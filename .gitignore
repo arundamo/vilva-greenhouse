@@ -24,5 +24,6 @@ pnpm-debug.log*
 # Uploads (kept out of git)
 server/uploads/
 server/vilva-farm.db
+server/greenhouse.db
 *.sqlite
 *.sqlite3

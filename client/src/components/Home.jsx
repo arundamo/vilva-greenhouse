@@ -19,12 +19,21 @@ export default function Home() {
                 <p className="text-sm text-gray-600">Fresh Spinach & Greens</p>
               </div>
             </div>
-            <button
-              onClick={() => navigate('/order')}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-medium text-sm sm:text-base"
-            >
-              Order Now
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate('/order')}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-medium text-sm sm:text-base"
+              >
+                Order Now
+              </button>
+              <button
+                onClick={() => navigate('/admin')}
+                className="hidden sm:inline-block bg-white text-green-700 border border-green-600 px-3 py-2 rounded-lg hover:bg-green-50 font-medium text-sm"
+                title="Admin Login"
+              >
+                Admin
+              </button>
+            </div>
           </div>
         </div>
       </div>

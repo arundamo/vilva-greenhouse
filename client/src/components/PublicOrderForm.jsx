@@ -21,7 +21,8 @@ export default function PublicOrderForm() {
   }, [])
 
   const loadVarieties = () => {
-    axios.get('/api/customers/varieties').then(res => {
+    // Use public varieties endpoint (no auth required)
+    axios.get('/api/public/varieties').then(res => {
       setVarieties(res.data)
       setLoading(false)
     }).catch(err => {

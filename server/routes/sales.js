@@ -227,4 +227,13 @@ router.patch('/:id', (req, res) => {
   );
 });
 
+// Delete sales order (cascades to order_items via ON DELETE CASCADE)
+router.delete('/:id', (req, res) => {
+  db.run('DELETE FROM sales_orders WHERE id = ?', [req.params.id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: 'Order not found' });
+    res.json({ message: 'Order deleted successfully' });
+  });
+});
+
 module.exports = router;

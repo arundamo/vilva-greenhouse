@@ -22,7 +22,14 @@ export default function Crops() {
   const [greenhouses, setGreenhouses] = useState([])
   const [availableBeds, setAvailableBeds] = useState([])
   const [varieties, setVarieties] = useState([])
-  const [newVariety, setNewVariety] = useState({ name: '', days_to_harvest: '' })
+  const [editingVariety, setEditingVariety] = useState(null)
+  const [newVariety, setNewVariety] = useState({ 
+    name: '', 
+    days_to_harvest: '', 
+    price_per_bunch: '', 
+    price_per_kg: '', 
+    price_per_100g: '' 
+  })
   const [formData, setFormData] = useState({
     greenhouse_id: '',
     raised_bed_id: '',
@@ -290,12 +297,46 @@ export default function Crops() {
     e.preventDefault()
     axios.post('/api/customers/varieties', newVariety).then(() => {
       loadVarieties()
-      setNewVariety({ name: '', days_to_harvest: '' })
+      setNewVariety({ 
+        name: '', 
+        days_to_harvest: '', 
+        price_per_bunch: '', 
+        price_per_kg: '', 
+        price_per_100g: '' 
+      })
       setShowVarietyModal(false)
     }).catch(err => {
       console.error(err)
       alert('Failed to add variety: ' + (err.response?.data?.error || err.message))
     })
+  }
+
+  const handleEditVariety = (variety) => {
+    setEditingVariety({
+      id: variety.id,
+      name: variety.name,
+      days_to_harvest: variety.days_to_harvest,
+      price_per_bunch: variety.price_per_bunch || '',
+      price_per_kg: variety.price_per_kg || '',
+      price_per_100g: variety.price_per_100g || ''
+    })
+  }
+
+  const handleUpdateVariety = (e) => {
+    e.preventDefault()
+    const { id, ...updateData } = editingVariety
+    
+    axios.patch(`/api/customers/varieties/${id}`, updateData).then(() => {
+      loadVarieties()
+      setEditingVariety(null)
+    }).catch(err => {
+      console.error(err)
+      alert('Failed to update variety: ' + (err.response?.data?.error || err.message))
+    })
+  }
+
+  const handleCancelEdit = () => {
+    setEditingVariety(null)
   }
 
   const handleDeleteVariety = (id) => {
@@ -819,7 +860,7 @@ export default function Crops() {
             {/* Add New Variety Form */}
             <form onSubmit={handleAddVariety} className="bg-gray-50 p-4 rounded-lg mb-4">
               <h4 className="font-semibold mb-3">Add New Variety</h4>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 mb-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Variety Name *
@@ -848,6 +889,57 @@ export default function Crops() {
                   />
                 </div>
               </div>
+              
+              {/* Pricing Section */}
+              <div className="border-t pt-3 mb-3">
+                <h5 className="text-sm font-semibold text-gray-700 mb-2">💰 Pricing (₹)</h5>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Per Bunch
+                    </label>
+                    <input
+                      type="number"
+                      value={newVariety.price_per_bunch}
+                      onChange={(e) => setNewVariety({ ...newVariety, price_per_bunch: e.target.value })}
+                      min="0"
+                      step="0.01"
+                      placeholder="e.g., 20"
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Per Kg
+                    </label>
+                    <input
+                      type="number"
+                      value={newVariety.price_per_kg}
+                      onChange={(e) => setNewVariety({ ...newVariety, price_per_kg: e.target.value })}
+                      min="0"
+                      step="0.01"
+                      placeholder="e.g., 100"
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Per 100g
+                    </label>
+                    <input
+                      type="number"
+                      value={newVariety.price_per_100g}
+                      onChange={(e) => setNewVariety({ ...newVariety, price_per_100g: e.target.value })}
+                      min="0"
+                      step="0.01"
+                      placeholder="e.g., 15"
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Optional: Set prices to display in customer order forms</p>
+              </div>
+              
               <button
                 type="submit"
                 className="mt-3 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -861,17 +953,129 @@ export default function Crops() {
               <h4 className="font-semibold mb-3">Existing Varieties</h4>
               <div className="space-y-2">
                 {varieties.map((variety) => (
-                  <div key={variety.id} className="flex justify-between items-center bg-white border rounded-lg p-3 hover:shadow-md transition-shadow">
-                    <div>
-                      <p className="font-medium text-green-700">{variety.name}</p>
-                      <p className="text-sm text-gray-600">{variety.days_to_harvest} days to harvest</p>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteVariety(variety.id)}
-                      className="px-3 py-1 bg-red-50 text-red-700 rounded hover:bg-red-100 text-sm font-medium"
-                    >
-                      Delete
-                    </button>
+                  <div key={variety.id} className="bg-white border rounded-lg p-3 hover:shadow-md transition-shadow">
+                    {editingVariety?.id === variety.id ? (
+                      // Edit Mode
+                      <form onSubmit={handleUpdateVariety} className="space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                              Variety Name *
+                            </label>
+                            <input
+                              type="text"
+                              value={editingVariety.name}
+                              onChange={(e) => setEditingVariety({ ...editingVariety, name: e.target.value })}
+                              required
+                              className="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                              Days to Harvest *
+                            </label>
+                            <input
+                              type="number"
+                              value={editingVariety.days_to_harvest}
+                              onChange={(e) => setEditingVariety({ ...editingVariety, days_to_harvest: e.target.value })}
+                              required
+                              min="1"
+                              className="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="border-t pt-2">
+                          <p className="text-xs font-medium text-gray-700 mb-2">Pricing (₹)</p>
+                          <div className="grid grid-cols-3 gap-2">
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Per Bunch</label>
+                              <input
+                                type="number"
+                                value={editingVariety.price_per_bunch}
+                                onChange={(e) => setEditingVariety({ ...editingVariety, price_per_bunch: e.target.value })}
+                                min="0"
+                                step="0.01"
+                                placeholder="0"
+                                className="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-green-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Per Kg</label>
+                              <input
+                                type="number"
+                                value={editingVariety.price_per_kg}
+                                onChange={(e) => setEditingVariety({ ...editingVariety, price_per_kg: e.target.value })}
+                                min="0"
+                                step="0.01"
+                                placeholder="0"
+                                className="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-green-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Per 100g</label>
+                              <input
+                                type="number"
+                                value={editingVariety.price_per_100g}
+                                onChange={(e) => setEditingVariety({ ...editingVariety, price_per_100g: e.target.value })}
+                                min="0"
+                                step="0.01"
+                                placeholder="0"
+                                className="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-green-500"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <button
+                            type="submit"
+                            className="flex-1 bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                          >
+                            Save Changes
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleCancelEdit}
+                            className="flex-1 bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      // View Mode
+                      <>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <p className="font-medium text-green-700">{variety.name}</p>
+                            <p className="text-sm text-gray-600">{variety.days_to_harvest} days to harvest</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEditVariety(variety)}
+                              className="px-3 py-1 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 text-sm font-medium"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteVariety(variety.id)}
+                              className="px-3 py-1 bg-red-50 text-red-700 rounded hover:bg-red-100 text-sm font-medium"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                        {(variety.price_per_bunch > 0 || variety.price_per_kg > 0 || variety.price_per_100g > 0) && (
+                          <div className="flex gap-3 text-xs text-gray-600 border-t pt-2">
+                            <span className="font-medium">Prices:</span>
+                            {variety.price_per_bunch > 0 && <span>₹{variety.price_per_bunch}/bunch</span>}
+                            {variety.price_per_kg > 0 && <span>₹{variety.price_per_kg}/kg</span>}
+                            {variety.price_per_100g > 0 && <span>₹{variety.price_per_100g}/100g</span>}
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 ))}
               </div>

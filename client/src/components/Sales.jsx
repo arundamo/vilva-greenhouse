@@ -237,8 +237,21 @@ export default function Sales() {
     })
   }
 
+  const handleDeleteOrder = (orderId) => {
+    if (confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
+      axios.delete(`/api/sales/${orderId}`).then(() => {
+        loadOrders()
+        alert('Order deleted successfully!')
+      }).catch(err => {
+        console.error(err)
+        alert('Failed to delete order: ' + (err.response?.data?.error || err.message))
+      })
+    }
+  }
+
   const getStatusColor = (status) => {
     switch(status) {
+      case 'unconfirmed': return 'bg-orange-100 text-orange-700 border border-orange-300'
       case 'pending': return 'bg-yellow-100 text-yellow-700'
       case 'packed': return 'bg-blue-100 text-blue-700'
       case 'delivered': return 'bg-green-100 text-green-700'
@@ -262,17 +275,18 @@ export default function Sales() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex space-x-2 border-b">
-        {['pending', 'packed', 'delivered', 'all'].map((f) => (
+      <div className="flex flex-wrap gap-2 border-b pb-2">
+        {['unconfirmed', 'pending', 'packed', 'delivered', 'all'].map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-4 py-2 border-b-2 transition-colors ${
+            className={`px-3 sm:px-4 py-2 rounded-t-lg transition-colors text-sm sm:text-base ${
               filter === f
-                ? 'border-green-600 text-green-600 font-semibold'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'bg-green-600 text-white font-semibold'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
+            {f === 'unconfirmed' && '🆕 '}
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
@@ -280,18 +294,27 @@ export default function Sales() {
 
       <div className="space-y-4">
         {orders.map((order) => (
-          <div key={order.id} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="text-xl font-semibold">{order.customer_name}</h3>
+          <div key={order.id} className={`bg-white rounded-lg shadow p-4 sm:p-6 hover:shadow-lg transition-shadow ${order.delivery_status === 'unconfirmed' ? 'border-2 border-orange-300' : ''}`}>
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-lg sm:text-xl font-semibold">{order.customer_name}</h3>
+                  {order.requested_via === 'online_form' && (
+                    <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full font-semibold">
+                      🌐 Online Order
+                    </span>
+                  )}
+                </div>
                 <p className="text-sm text-gray-600">
                   📞 {order.phone} {order.whatsapp && `• WhatsApp: ${order.whatsapp}`}
                 </p>
                 <p className="text-xs text-gray-500 mt-1">Order #{order.id} • {order.order_date}</p>
               </div>
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.delivery_status)}`}>
-                {order.delivery_status}
-              </span>
+              <div className="flex gap-2">
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${getStatusColor(order.delivery_status)}`}>
+                  {order.delivery_status}
+                </span>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -383,6 +406,12 @@ export default function Sales() {
                     Mark Delivered
                   </button>
                 )}
+                <button
+                  onClick={() => handleDeleteOrder(order.id)}
+                  className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium"
+                >
+                  🗑️ Delete
+                </button>
               </div>
             </div>
           </div>

@@ -38,13 +38,20 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
 });
 
-// API routes
-app.use('/api/greenhouses', require('./routes/greenhouses'));
-app.use('/api/crops', require('./routes/crops'));
-app.use('/api/activities', require('./routes/activities'));
-app.use('/api/sales', require('./routes/sales'));
-app.use('/api/customers', require('./routes/customers'));
-app.use('/api/harvests', require('./routes/harvests'));
+// Authentication middleware
+const { requireAuth, requireAdmin } = require('./middleware/auth');
+
+// Public API routes (no authentication required)
+app.use('/api/auth', require('./routes/auth')); // Login, register, etc.
+app.use('/api/public', require('./routes/public')); // Public order form endpoint
+
+// Protected admin-only routes
+app.use('/api/greenhouses', requireAuth, requireAdmin, require('./routes/greenhouses'));
+app.use('/api/crops', requireAuth, requireAdmin, require('./routes/crops'));
+app.use('/api/activities', requireAuth, requireAdmin, require('./routes/activities'));
+app.use('/api/sales', requireAuth, requireAdmin, require('./routes/sales'));
+app.use('/api/customers', requireAuth, requireAdmin, require('./routes/customers'));
+app.use('/api/harvests', requireAuth, requireAdmin, require('./routes/harvests'));
 
 // 404 handler
 app.use((req, res, next) => {

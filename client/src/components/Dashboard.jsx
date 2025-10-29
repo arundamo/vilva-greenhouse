@@ -192,73 +192,73 @@ export default function Dashboard() {
   if (loading) return <div className="text-center py-10">Loading...</div>
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h2 className="text-3xl font-bold text-gray-800">Vilva Greenhouse Farm Dashboard</h2>
-        <p className="text-gray-600">Farm management and tracking system</p>
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Vilva Greenhouse Farm Dashboard</h2>
+        <p className="text-sm sm:text-base text-gray-600">Farm management and tracking system</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-lg shadow">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Greenhouses</p>
-              <p className="text-3xl font-bold text-green-600">{stats.greenhouses}</p>
-              <p className="text-xs text-gray-500">G1, G2, G3</p>
+              <p className="text-gray-500 text-xs sm:text-sm">Greenhouses</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.greenhouses}</p>
+              <p className="text-xs text-gray-500 hidden sm:block">G1, G2, G3</p>
             </div>
-            <span className="text-4xl">🏡</span>
+            <span className="text-3xl sm:text-4xl">🏡</span>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Active Crops</p>
-              <p className="text-3xl font-bold text-green-600">{stats.activeCrops}</p>
-              <p className="text-xs text-gray-500">Growing now</p>
+              <p className="text-gray-500 text-xs sm:text-sm">Active Crops</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.activeCrops}</p>
+              <p className="text-xs text-gray-500 hidden sm:block">Growing now</p>
             </div>
-            <span className="text-4xl">🌱</span>
+            <span className="text-3xl sm:text-4xl">🌱</span>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Total Crops</p>
-              <p className="text-3xl font-bold text-blue-600">{stats.crops}</p>
-              <p className="text-xs text-gray-500">All time</p>
+              <p className="text-gray-500 text-xs sm:text-sm">Total Crops</p>
+              <p className="text-2xl sm:text-3xl font-bold text-blue-600">{stats.crops}</p>
+              <p className="text-xs text-gray-500 hidden sm:block">All time</p>
             </div>
-            <span className="text-4xl">📊</span>
+            <span className="text-3xl sm:text-4xl">📊</span>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Pending Orders</p>
-              <p className="text-3xl font-bold text-orange-600">{stats.pendingOrders}</p>
-              <p className="text-xs text-gray-500">To deliver</p>
+              <p className="text-gray-500 text-xs sm:text-sm">Pending Orders</p>
+              <p className="text-2xl sm:text-3xl font-bold text-orange-600">{stats.pendingOrders}</p>
+              <p className="text-xs text-gray-500 hidden sm:block">To deliver</p>
             </div>
-            <span className="text-4xl">💰</span>
+            <span className="text-3xl sm:text-4xl">💰</span>
           </div>
         </div>
       </div>
 
       {/* Recent Activities */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-xl font-semibold mb-4">Recent Activities</h3>
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4">Recent Activities</h3>
         {recentActivities.length === 0 ? (
           <p className="text-gray-500">No recent activities</p>
         ) : (
           <div className="space-y-2">
             {recentActivities.map((activity) => (
               <div key={activity.id} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
-                <div>
-                  <p className="font-medium">{activity.activity_type.replace('_', ' ')} - {activity.greenhouse_name} / {activity.bed_name}</p>
-                  <p className="text-sm text-gray-500">
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm sm:text-base truncate">{activity.activity_type.replace('_', ' ')} - {activity.greenhouse_name} / {activity.bed_name}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 truncate">
                     {activity.variety_name} • {activity.activity_date}
                     {activity.description && ` • ${activity.description}`}
                   </p>
                 </div>
-                <span className="text-2xl">
+                <span className="text-xl sm:text-2xl ml-2 flex-shrink-0">
                   {activity.activity_type === 'watering' && '💧'}
                   {activity.activity_type === 'fertilizer' && '🌾'}
                   {activity.activity_type === 'weeding' && '🪴'}
@@ -273,24 +273,24 @@ export default function Dashboard() {
       </div>
 
       {/* Pending Sales Orders */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-xl font-semibold mb-4">Pending Sales Orders</h3>
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4">Pending Sales Orders</h3>
         {recentSales.length === 0 ? (
           <p className="text-gray-500">No pending orders</p>
         ) : (
           <div className="space-y-2">
             {recentSales.map((sale) => (
               <div key={sale.id} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
-                <div>
-                  <p className="font-medium">
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm sm:text-base truncate">
                     {sale.customer_name} - {sale.items && sale.items.length > 1 ? 'Multiple items' : (sale.items && sale.items[0] ? sale.items[0].variety_name : 'No items')}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs sm:text-sm text-gray-500 truncate">
                     ₹{sale.total_amount} • {sale.requested_via}
                     {sale.delivery_date && ` • Delivery: ${sale.delivery_date}`}
                   </p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ml-2 flex-shrink-0 ${
                   sale.delivery_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                   sale.delivery_status === 'packed' ? 'bg-blue-100 text-blue-700' :
                   'bg-green-100 text-green-700'
@@ -304,158 +304,164 @@ export default function Dashboard() {
       </div>
 
       {/* Crop Performance Reports */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-xl font-semibold mb-4">📊 Crop Performance Reports</h3>
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4">📊 Crop Performance Reports</h3>
         {cropReports.length === 0 ? (
           <p className="text-gray-500">No crop data available</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variety</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Times Sowed</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Currently Growing</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Harvests</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Harvested</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Times Sold</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {cropReports.map((report, index) => {
-                  // Success rate = crops completed (harvested or sold) / total sowed
-                  // Note: status is mutually exclusive (either 'harvested' OR 'sold', not both)
-                  const completedCrops = report.timesHarvested + report.timesSold
-                  const successRate = report.timesSowed > 0 
-                    ? Math.round((completedCrops / report.timesSowed) * 100)
-                    : 0
-                  
-                  return (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="font-medium text-green-700">{report.variety}</span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
-                          {report.timesSowed}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                          {report.growing}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
-                          {report.totalHarvestCount}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="space-y-1">
-                          {Object.entries(report.harvestByUnit).map(([unit, qty]) => (
-                            <div key={unit} className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-sm font-semibold inline-block mr-1">
-                              {qty.toFixed(unit === 'grams' ? 0 : 1)} {unit}
-                            </div>
-                          ))}
-                          {Object.keys(report.harvestByUnit).length === 0 && (
-                            <span className="text-gray-400 text-sm">—</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold">
-                          {report.timesSold}
-                        </span>
-                      </td>
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <div className="overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variety</th>
+                      <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sowed</th>
+                      <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Growing</th>
+                      <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Harvests</th>
+                      <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Harvested</th>
+                      <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sold</th>
                     </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {cropReports.map((report, index) => {
+                      const completedCrops = report.timesHarvested + report.timesSold
+                      const successRate = report.timesSowed > 0 
+                        ? Math.round((completedCrops / report.timesSowed) * 100)
+                        : 0
+                      
+                      return (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                            <span className="font-medium text-green-700 text-sm">{report.variety}</span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs sm:text-sm font-semibold">
+                              {report.timesSowed}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden sm:table-cell">
+                            <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                              {report.growing}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden md:table-cell">
+                            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
+                              {report.totalHarvestCount}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 text-center hidden md:table-cell">
+                            <div className="space-y-1">
+                              {Object.entries(report.harvestByUnit).map(([unit, qty]) => (
+                                <div key={unit} className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs sm:text-sm font-semibold inline-block mr-1">
+                                  {qty.toFixed(unit === 'grams' ? 0 : 1)} {unit}
+                                </div>
+                              ))}
+                              {Object.keys(report.harvestByUnit).length === 0 && (
+                                <span className="text-gray-400 text-sm">—</span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
+                            <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs sm:text-sm font-semibold">
+                              {report.timesSold}
+                            </span>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
       </div>
 
       {/* Customer Purchase Reports */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-xl font-semibold mb-4">👥 Customer Purchase Reports</h3>
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4">👥 Customer Purchase Reports</h3>
         {customerReports.length === 0 ? (
           <p className="text-gray-500">No customer data available</p>
         ) : (
           <>
             {/* Grand Total Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-600 font-medium">Total Customers</p>
-                <p className="text-3xl font-bold text-blue-700">{customerReports.length}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-3 sm:p-4 rounded-lg border border-blue-200">
+                <p className="text-xs sm:text-sm text-blue-600 font-medium">Total Customers</p>
+                <p className="text-2xl sm:text-3xl font-bold text-blue-700">{customerReports.length}</p>
               </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
-                <p className="text-sm text-green-600 font-medium">Total Orders</p>
-                <p className="text-3xl font-bold text-green-700">
+              <div className="bg-gradient-to-br from-green-50 to-green-100 p-3 sm:p-4 rounded-lg border border-green-200">
+                <p className="text-xs sm:text-sm text-green-600 font-medium">Total Orders</p>
+                <p className="text-2xl sm:text-3xl font-bold text-green-700">
                   {customerReports.reduce((sum, c) => sum + c.totalOrders, 0)}
                 </p>
               </div>
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
-                <p className="text-sm text-purple-600 font-medium">Total Sales</p>
-                <p className="text-3xl font-bold text-purple-700">
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-3 sm:p-4 rounded-lg border border-purple-200">
+                <p className="text-xs sm:text-sm text-purple-600 font-medium">Total Sales</p>
+                <p className="text-2xl sm:text-3xl font-bold text-purple-700">
                   ₹{customerReports.reduce((sum, c) => sum + c.totalAmount, 0).toFixed(2)}
                 </p>
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Orders</th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Preferred Variety</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Varieties Purchased</th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Last Order</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {customerReports.map((customer, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div>
-                          <p className="font-medium text-gray-900">{customer.customer_name}</p>
-                          <p className="text-xs text-gray-500">📞 {customer.phone}</p>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
-                          {customer.totalOrders}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                          ₹{customer.totalAmount.toFixed(2)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
-                          {customer.preferredVariety}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="space-y-1">
-                          {Object.entries(customer.varietiesPurchased).map(([variety, data]) => (
-                            <div key={variety} className="text-sm">
-                              <span className="font-medium text-gray-700">{variety}</span>: 
-                              <span className="text-gray-600"> {data.count}× ({data.totalQuantity.toFixed(1)} {data.unit})</span>
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <div className="inline-block min-w-full align-middle">
+                <div className="overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                        <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
+                        <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                        <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Preferred</th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Varieties</th>
+                        <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Last Order</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {customerReports.map((customer, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                            <div>
+                              <p className="font-medium text-gray-900 text-sm">{customer.customer_name}</p>
+                              <p className="text-xs text-gray-500">📞 {customer.phone}</p>
                             </div>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
-                        {customer.lastOrderDate}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs sm:text-sm font-semibold">
+                              {customer.totalOrders}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
+                            <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs sm:text-sm font-semibold">
+                              ₹{customer.totalAmount.toFixed(2)}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden md:table-cell">
+                            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs sm:text-sm font-semibold">
+                              {customer.preferredVariety}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 hidden lg:table-cell">
+                            <div className="space-y-1">
+                              {Object.entries(customer.varietiesPurchased).map(([variety, data]) => (
+                                <div key={variety} className="text-xs sm:text-sm">
+                                  <span className="font-medium text-gray-700">{variety}</span>: 
+                                  <span className="text-gray-600"> {data.count}× ({data.totalQuantity.toFixed(1)} {data.unit})</span>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center text-xs sm:text-sm text-gray-600 hidden sm:table-cell">
+                            {customer.lastOrderDate}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </>
         )}

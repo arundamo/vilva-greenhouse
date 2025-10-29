@@ -78,14 +78,59 @@ router.get('/varieties', (req, res) => {
 
 // Add spinach variety
 router.post('/varieties', (req, res) => {
-  const { name, days_to_harvest } = req.body;
+  const { name, days_to_harvest, price_per_bunch, price_per_kg, price_per_100g } = req.body;
   
   db.run(
-    'INSERT INTO spinach_varieties (name, days_to_harvest) VALUES (?, ?)',
-    [name, days_to_harvest],
+    `INSERT INTO spinach_varieties (name, days_to_harvest, price_per_bunch, price_per_kg, price_per_100g) 
+     VALUES (?, ?, ?, ?, ?)`,
+    [name, days_to_harvest, price_per_bunch || 0, price_per_kg || 0, price_per_100g || 0],
     function(err) {
       if (err) return res.status(500).json({ error: err.message });
       res.status(201).json({ id: this.lastID, message: 'Variety added' });
+    }
+  );
+});
+
+// Update spinach variety
+router.patch('/varieties/:id', (req, res) => {
+  const { name, days_to_harvest, price_per_bunch, price_per_kg, price_per_100g } = req.body;
+  const updates = [];
+  const params = [];
+  
+  if (name !== undefined) {
+    updates.push('name = ?');
+    params.push(name);
+  }
+  if (days_to_harvest !== undefined) {
+    updates.push('days_to_harvest = ?');
+    params.push(days_to_harvest);
+  }
+  if (price_per_bunch !== undefined) {
+    updates.push('price_per_bunch = ?');
+    params.push(price_per_bunch);
+  }
+  if (price_per_kg !== undefined) {
+    updates.push('price_per_kg = ?');
+    params.push(price_per_kg);
+  }
+  if (price_per_100g !== undefined) {
+    updates.push('price_per_100g = ?');
+    params.push(price_per_100g);
+  }
+  
+  if (updates.length === 0) {
+    return res.status(400).json({ error: 'No fields to update' });
+  }
+  
+  params.push(req.params.id);
+  
+  db.run(
+    `UPDATE spinach_varieties SET ${updates.join(', ')} WHERE id = ?`,
+    params,
+    function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      if (this.changes === 0) return res.status(404).json({ error: 'Variety not found' });
+      res.json({ message: 'Variety updated' });
     }
   );
 });

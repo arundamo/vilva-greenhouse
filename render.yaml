@@ -6,7 +6,7 @@ services:
     region: oregon
     plan: free
     buildCommand: npm install
-    startCommand: node server/index.js
+    startCommand: node server/add-user-management.js && node server/add-online-form-via.js && node server/add-variety-prices.js && node server/index.js
     envVars:
       - key: NODE_ENV
         value: production

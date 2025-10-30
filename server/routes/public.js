@@ -118,13 +118,16 @@ router.post('/orders', (req, res) => {
 
 // Get available varieties (public endpoint)
 router.get('/varieties', (req, res) => {
-  db.all('SELECT id, name, days_to_harvest FROM spinach_varieties ORDER BY name', (err, rows) => {
-    if (err) {
-      console.error(err)
-      return res.status(500).json({ error: 'Database error' })
+  db.all(
+    'SELECT id, name, days_to_harvest, price_per_bunch, price_per_kg, price_per_100g FROM spinach_varieties ORDER BY name',
+    (err, rows) => {
+      if (err) {
+        console.error(err)
+        return res.status(500).json({ error: 'Database error' })
+      }
+      res.json(rows)
     }
-    res.json(rows)
-  })
+  )
 })
 
 module.exports = router

@@ -1,11 +1,23 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
+const { execSync } = require('child_process');
 
 const dbPath = path.join(__dirname, 'vilva-farm.db');
 const db = new sqlite3.Database(dbPath);
 
 console.log('📥 Importing data into database...\n');
+
+// Run migrations first to ensure schema is up to date
+console.log('🔧 Running database migrations...\n');
+try {
+  execSync('node server/add-online-form-via.js', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+  execSync('node server/add-variety-prices.js', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+  console.log('\n✓ Migrations completed\n');
+} catch (err) {
+  console.log('⚠️  Migrations may have already run or failed:', err.message);
+  console.log('Continuing with import...\n');
+}
 
 // Read the exported JSON file
 const dataPath = path.join(__dirname, 'data-export.json');
@@ -101,6 +113,18 @@ db.serialize(() => {
       
       // Import all other tables
       rows.forEach(row => {
+        // Fix any constraint violations for sales_orders
+        if (table === 'sales_orders') {
+          // Map old requested_via values if they don't exist in production schema
+          if (row.requested_via && !['whatsapp', 'phone', 'in-person', 'online_form'].includes(row.requested_via)) {
+            row.requested_via = 'whatsapp'; // default fallback
+          }
+          // Map old delivery_status values
+          if (row.delivery_status && !['pending', 'packed', 'delivered', 'cancelled', 'unconfirmed'].includes(row.delivery_status)) {
+            row.delivery_status = 'pending'; // default fallback
+          }
+        }
+        
         const columns = Object.keys(row);
         const placeholders = columns.map(() => '?').join(', ');
         const values = columns.map(col => row[col]);

@@ -10,11 +10,18 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
-// Middleware - Allow both 5173 and 5174 for Vite
-app.use(cors({ 
-  origin: [CLIENT_ORIGIN, 'http://localhost:5174'], 
-  credentials: true 
-}));
+// CORS configuration
+// We use Authorization header tokens, not cookies, so credentials can be false.
+// Allow any origin to avoid deployment-origin mismatches; tighten later if needed.
+const corsOptions = {
+  origin: true, // reflect request origin
+  credentials: false, // no cookies used
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range']
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 

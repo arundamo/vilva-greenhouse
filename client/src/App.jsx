@@ -64,7 +64,7 @@ export default function App() {
   };
   
   // Public routes that don't require authentication
-  const isPublicRoute = location.pathname === '/order' || location.pathname === '/home' || location.pathname === '/';
+  const isPublicRoute = location.pathname === '/order' || location.pathname === '/home' || location.pathname === '/' || location.pathname === '/admin';
   
   // Show loading state
   if (loading) {

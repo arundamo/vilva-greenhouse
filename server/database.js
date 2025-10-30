@@ -35,6 +35,9 @@ db.serialize(() => {
     name TEXT NOT NULL UNIQUE,
     description TEXT,
     days_to_harvest INTEGER,
+    price_per_bunch REAL DEFAULT 0,
+    price_per_kg REAL DEFAULT 0,
+    price_per_100g REAL DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 

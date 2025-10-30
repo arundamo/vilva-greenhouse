@@ -125,33 +125,20 @@ router.post('/orders', (req, res) => {
                   
                   if (itemsInserted === itemsWithPrices.length) {
                     stmt.finalize()
-                
-                // Log the new order for admin notification
-                console.log(`📦 NEW PUBLIC ORDER #${orderId} from ${customer_name} (${phone})`)
-                console.log(`   Delivery: ${delivery_date}`)
-                console.log(`   Items: ${items.length}`)
-                
-                res.json({
-                  success: true,
-                  message: 'Order submitted successfully',
-                  order_id: orderId,
-                  customer_name,
-                  phone
+                    
+                    // Log the new order for admin notification
+                    console.log(`📦 NEW PUBLIC ORDER #${orderId} from ${customer_name} (${phone})`)
+                    console.log(`   Delivery: ${delivery_date}`)
+                    console.log(`   Items: ${itemsWithPrices.length}`)
+                    console.log(`   Total: ₹${totalAmount.toFixed(2)}`)
+                    
+                    res.json({
+                      success: true,
+                      message: 'Order submitted successfully',
+                      order_id: orderId
                     })
                   }
                 })
-              })
-              
-              // Log the new order for admin notification
-              console.log(`📦 NEW PUBLIC ORDER #${orderId} from ${customer_name} (${phone})`)
-              console.log(`   Delivery: ${delivery_date}`)
-              console.log(`   Items: ${itemsWithPrices.length}`)
-              console.log(`   Total: ₹${totalAmount.toFixed(2)}`)
-              
-              res.json({
-                success: true,
-                message: 'Order submitted successfully',
-                order_id: orderId
               })
             }
           )

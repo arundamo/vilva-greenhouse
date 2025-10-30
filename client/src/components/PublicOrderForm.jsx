@@ -41,13 +41,16 @@ export default function PublicOrderForm() {
     const quantity = parseFloat(item.quantity)
     if (isNaN(quantity)) return 0
     
+    // Helper to parse price (handles empty strings, null, etc.)
+    const getPrice = (price) => parseFloat(price) || 0
+    
     switch(item.unit) {
       case 'bunches':
-        return quantity * (variety.price_per_bunch || 0)
+        return quantity * getPrice(variety.price_per_bunch)
       case 'kg':
-        return quantity * (variety.price_per_kg || 0)
+        return quantity * getPrice(variety.price_per_kg)
       case 'grams':
-        return (quantity / 100) * (variety.price_per_100g || 0)
+        return (quantity / 100) * getPrice(variety.price_per_100g)
       default:
         return 0
     }
@@ -335,14 +338,20 @@ export default function PublicOrderForm() {
                         const variety = varieties.find(v => v.id === parseInt(item.variety_id))
                         if (!variety) return null
                         
-                        const hasPrices = variety.price_per_bunch > 0 || variety.price_per_kg > 0 || variety.price_per_100g > 0
+                        // Helper to parse and check price
+                        const getPrice = (price) => parseFloat(price) || 0
+                        const priceBunch = getPrice(variety.price_per_bunch)
+                        const priceKg = getPrice(variety.price_per_kg)
+                        const price100g = getPrice(variety.price_per_100g)
+                        
+                        const hasPrices = priceBunch > 0 || priceKg > 0 || price100g > 0
                         if (!hasPrices) return null
                         
                         return (
                           <div className="mt-1 text-xs text-gray-600 flex flex-wrap gap-2">
-                            {variety.price_per_bunch > 0 && <span>₹{variety.price_per_bunch}/bunch</span>}
-                            {variety.price_per_kg > 0 && <span>₹{variety.price_per_kg}/kg</span>}
-                            {variety.price_per_100g > 0 && <span>₹{variety.price_per_100g}/100g</span>}
+                            {priceBunch > 0 && <span>₹{priceBunch}/bunch</span>}
+                            {priceKg > 0 && <span>₹{priceKg}/kg</span>}
+                            {price100g > 0 && <span>₹{price100g}/100g</span>}
                           </div>
                         )
                       })()}

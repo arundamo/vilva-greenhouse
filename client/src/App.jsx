@@ -6,6 +6,7 @@ import Greenhouses from './components/Greenhouses';
 import Crops from './components/Crops';
 import Activities from './components/Activities';
 import Sales from './components/Sales';
+import Settings from './components/Settings';
 import PublicOrderForm from './components/PublicOrderForm';
 import Login from './components/Login';
 import Home from './components/Home';
@@ -102,6 +103,7 @@ export default function App() {
     { path: '/crops', label: 'Crops', icon: '🌱' },
     { path: '/activities', label: 'Activities', icon: '📝' },
     { path: '/sales', label: 'Sales', icon: '💰' },
+    { path: '/settings', label: 'Settings', icon: '⚙️' },
   ];
   
   // Admin dashboard interface
@@ -196,6 +198,7 @@ export default function App() {
           <Route path="/crops" element={<Crops />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/sales" element={<Sales />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
       </main>

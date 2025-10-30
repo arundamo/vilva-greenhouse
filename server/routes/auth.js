@@ -141,56 +141,116 @@ router.get('/me', (req, res) => {
   );
 });
 
-// Register endpoint (for creating public users)
-router.post('/register', (req, res) => {
-  const { username, password, full_name, email, phone } = req.body;
+// Get all users (admin only)
+router.get('/users', (req, res) => {
+  const token = req.headers.authorization?.replace('Bearer ', '');
   
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required' });
+  if (!token) {
+    return res.status(401).json({ error: 'Not authenticated' });
   }
   
-  if (password.length < 6) {
-    return res.status(400).json({ error: 'Password must be at least 6 characters' });
-  }
-  
-  // Check if username exists
-  db.get('SELECT id FROM users WHERE username = ?', [username], (err, existing) => {
-    if (err) {
-      return res.status(500).json({ error: 'Database error' });
-    }
-    
-    if (existing) {
-      return res.status(400).json({ error: 'Username already exists' });
-    }
-    
-    // Hash password
-    bcrypt.hash(password, 10, (err, hash) => {
-      if (err) {
-        return res.status(500).json({ error: 'Failed to hash password' });
+  // Verify admin user
+  db.get(
+    `SELECT u.* FROM users u 
+     JOIN sessions s ON u.id = s.user_id 
+     WHERE s.session_token = ? AND s.expires_at > datetime("now") AND u.active = 1`,
+    [token],
+    (err, user) => {
+      if (err || !user) {
+        return res.status(401).json({ error: 'Invalid session' });
       }
       
-      // Create user
-      db.run(
-        `INSERT INTO users (username, password_hash, role, full_name, email, phone) 
-         VALUES (?, ?, 'public', ?, ?, ?)`,
-        [username, hash, full_name, email, phone],
-        function(err) {
+      if (user.role !== 'admin') {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+      
+      // Get all users (exclude password hash)
+      db.all(
+        'SELECT id, username, role, full_name, email, phone, active, created_at, last_login FROM users ORDER BY created_at DESC',
+        (err, rows) => {
           if (err) {
-            return res.status(500).json({ error: 'Failed to create user' });
+            return res.status(500).json({ error: 'Database error' });
           }
-          
-          res.status(201).json({
-            message: 'User registered successfully',
-            user: {
-              id: this.lastID,
-              username,
-              role: 'public'
-            }
-          });
+          res.json(rows);
         }
       );
+    }
+  );
+});
+
+// Register endpoint (for creating users - admin can create any role)
+router.post('/register', (req, res) => {
+  const { username, password, role, full_name, email, phone } = req.body;
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  
+  // If creating admin user, check if requester is admin
+  if (role === 'admin' && token) {
+    db.get(
+      `SELECT u.* FROM users u 
+       JOIN sessions s ON u.id = s.user_id 
+       WHERE s.session_token = ? AND s.expires_at > datetime("now") AND u.active = 1`,
+      [token],
+      (err, user) => {
+        if (err || !user || user.role !== 'admin') {
+          return res.status(403).json({ error: 'Only admins can create admin users' });
+        }
+        createUser();
+      }
+    );
+  } else {
+    createUser();
+  }
+  
+  function createUser() {
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+    
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+    
+    // Check if username exists
+    db.get('SELECT id FROM users WHERE username = ?', [username], (err, existing) => {
+      if (err) {
+        return res.status(500).json({ error: 'Database error' });
+      }
+      
+      if (existing) {
+        return res.status(400).json({ error: 'Username already exists' });
+      }
+      
+      // Hash password
+      bcrypt.hash(password, 10, (err, hash) => {
+        if (err) {
+          return res.status(500).json({ error: 'Failed to hash password' });
+        }
+        
+        // Create user with specified or default role
+        const userRole = role || 'public';
+        
+        db.run(
+          `INSERT INTO users (username, password_hash, role, full_name, email, phone) 
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [username, hash, userRole, full_name, email, phone],
+          function(err) {
+            if (err) {
+              return res.status(500).json({ error: 'Failed to create user' });
+            }
+            
+            res.status(201).json({
+              message: 'User registered successfully',
+              user: {
+                id: this.lastID,
+                username,
+                role: userRole
+              }
+            });
+          }
+        );
+      });
     });
-  });
+  }
 });
 
 // Change password endpoint

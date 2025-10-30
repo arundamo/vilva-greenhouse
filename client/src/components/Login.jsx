@@ -96,17 +96,6 @@ export default function Login({ onLoginSuccess }) {
               {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
-
-          {/* Default credentials info */}
-          <div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-xs text-blue-800">
-              <strong>First time login?</strong><br/>
-              Default Admin Credentials:<br/>
-              Username: <code className="bg-white px-1 py-0.5 rounded">admin</code><br/>
-              Password: <code className="bg-white px-1 py-0.5 rounded">admin123</code><br/>
-              <span className="text-red-600">⚠️ Change password after first login!</span>
-            </p>
-          </div>
         </div>
 
         {/* Footer */}

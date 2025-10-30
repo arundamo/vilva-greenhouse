@@ -96,15 +96,20 @@ export default function App() {
     return <Login onLoginSuccess={handleLoginSuccess} />;
   }
   
-  // Admin navigation links
-  const navLinks = [
-    { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/greenhouses', label: 'Greenhouses', icon: '🏡' },
-    { path: '/crops', label: 'Crops', icon: '🌱' },
-    { path: '/activities', label: 'Activities', icon: '📝' },
-    { path: '/sales', label: 'Sales', icon: '💰' },
-    { path: '/settings', label: 'Settings', icon: '⚙️' },
-  ];
+  // Navigation links based on user role
+  const navLinks = user.role === 'admin' 
+    ? [
+        { path: '/dashboard', label: 'Dashboard', icon: '📊' },
+        { path: '/greenhouses', label: 'Greenhouses', icon: '🏡' },
+        { path: '/crops', label: 'Crops', icon: '🌱' },
+        { path: '/activities', label: 'Activities', icon: '📝' },
+        { path: '/sales', label: 'Sales', icon: '💰' },
+        { path: '/settings', label: 'Settings', icon: '⚙️' },
+      ]
+    : [
+        { path: '/home', label: 'Home', icon: '🏠' },
+        { path: '/order', label: 'Order Form', icon: '📝' },
+      ];
   
   // Admin dashboard interface
   return (
@@ -116,7 +121,7 @@ export default function App() {
               <span className="text-2xl">🌿</span>
               <div>
                 <h1 className="text-lg sm:text-xl font-bold truncate">Vilva Greenhouse Farm</h1>
-                <p className="text-xs text-green-100">Admin Panel</p>
+                <p className="text-xs text-green-100">{user.role === 'admin' ? 'Admin Panel' : 'User Panel'}</p>
               </div>
             </div>
             
@@ -193,13 +198,23 @@ export default function App() {
       </nav>
       <main className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
         <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/greenhouses" element={<Greenhouses />} />
-          <Route path="/crops" element={<Crops />} />
-          <Route path="/activities" element={<Activities />} />
-          <Route path="/sales" element={<Sales />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<Navigate to="/dashboard" />} />
+          {user.role === 'admin' ? (
+            <>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/greenhouses" element={<Greenhouses />} />
+              <Route path="/crops" element={<Crops />} />
+              <Route path="/activities" element={<Activities />} />
+              <Route path="/sales" element={<Sales />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="*" element={<Navigate to="/dashboard" />} />
+            </>
+          ) : (
+            <>
+              <Route path="/home" element={<Home />} />
+              <Route path="/order" element={<PublicOrderForm />} />
+              <Route path="*" element={<Navigate to="/home" />} />
+            </>
+          )}
         </Routes>
       </main>
     </div>

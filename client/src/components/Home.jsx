@@ -1,8 +1,38 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 export default function Home() {
   const navigate = useNavigate()
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('auth_token')
+    const savedUser = localStorage.getItem('user')
+    
+    if (token && savedUser) {
+      try {
+        setUser(JSON.parse(savedUser))
+      } catch (err) {
+        console.error('Error parsing user:', err)
+      }
+    }
+  }, [])
+
+  const handleLogout = () => {
+    const token = localStorage.getItem('auth_token')
+    
+    if (token) {
+      axios.post('/api/auth/logout').catch(err => console.error('Logout error:', err))
+    }
+    
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('user')
+    delete axios.defaults.headers.common['Authorization']
+    setUser(null)
+    navigate('/')
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
@@ -26,13 +56,25 @@ export default function Home() {
               >
                 Order Now
               </button>
-              <button
-                onClick={() => navigate('/admin')}
-                className="hidden sm:inline-block bg-white text-green-700 border border-green-600 px-3 py-2 rounded-lg hover:bg-green-50 font-medium text-sm"
-                title="Admin Login"
-              >
-                Admin
-              </button>
+              {user ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-700 hidden sm:inline">👤 {user.username}</span>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 font-medium text-sm"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => navigate('/admin')}
+                  className="hidden sm:inline-block bg-white text-green-700 border border-green-600 px-3 py-2 rounded-lg hover:bg-green-50 font-medium text-sm"
+                  title="Admin Login"
+                >
+                  Admin
+                </button>
+              )}
             </div>
           </div>
         </div>

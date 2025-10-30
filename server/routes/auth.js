@@ -30,6 +30,7 @@ router.post('/login', (req, res) => {
     [username],
     (err, user) => {
       if (err) {
+        console.error('Login DB error:', err);
         return res.status(500).json({ error: 'Database error' });
       }
       
@@ -40,6 +41,7 @@ router.post('/login', (req, res) => {
       // Compare password
       bcrypt.compare(password, user.password_hash, (err, match) => {
         if (err) {
+          console.error('Password compare error:', err);
           return res.status(500).json({ error: 'Authentication error' });
         }
         
@@ -57,6 +59,7 @@ router.post('/login', (req, res) => {
           [user.id, token, expiresAt.toISOString()],
           function(err) {
             if (err) {
+              console.error('Create session error:', err);
               return res.status(500).json({ error: 'Failed to create session' });
             }
             

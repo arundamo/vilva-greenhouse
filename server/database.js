@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 const dbPath = path.join(__dirname, 'vilva-farm.db');
 const db = new sqlite3.Database(dbPath);
@@ -179,6 +180,61 @@ db.serialize(() => {
         (1, '2025-10-25', 'fertilizer', 'Applied organic fertilizer')`);
 
       console.log('✓ Vilva Greenhouse Farm database initialized with sample data');
+    }
+  });
+
+  // Ensure user management tables exist and seed default admin if missing
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      role TEXT NOT NULL CHECK(role IN ('admin', 'public')) DEFAULT 'public',
+      full_name TEXT,
+      email TEXT,
+      phone TEXT,
+      active INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      last_login DATETIME
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS sessions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      session_token TEXT NOT NULL UNIQUE,
+      expires_at DATETIME NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Seed default admin user if not exists
+  db.get('SELECT id FROM users WHERE username = ?', ['admin'], (err, row) => {
+    if (err) {
+      console.error('User table check error:', err);
+      return;
+    }
+    if (!row) {
+      const defaultPassword = 'admin123';
+      bcrypt.hash(defaultPassword, 10, (hashErr, hash) => {
+        if (hashErr) {
+          console.error('Error hashing default admin password:', hashErr);
+          return;
+        }
+        db.run(
+          `INSERT INTO users (username, password_hash, role, full_name) VALUES (?, ?, 'admin', 'Administrator')`,
+          ['admin', hash],
+          (insErr) => {
+            if (insErr) {
+              console.error('Error creating default admin user:', insErr);
+            } else {
+              console.log('✓ Default admin user ensured');
+            }
+          }
+        );
+      });
     }
   });
 });

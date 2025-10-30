@@ -213,7 +213,8 @@ router.post('/register', (req, res) => {
     // Check if username exists
     db.get('SELECT id FROM users WHERE username = ?', [username], (err, existing) => {
       if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        console.error('❌ User check error:', err);
+        return res.status(500).json({ error: 'Database error', details: err.message });
       }
       
       if (existing) {
@@ -223,7 +224,8 @@ router.post('/register', (req, res) => {
       // Hash password
       bcrypt.hash(password, 10, (err, hash) => {
         if (err) {
-          return res.status(500).json({ error: 'Failed to hash password' });
+          console.error('❌ Password hash error:', err);
+          return res.status(500).json({ error: 'Failed to hash password', details: err.message });
         }
         
         // Create user with specified or default role
@@ -235,9 +237,11 @@ router.post('/register', (req, res) => {
           [username, hash, userRole, full_name, email, phone],
           function(err) {
             if (err) {
-              return res.status(500).json({ error: 'Failed to create user' });
+              console.error('❌ User creation error:', err);
+              return res.status(500).json({ error: 'Failed to create user', details: err.message });
             }
             
+            console.log(`✓ User created: ${username} (${userRole})`);
             res.status(201).json({
               message: 'User registered successfully',
               user: {
@@ -283,14 +287,20 @@ router.post('/change-password', (req, res) => {
       
       // Verify current password
       bcrypt.compare(current_password, user.password_hash, (err, match) => {
-        if (err || !match) {
+        if (err) {
+          console.error('❌ Password compare error:', err);
+          return res.status(500).json({ error: 'Authentication error', details: err.message });
+        }
+        
+        if (!match) {
           return res.status(401).json({ error: 'Current password is incorrect' });
         }
         
         // Hash new password
         bcrypt.hash(new_password, 10, (err, hash) => {
           if (err) {
-            return res.status(500).json({ error: 'Failed to hash password' });
+            console.error('❌ Password hash error:', err);
+            return res.status(500).json({ error: 'Failed to hash password', details: err.message });
           }
           
           // Update password
@@ -299,9 +309,11 @@ router.post('/change-password', (req, res) => {
             [hash, user.id],
             (err) => {
               if (err) {
-                return res.status(500).json({ error: 'Failed to update password' });
+                console.error('❌ Password update error:', err);
+                return res.status(500).json({ error: 'Failed to update password', details: err.message });
               }
               
+              console.log(`✓ Password changed for user: ${user.username}`);
               res.json({ message: 'Password changed successfully' });
             }
           );

@@ -197,7 +197,13 @@ db.serialize(() => {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       last_login DATETIME
     )
-  `);
+  `, (err) => {
+    if (err) {
+      console.error('❌ Error creating users table:', err);
+    } else {
+      console.log('✓ Users table ready');
+    }
+  });
 
   db.run(`
     CREATE TABLE IF NOT EXISTS sessions (
@@ -208,19 +214,25 @@ db.serialize(() => {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )
-  `);
+  `, (err) => {
+    if (err) {
+      console.error('❌ Error creating sessions table:', err);
+    } else {
+      console.log('✓ Sessions table ready');
+    }
+  });
 
   // Seed default admin user if not exists
   db.get('SELECT id FROM users WHERE username = ?', ['admin'], (err, row) => {
     if (err) {
-      console.error('User table check error:', err);
+      console.error('❌ User table check error:', err);
       return;
     }
     if (!row) {
       const defaultPassword = 'admin123';
       bcrypt.hash(defaultPassword, 10, (hashErr, hash) => {
         if (hashErr) {
-          console.error('Error hashing default admin password:', hashErr);
+          console.error('❌ Error hashing default admin password:', hashErr);
           return;
         }
         db.run(
@@ -228,13 +240,15 @@ db.serialize(() => {
           ['admin', hash],
           (insErr) => {
             if (insErr) {
-              console.error('Error creating default admin user:', insErr);
+              console.error('❌ Error creating default admin user:', insErr);
             } else {
-              console.log('✓ Default admin user ensured');
+              console.log('✓ Default admin user created successfully');
             }
           }
         );
       });
+    } else {
+      console.log('✓ Admin user already exists');
     }
   });
 });

@@ -32,6 +32,7 @@ export default function Sales() {
     }, 0).toFixed(2)
   }
   const [filter, setFilter] = useState('pending')
+  const [selectedCustomerId, setSelectedCustomerId] = useState('')
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingOrder, setEditingOrder] = useState(null)
@@ -65,11 +66,14 @@ export default function Sales() {
     loadOrders()
     loadCustomers()
     loadVarieties()
-  }, [filter])
+  }, [filter, selectedCustomerId])
 
   const loadOrders = () => {
     setLoading(true)
-    const url = filter === 'all' ? '/api/sales' : `/api/sales?status=${filter}`
+    const params = new URLSearchParams()
+    if (filter !== 'all') params.append('status', filter)
+    if (selectedCustomerId) params.append('customer_id', selectedCustomerId)
+    const url = params.toString() ? `/api/sales?${params.toString()}` : '/api/sales'
     axios.get(url).then(res => {
       setOrders(res.data)
       setLoading(false)
@@ -274,8 +278,8 @@ export default function Sales() {
         </button>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-2 border-b pb-2">
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2 border-b pb-2">
         {['unconfirmed', 'pending', 'packed', 'delivered', 'all'].map((f) => (
           <button
             key={f}
@@ -290,6 +294,27 @@ export default function Sales() {
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
+        <div className="ml-auto flex items-center gap-2">
+          <label className="text-sm text-gray-600 hidden sm:inline">Customer:</label>
+          <select
+            value={selectedCustomerId}
+            onChange={(e) => setSelectedCustomerId(e.target.value)}
+            className="border rounded px-2 py-1 text-sm"
+          >
+            <option value="">All customers</option>
+            {customers.map(c => (
+              <option key={c.id} value={c.id}>{c.name} - {c.phone}</option>
+            ))}
+          </select>
+          {selectedCustomerId && (
+            <button
+              onClick={() => setSelectedCustomerId('')}
+              className="text-sm text-gray-600 underline"
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="space-y-4">

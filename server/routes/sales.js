@@ -4,7 +4,7 @@ const db = require('../database');
 
 // Get all sales orders with items
 router.get('/', (req, res) => {
-  const status = req.query.status;
+  const { status, customer_id } = req.query;
   let query = `
     SELECT so.*, 
       c.name as customer_name, c.phone, c.whatsapp
@@ -12,10 +12,19 @@ router.get('/', (req, res) => {
     JOIN customers c ON so.customer_id = c.id
   `;
   const params = [];
-  
+
+  const conditions = [];
   if (status) {
-    query += ' WHERE so.delivery_status = ?';
+    conditions.push('so.delivery_status = ?');
     params.push(status);
+  }
+  if (customer_id) {
+    conditions.push('so.customer_id = ?');
+    params.push(customer_id);
+  }
+  
+  if (conditions.length > 0) {
+    query += ' WHERE ' + conditions.join(' AND ');
   }
   
   query += ' ORDER BY so.order_date DESC';

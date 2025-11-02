@@ -10,6 +10,7 @@ import Settings from './components/Settings';
 import PublicOrderForm from './components/PublicOrderForm';
 import Login from './components/Login';
 import Home from './components/Home';
+import Customers from './components/Customers';
 
 export default function App() {
   const location = useLocation();
@@ -103,6 +104,7 @@ export default function App() {
         { path: '/greenhouses', label: 'Greenhouses', icon: '🏡' },
         { path: '/crops', label: 'Crops', icon: '🌱' },
         { path: '/activities', label: 'Activities', icon: '📝' },
+        { path: '/customers', label: 'Customers', icon: '👥' },
         { path: '/sales', label: 'Sales', icon: '💰' },
         { path: '/settings', label: 'Settings', icon: '⚙️' },
       ]
@@ -204,6 +206,7 @@ export default function App() {
               <Route path="/greenhouses" element={<Greenhouses />} />
               <Route path="/crops" element={<Crops />} />
               <Route path="/activities" element={<Activities />} />
+              <Route path="/customers" element={<Customers />} />
               <Route path="/sales" element={<Sales />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/dashboard" />} />

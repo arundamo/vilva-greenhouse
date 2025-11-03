@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { formatCAD } from '../utils/currency'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ greenhouses: 3, crops: 0, activeCrops: 0, pendingOrders: 0 })
@@ -8,6 +9,8 @@ export default function Dashboard() {
   const [cropReports, setCropReports] = useState([])
   const [customerReports, setCustomerReports] = useState([])
   const [loading, setLoading] = useState(true)
+
+  // Using shared CAD formatter from utils
 
   useEffect(() => {
     Promise.all([
@@ -286,7 +289,7 @@ export default function Dashboard() {
                     {sale.customer_name} - {sale.items && sale.items.length > 1 ? 'Multiple items' : (sale.items && sale.items[0] ? sale.items[0].variety_name : 'No items')}
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500 truncate">
-                    ₹{sale.total_amount} • {sale.requested_via}
+                    {formatCAD(sale.total_amount)} • {sale.requested_via}
                     {sale.delivery_date && ` • Delivery: ${sale.delivery_date}`}
                   </p>
                 </div>
@@ -400,7 +403,7 @@ export default function Dashboard() {
               <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-3 sm:p-4 rounded-lg border border-purple-200">
                 <p className="text-xs sm:text-sm text-purple-600 font-medium">Total Sales</p>
                 <p className="text-2xl sm:text-3xl font-bold text-purple-700">
-                  ₹{customerReports.reduce((sum, c) => sum + c.totalAmount, 0).toFixed(2)}
+                  {formatCAD(customerReports.reduce((sum, c) => sum + c.totalAmount, 0))}
                 </p>
               </div>
             </div>
@@ -435,7 +438,7 @@ export default function Dashboard() {
                           </td>
                           <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
                             <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs sm:text-sm font-semibold">
-                              ₹{customer.totalAmount.toFixed(2)}
+                              {formatCAD(customer.totalAmount)}
                             </span>
                           </td>
                           <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden md:table-cell">

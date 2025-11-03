@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { formatCAD } from '../utils/currency'
 
 export default function Sales() {
   const [orders, setOrders] = useState([])
@@ -61,6 +62,8 @@ export default function Sales() {
     delivery_address: '',
     notes: ''
   })
+
+  // Using shared CAD formatter from utils
 
   useEffect(() => {
     loadOrders()
@@ -351,7 +354,7 @@ export default function Sales() {
                       <div key={idx} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
                         <span className="font-medium text-green-700">{item.variety_name}</span>
                         <span className="text-sm text-gray-600">
-                          {item.quantity} {item.unit} × ₹{item.price_per_unit} = ₹{item.subtotal}
+                          {item.quantity} {item.unit} × {formatCAD(item.price_per_unit)} = {formatCAD(item.subtotal)}
                         </span>
                       </div>
                     ))}
@@ -362,7 +365,7 @@ export default function Sales() {
               </div>
               <div className="col-span-2 md:col-span-1">
                 <p className="text-xs text-gray-500">Amount</p>
-                <p className="font-medium">₹{order.total_amount}</p>
+                <p className="font-medium">{formatCAD(order.total_amount)}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Payment</p>
@@ -708,7 +711,7 @@ export default function Sales() {
                           />
                           {item.quantity && item.price_per_unit && (
                             <p className="text-xs text-gray-500 mt-1">
-                              Subtotal: ₹{(parseFloat(item.quantity) * parseFloat(item.price_per_unit)).toFixed(2)}
+                              Subtotal: {formatCAD((parseFloat(item.quantity) * parseFloat(item.price_per_unit)))}
                             </p>
                           )}
                         </div>
@@ -716,7 +719,7 @@ export default function Sales() {
                     </div>
                   ))}
                   <div className="text-right font-semibold text-lg pt-2 border-t">
-                    Total: ₹{calculateTotal()}
+                    Total: {formatCAD(Number(calculateTotal()))}
                   </div>
                 </div>
 
@@ -763,7 +766,7 @@ export default function Sales() {
                 <div className="bg-green-50 rounded-lg p-3">
                   <p className="text-sm text-gray-600">Total Amount:</p>
                   <p className="text-2xl font-bold text-green-700">
-                    ₹{(parseFloat(formData.quantity) * parseFloat(formData.price_per_unit)).toFixed(2)}
+                    {formatCAD((parseFloat(formData.quantity) * parseFloat(formData.price_per_unit)))}
                   </p>
                 </div>
               )}
@@ -806,7 +809,7 @@ export default function Sales() {
               <p className="text-sm text-gray-600">Order #{selectedOrder.id}</p>
               <p className="font-semibold text-lg">{selectedOrder.customer_name}</p>
               <p className="text-sm text-gray-600">{selectedOrder.variety_name} - {selectedOrder.quantity} {selectedOrder.unit}</p>
-              <p className="text-2xl font-bold text-green-700 mt-2">₹{selectedOrder.total_amount}</p>
+              <p className="text-2xl font-bold text-green-700 mt-2">{formatCAD(selectedOrder.total_amount)}</p>
             </div>
 
             <form onSubmit={handlePaymentReceived} className="space-y-4">

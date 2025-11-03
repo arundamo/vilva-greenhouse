@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { formatCAD } from '../utils/currency'
 
 export default function PublicOrderForm() {
   const [varieties, setVarieties] = useState([])
@@ -15,6 +16,8 @@ export default function PublicOrderForm() {
     notes: '',
     items: [{ variety_id: '', quantity: '', unit: 'bunches' }]
   })
+
+  // Using shared CAD formatter from utils
 
   useEffect(() => {
     loadVarieties()
@@ -157,7 +160,7 @@ export default function PublicOrderForm() {
                         return (
                           <li key={idx} className="flex justify-between">
                             <span>• {variety?.name} - {item.quantity} {item.unit}</span>
-                            {itemPrice > 0 && <span className="font-medium">₹{itemPrice.toFixed(2)}</span>}
+                            {itemPrice > 0 && <span className="font-medium">{formatCAD(itemPrice)}</span>}
                           </li>
                         )
                       })}
@@ -167,7 +170,7 @@ export default function PublicOrderForm() {
                     <div className="border-t pt-2 mt-3">
                       <p className="flex justify-between text-lg">
                         <strong>Estimated Total:</strong> 
-                        <strong className="text-green-700">₹{calculateTotalPrice().toFixed(2)}</strong>
+                        <strong className="text-green-700">{formatCAD(calculateTotalPrice())}</strong>
                       </p>
                       <p className="text-xs text-gray-600 mt-1">*Price may vary based on final confirmation</p>
                     </div>
@@ -349,9 +352,9 @@ export default function PublicOrderForm() {
                         
                         return (
                           <div className="mt-1 text-xs text-gray-600 flex flex-wrap gap-2">
-                            {priceBunch > 0 && <span>₹{priceBunch}/bunch</span>}
-                            {priceKg > 0 && <span>₹{priceKg}/kg</span>}
-                            {price100g > 0 && <span>₹{price100g}/100g</span>}
+                            {priceBunch > 0 && <span>{formatCAD(priceBunch)}/bunch</span>}
+                            {priceKg > 0 && <span>{formatCAD(priceKg)}/kg</span>}
+                            {price100g > 0 && <span>{formatCAD(price100g)}/100g</span>}
                           </div>
                         )
                       })()}
@@ -389,7 +392,7 @@ export default function PublicOrderForm() {
                   {calculateItemPrice(item) > 0 && (
                     <div className="text-right pt-2 border-t">
                       <span className="text-sm font-semibold text-green-700">
-                        Subtotal: ₹{calculateItemPrice(item).toFixed(2)}
+                        Subtotal: {formatCAD(calculateItemPrice(item))}
                       </span>
                     </div>
                   )}
@@ -416,7 +419,7 @@ export default function PublicOrderForm() {
               <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold text-gray-800">Estimated Total:</span>
-                  <span className="text-2xl font-bold text-green-700">₹{calculateTotalPrice().toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-green-700">{formatCAD(calculateTotalPrice())}</span>
                 </div>
                 <p className="text-xs text-gray-600 mt-2">
                   *This is an estimated price. Final pricing will be confirmed by our team.

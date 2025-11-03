@@ -892,7 +892,7 @@ export default function Crops() {
               
               {/* Pricing Section */}
               <div className="border-t pt-3 mb-3">
-                <h5 className="text-sm font-semibold text-gray-700 mb-2">💰 Pricing (₹)</h5>
+                <h5 className="text-sm font-semibold text-gray-700 mb-2">💰 Pricing ($)</h5>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -986,7 +986,7 @@ export default function Crops() {
                         </div>
                         
                         <div className="border-t pt-2">
-                          <p className="text-xs font-medium text-gray-700 mb-2">Pricing (₹)</p>
+                          <p className="text-xs font-medium text-gray-700 mb-2">Pricing ($)</p>
                           <div className="grid grid-cols-3 gap-2">
                             <div>
                               <label className="block text-xs text-gray-600 mb-1">Per Bunch</label>
@@ -1069,9 +1069,9 @@ export default function Crops() {
                         {(variety.price_per_bunch > 0 || variety.price_per_kg > 0 || variety.price_per_100g > 0) && (
                           <div className="flex gap-3 text-xs text-gray-600 border-t pt-2">
                             <span className="font-medium">Prices:</span>
-                            {variety.price_per_bunch > 0 && <span>₹{variety.price_per_bunch}/bunch</span>}
-                            {variety.price_per_kg > 0 && <span>₹{variety.price_per_kg}/kg</span>}
-                            {variety.price_per_100g > 0 && <span>₹{variety.price_per_100g}/100g</span>}
+                            {variety.price_per_bunch > 0 && <span>${variety.price_per_bunch}/bunch</span>}
+                            {variety.price_per_kg > 0 && <span>${variety.price_per_kg}/kg</span>}
+                            {variety.price_per_100g > 0 && <span>${variety.price_per_100g}/100g</span>}
                           </div>
                         )}
                       </>

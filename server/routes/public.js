@@ -130,7 +130,7 @@ router.post('/orders', (req, res) => {
                     console.log(`📦 NEW PUBLIC ORDER #${orderId} from ${customer_name} (${phone})`)
                     console.log(`   Delivery: ${delivery_date}`)
                     console.log(`   Items: ${itemsWithPrices.length}`)
-                    console.log(`   Total: ₹${totalAmount.toFixed(2)}`)
+                    console.log(`   Total: $${totalAmount.toFixed(2)}`)
                     
                     res.json({
                       success: true,

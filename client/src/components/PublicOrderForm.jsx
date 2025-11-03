@@ -157,7 +157,7 @@ export default function PublicOrderForm() {
                         return (
                           <li key={idx} className="flex justify-between">
                             <span>• {variety?.name} - {item.quantity} {item.unit}</span>
-                            {itemPrice > 0 && <span className="font-medium">₹{itemPrice.toFixed(2)}</span>}
+                            {itemPrice > 0 && <span className="font-medium">${itemPrice.toFixed(2)}</span>}
                           </li>
                         )
                       })}
@@ -167,7 +167,7 @@ export default function PublicOrderForm() {
                     <div className="border-t pt-2 mt-3">
                       <p className="flex justify-between text-lg">
                         <strong>Estimated Total:</strong> 
-                        <strong className="text-green-700">₹{calculateTotalPrice().toFixed(2)}</strong>
+                        <strong className="text-green-700">${calculateTotalPrice().toFixed(2)}</strong>
                       </p>
                       <p className="text-xs text-gray-600 mt-1">*Price may vary based on final confirmation</p>
                     </div>
@@ -349,9 +349,9 @@ export default function PublicOrderForm() {
                         
                         return (
                           <div className="mt-1 text-xs text-gray-600 flex flex-wrap gap-2">
-                            {priceBunch > 0 && <span>₹{priceBunch}/bunch</span>}
-                            {priceKg > 0 && <span>₹{priceKg}/kg</span>}
-                            {price100g > 0 && <span>₹{price100g}/100g</span>}
+                            {priceBunch > 0 && <span>${priceBunch}/bunch</span>}
+                            {priceKg > 0 && <span>${priceKg}/kg</span>}
+                            {price100g > 0 && <span>${price100g}/100g</span>}
                           </div>
                         )
                       })()}

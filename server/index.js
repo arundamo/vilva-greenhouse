@@ -59,6 +59,7 @@ app.use('/api/activities', requireAuth, requireAdmin, require('./routes/activiti
 app.use('/api/sales', requireAuth, requireAdmin, require('./routes/sales'));
 app.use('/api/customers', requireAuth, requireAdmin, require('./routes/customers'));
 app.use('/api/harvests', requireAuth, requireAdmin, require('./routes/harvests'));
+app.use('/api/admin', requireAuth, requireAdmin, require('./routes/admin'));
 
 // 404 handler
 app.use((req, res, next) => {

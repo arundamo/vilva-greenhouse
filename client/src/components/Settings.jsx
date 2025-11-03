@@ -170,6 +170,16 @@ export default function Settings() {
               >
                 🔔 Notifications
               </button>
+              <button
+                onClick={() => setActiveTab('export')}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'export'
+                    ? 'border-green-600 text-green-600'
+                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                ⬇️ Export Data
+              </button>
             </>
           )}
         </nav>
@@ -468,6 +478,47 @@ export default function Settings() {
               Save Settings
             </button>
           </form>
+        </div>
+      )}
+
+      {/* Export Data Tab (Admin) */}
+      {activeTab === 'export' && currentUser?.role === 'admin' && (
+        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+          <h3 className="text-lg font-semibold">Export Database Snapshot</h3>
+          <p className="text-sm text-gray-600">Download a full JSON snapshot of all tables for backup or to sync locally.</p>
+          <div>
+            <button
+              onClick={async () => {
+                try {
+                  setLoading(true)
+                  const res = await axios.get('/api/admin/export', { responseType: 'blob' })
+                  const blob = new Blob([res.data], { type: 'application/json' })
+                  const url = window.URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  a.href = url
+                  const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')
+                  a.download = `data-export-${ts}.json`
+                  document.body.appendChild(a)
+                  a.click()
+                  a.remove()
+                  window.URL.revokeObjectURL(url)
+                  setMessage({ type: 'success', text: 'Export downloaded successfully.' })
+                } catch (err) {
+                  console.error(err)
+                  setMessage({ type: 'error', text: err.response?.data?.error || 'Failed to export data' })
+                } finally {
+                  setLoading(false)
+                }
+              }}
+              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
+              disabled={loading}
+            >
+              {loading ? 'Preparing...' : 'Download JSON Export'}
+            </button>
+          </div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-800">
+            Tip: Use this export with <code>server/import-data.js</code> on your local machine to sync production → local.
+          </div>
         </div>
       )}
     </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { formatCAD } from '../utils/currency'
 
 export default function PublicOrderForm() {
   const [varieties, setVarieties] = useState([])
@@ -15,6 +16,8 @@ export default function PublicOrderForm() {
     notes: '',
     items: [{ variety_id: '', quantity: '', unit: 'bunches' }]
   })
+
+  // Using shared CAD formatter from utils
 
   useEffect(() => {
     loadVarieties()
@@ -157,7 +160,7 @@ export default function PublicOrderForm() {
                         return (
                           <li key={idx} className="flex justify-between">
                             <span>• {variety?.name} - {item.quantity} {item.unit}</span>
-                            {itemPrice > 0 && <span className="font-medium">${itemPrice.toFixed(2)}</span>}
+                            {itemPrice > 0 && <span className="font-medium">{formatCAD(itemPrice)}</span>}
                           </li>
                         )
                       })}
@@ -167,7 +170,7 @@ export default function PublicOrderForm() {
                     <div className="border-t pt-2 mt-3">
                       <p className="flex justify-between text-lg">
                         <strong>Estimated Total:</strong> 
-                        <strong className="text-green-700">${calculateTotalPrice().toFixed(2)}</strong>
+                        <strong className="text-green-700">{formatCAD(calculateTotalPrice())}</strong>
                       </p>
                       <p className="text-xs text-gray-600 mt-1">*Price may vary based on final confirmation</p>
                     </div>
@@ -349,9 +352,9 @@ export default function PublicOrderForm() {
                         
                         return (
                           <div className="mt-1 text-xs text-gray-600 flex flex-wrap gap-2">
-                            {priceBunch > 0 && <span>${priceBunch}/bunch</span>}
-                            {priceKg > 0 && <span>${priceKg}/kg</span>}
-                            {price100g > 0 && <span>${price100g}/100g</span>}
+                            {priceBunch > 0 && <span>{formatCAD(priceBunch)}/bunch</span>}
+                            {priceKg > 0 && <span>{formatCAD(priceKg)}/kg</span>}
+                            {price100g > 0 && <span>{formatCAD(price100g)}/100g</span>}
                           </div>
                         )
                       })()}
@@ -389,7 +392,7 @@ export default function PublicOrderForm() {
                   {calculateItemPrice(item) > 0 && (
                     <div className="text-right pt-2 border-t">
                       <span className="text-sm font-semibold text-green-700">
-                        Subtotal: ${calculateItemPrice(item).toFixed(2)}
+                        Subtotal: {formatCAD(calculateItemPrice(item))}
                       </span>
                     </div>
                   )}
@@ -416,7 +419,7 @@ export default function PublicOrderForm() {
               <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold text-gray-800">Estimated Total:</span>
-                  <span className="text-2xl font-bold text-green-700">${calculateTotalPrice().toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-green-700">{formatCAD(calculateTotalPrice())}</span>
                 </div>
                 <p className="text-xs text-gray-600 mt-2">
                   *This is an estimated price. Final pricing will be confirmed by our team.
@@ -441,51 +444,6 @@ export default function PublicOrderForm() {
             </button>
 
             <p className="text-xs text-center text-gray-500">
-              By submitting, you agree to be contacted by Vilva Greenhouse Farm regarding your order.
-            </p>
-          </form>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-8 text-sm text-gray-600">
-          <p>🌱 Fresh • Organic • Locally Grown 🌱</p>
-          <p className="mt-2">Questions? Contact us for assistance</p>
-        </div>
-      </div>
-    </div>
-  )
-}
--$5$0$0$"$>$
-$
-$ $ $ $ $ $ $ $ $ $ $ $ $ $ $B$y$ $s$u$b$m$i$t$t$i$n$g$,$ $y$o$u$ $a$g$r$e$e$ $t$o$ $b$e$ $c$o$n$t$a$c$t$e$d$ $b$y$ $V$i$l$v$a$ $G$r$e$e$n$h$o$u$s$e$ $F$a$r$m$ $r$e$g$a$r$d$i$n$g$ $y$o$u$r$ $o$r$d$e$r$.$
-$
-$ $ $ $ $ $ $ $ $ $ $ $ $<$/$p$>$
-$
-$ $ $ $ $ $ $ $ $ $ $<$/$f$o$r$m$>$
-$
-$ $ $ $ $ $ $ $ $<$/$d$i$v$>$
-$
-$
-$
-$ $ $ $ $ $ $ $ ${$/$*$ $F$o$o$t$e$r$ $*$/$}$
-$
-$ $ $ $ $ $ $ $ $<$d$i$v$ $c$l$a$s$s$N$a$m$e$=$"$t$e$x$t$-$c$e$n$t$e$r$ $m$t$-$8$ $t$e$x$t$-$s$m$ $t$e$x$t$-$g$r$a$y$-$6$0$0$"$>$
-$
-$ $ $ $ $ $ $ $ $ $ $<$p$>$�$�$�$�$ $F$r$e$s$h$ $�$�$�$ $O$r$g$a$n$i$c$ $�$�$�$ $L$o$c$a$l$l$y$ $G$r$o$w$n$ $�$�$�$�$<$/$p$>$
-$
-$ $ $ $ $ $ $ $ $ $ $<$p$ $c$l$a$s$s$N$a$m$e$=$"$m$t$-$2$"$>$Q$u$e$s$t$i$o$n$s$?$ $C$o$n$t$a$c$t$ $u$s$ $f$o$r$ $a$s$s$i$s$t$a$n$c$e$<$/$p$>$
-$
-$ $ $ $ $ $ $ $ $<$/$d$i$v$>$
-$
-$ $ $ $ $ $ $<$/$d$i$v$>$
-$
-$ $ $ $ $<$/$d$i$v$>$
-$
-$ $ $)$
-$
-$}$
-$
-$s text-center text-gray-500">
               By submitting, you agree to be contacted by Vilva Greenhouse Farm regarding your order.
             </p>
           </form>

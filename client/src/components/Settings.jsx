@@ -52,11 +52,29 @@ export default function Settings() {
   }
 
   const loadNotificationSettings = () => {
-    // Load from localStorage for now (can be moved to DB later)
-    const saved = localStorage.getItem('notification_settings')
-    if (saved) {
-      setNotificationSettings(JSON.parse(saved))
-    }
+    // Load from backend
+    axios.get('/api/admin/settings', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(res => {
+        const settings = {
+          email_enabled: res.data.email_enabled === 'true',
+          admin_email: res.data.admin_email || '',
+          notify_new_orders: res.data.notify_new_orders === 'true',
+          notify_order_status: res.data.notify_order_status === 'true',
+          notify_payments: res.data.notify_payments === 'true',
+          whatsapp_enabled: res.data.whatsapp_enabled === 'true',
+          whatsapp_number: res.data.whatsapp_number || ''
+        };
+        setNotificationSettings(settings);
+      })
+      .catch(err => {
+        if (err.response?.status === 401) {
+          console.error('Session expired - please log in again');
+        } else {
+          console.error('Failed to load settings:', err);
+        }
+      })
   }
 
   const handlePasswordChange = (e) => {
@@ -120,10 +138,56 @@ export default function Settings() {
   const handleSaveNotifications = (e) => {
     e.preventDefault()
     setMessage({ type: '', text: '' })
+    setLoading(true)
 
-    // Save to localStorage (can be moved to DB later)
-    localStorage.setItem('notification_settings', JSON.stringify(notificationSettings))
-    setMessage({ type: 'success', text: 'Notification settings saved!' })
+    // Convert to string values for backend
+    const settings = {
+      email_enabled: notificationSettings.email_enabled ? 'true' : 'false',
+      admin_email: notificationSettings.admin_email,
+      notify_new_orders: notificationSettings.notify_new_orders ? 'true' : 'false',
+      notify_order_status: notificationSettings.notify_order_status ? 'true' : 'false',
+      notify_payments: notificationSettings.notify_payments ? 'true' : 'false',
+      whatsapp_enabled: notificationSettings.whatsapp_enabled ? 'true' : 'false',
+      whatsapp_number: notificationSettings.whatsapp_number
+    };
+
+    axios.post('/api/admin/settings', settings, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(() => {
+        setMessage({ type: 'success', text: 'Notification settings saved successfully!' })
+      })
+      .catch(err => {
+        setMessage({ type: 'error', text: err.response?.data?.error || 'Failed to save settings' })
+      })
+      .finally(() => setLoading(false))
+  }
+
+  const handleTestEmail = () => {
+    if (!notificationSettings.admin_email) {
+      setMessage({ type: 'error', text: 'Please enter an admin email address first' })
+      return
+    }
+
+    setLoading(true)
+    setMessage({ type: '', text: '' })
+
+    axios.post('/api/admin/test-email', {
+      email: notificationSettings.admin_email
+    }, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(() => {
+        setMessage({ type: 'success', text: 'Test email sent! Check your inbox.' })
+      })
+      .catch(err => {
+        if (err.response?.status === 401) {
+          setMessage({ type: 'error', text: 'Session expired. Please log out and log back in.' })
+        } else {
+          setMessage({ type: 'error', text: err.response?.data?.error || 'Failed to send test email' })
+        }
+      })
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -398,8 +462,7 @@ export default function Settings() {
           <form onSubmit={handleSaveNotifications} className="space-y-6 max-w-2xl">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                <strong>ℹ️ Note:</strong> Email notifications require additional setup. 
-                For now, we recommend checking the Sales page regularly for new orders marked with 🌐.
+                <strong>✅ Email & WhatsApp Integration Active!</strong> Configure your notification preferences below.
               </p>
             </div>
 
@@ -419,20 +482,71 @@ export default function Settings() {
               </div>
 
               {notificationSettings.email_enabled && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Notification Email
-                  </label>
-                  <input
-                    type="email"
-                    value={notificationSettings.notification_email}
-                    onChange={(e) => setNotificationSettings({ ...notificationSettings, notification_email: e.target.value })}
-                    placeholder="your@email.com"
-                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Requires email service configuration (not yet implemented)
-                  </p>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Admin Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={notificationSettings.admin_email}
+                      onChange={(e) => setNotificationSettings({ ...notificationSettings, admin_email: e.target.value })}
+                      placeholder="admin@example.com"
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Receives notifications for new orders from the public form
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Notification Types</label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="notify_new_orders"
+                        checked={notificationSettings.notify_new_orders}
+                        onChange={(e) => setNotificationSettings({ ...notificationSettings, notify_new_orders: e.target.checked })}
+                        className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                      />
+                      <label htmlFor="notify_new_orders" className="text-sm text-gray-700">
+                        New order submissions (admin)
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="notify_order_status"
+                        checked={notificationSettings.notify_order_status}
+                        onChange={(e) => setNotificationSettings({ ...notificationSettings, notify_order_status: e.target.checked })}
+                        className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                      />
+                      <label htmlFor="notify_order_status" className="text-sm text-gray-700">
+                        Order status updates (customers)
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="notify_payments"
+                        checked={notificationSettings.notify_payments}
+                        onChange={(e) => setNotificationSettings({ ...notificationSettings, notify_payments: e.target.checked })}
+                        className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                      />
+                      <label htmlFor="notify_payments" className="text-sm text-gray-700">
+                        Payment receipts (customers)
+                      </label>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleTestEmail}
+                    disabled={loading || !notificationSettings.admin_email}
+                    className="text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200 disabled:bg-gray-200 disabled:text-gray-500"
+                  >
+                    📧 Send Test Email
+                  </button>
                 </div>
               )}
             </div>
@@ -448,24 +562,24 @@ export default function Settings() {
                   className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
                 />
                 <label htmlFor="whatsapp_enabled" className="text-sm font-medium text-gray-700">
-                  Enable WhatsApp Notifications
+                  Enable WhatsApp Click-to-Chat Buttons
                 </label>
               </div>
 
               {notificationSettings.whatsapp_enabled && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    WhatsApp Number
+                    Admin WhatsApp Number
                   </label>
                   <input
                     type="tel"
                     value={notificationSettings.whatsapp_number}
                     onChange={(e) => setNotificationSettings({ ...notificationSettings, whatsapp_number: e.target.value })}
-                    placeholder="10-digit mobile number"
+                    placeholder="Country code + 10-digit number (e.g., 14165551234)"
                     className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Requires WhatsApp Business API (not yet implemented)
+                    Include country code without + or spaces. Used for click-to-chat buttons in Sales and Dashboard.
                   </p>
                 </div>
               )}

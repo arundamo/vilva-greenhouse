@@ -12,21 +12,37 @@ router.get('/', (req, res) => {
 
 // Create customer
 router.post('/', (req, res) => {
-  const { name, phone, whatsapp, address, notes } = req.body;
-  
-  db.run(
-    'INSERT INTO customers (name, phone, whatsapp, address, notes) VALUES (?, ?, ?, ?, ?)',
-    [name, phone, whatsapp, address, notes],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.status(201).json({ id: this.lastID, message: 'Customer created' });
-    }
-  );
+  const { name, phone, whatsapp, address, notes, email } = req.body;
+
+  if (!name || !phone) {
+    return res.status(400).json({ error: 'Name and phone are required' });
+  }
+
+  // Basic phone validation (10 digits)
+  const cleanPhone = String(phone).replace(/\D/g, '');
+  if (cleanPhone.length !== 10) {
+    return res.status(400).json({ error: 'Phone must be 10 digits' });
+  }
+
+  // Ensure phone uniqueness
+  db.get('SELECT id FROM customers WHERE phone = ?', [phone], (err, existing) => {
+    if (err) return res.status(500).json({ error: 'Database error' });
+    if (existing) return res.status(409).json({ error: 'Phone already exists for another customer' });
+
+    db.run(
+      'INSERT INTO customers (name, phone, whatsapp, address, notes, email) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, phone, whatsapp || null, address || null, notes || null, email || null],
+      function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(201).json({ id: this.lastID, message: 'Customer created' });
+      }
+    );
+  });
 });
 
 // Update customer
 router.patch('/:id', (req, res) => {
-  const { name, phone, whatsapp, address, notes } = req.body;
+  const { name, phone, whatsapp, address, notes, email } = req.body;
   const updates = [];
   const params = [];
   
@@ -35,8 +51,24 @@ router.patch('/:id', (req, res) => {
     params.push(name);
   }
   if (phone !== undefined) {
-    updates.push('phone = ?');
-    params.push(phone);
+    // Validate phone if provided
+    const cleanPhone = String(phone).replace(/\D/g, '');
+    if (cleanPhone.length !== 10) {
+      return res.status(400).json({ error: 'Phone must be 10 digits' });
+    }
+    // Check uniqueness (excluding current id)
+    db.get('SELECT id FROM customers WHERE phone = ? AND id != ?', [phone, req.params.id], (err, existing) => {
+      if (err) return res.status(500).json({ error: 'Database error' });
+      if (existing) return res.status(409).json({ error: 'Phone already in use by another customer' });
+      updates.push('phone = ?');
+      params.push(phone);
+      proceed();
+    });
+    return; // wait for async uniqueness check
+  }
+  if (email !== undefined) {
+    updates.push('email = ?');
+    params.push(email || null);
   }
   if (whatsapp !== undefined) {
     updates.push('whatsapp = ?');
@@ -51,21 +83,26 @@ router.patch('/:id', (req, res) => {
     params.push(notes);
   }
   
-  if (updates.length === 0) {
-    return res.status(400).json({ error: 'No fields to update' });
-  }
-  
-  params.push(req.params.id);
-  
-  db.run(
-    `UPDATE customers SET ${updates.join(', ')} WHERE id = ?`,
-    params,
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      if (this.changes === 0) return res.status(404).json({ error: 'Customer not found' });
-      res.json({ message: 'Customer updated' });
+  function proceed() {
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
     }
-  );
+    params.push(req.params.id);
+    db.run(
+      `UPDATE customers SET ${updates.join(', ')} WHERE id = ?`,
+      params,
+      function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        if (this.changes === 0) return res.status(404).json({ error: 'Customer not found' });
+        res.json({ message: 'Customer updated' });
+      }
+    );
+  }
+
+  // If phone was not provided (async path not taken), continue immediately
+  if (phone === undefined) {
+    proceed();
+  }
 });
 
 // Get spinach varieties

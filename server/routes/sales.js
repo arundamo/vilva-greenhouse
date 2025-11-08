@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../database');
+const emailService = require('../services/emailService');
 
 // Get all sales orders with items
 router.get('/', (req, res) => {
@@ -198,6 +199,53 @@ router.patch('/:id', (req, res) => {
       if (err) return res.status(500).json({ error: err.message });
       if (this.changes === 0) return res.status(404).json({ error: 'Order not found' });
       
+      // Send email notifications for status updates
+      const sendNotifications = () => {
+        if (delivery_status || payment_status) {
+          // Fetch order details with customer info
+          db.get(
+            `SELECT so.*, c.name as customer_name, c.email as customer_email
+             FROM sales_orders so
+             JOIN customers c ON so.customer_id = c.id
+             WHERE so.id = ?`,
+            [req.params.id],
+            async (err, order) => {
+              if (!err && order && order.customer_email) {
+                // Fetch order items
+                db.all(
+                  `SELECT oi.*, sv.name as variety_name 
+                   FROM order_items oi 
+                   JOIN spinach_varieties sv ON oi.variety_id = sv.id 
+                   WHERE oi.order_id = ?`,
+                  [req.params.id],
+                  async (err, orderItems) => {
+                    if (!err && orderItems) {
+                      order.items = orderItems;
+                      
+                      // Send order confirmation email when status changes from unconfirmed
+                      if (delivery_status === 'confirmed') {
+                        await emailService.sendOrderConfirmation(order);
+                      }
+                      // Send status update for packed or delivered
+                      else if (delivery_status === 'packed' || delivery_status === 'delivered') {
+                        await emailService.sendOrderStatusUpdate(order, delivery_status);
+                      }
+                      
+                      // Send payment receipt when payment is received
+                      if (payment_status === 'paid' && payment_date) {
+                        order.payment_method = payment_method || 'Cash';
+                        order.payment_date = payment_date;
+                        await emailService.sendPaymentReceipt(order);
+                      }
+                    }
+                  }
+                );
+              }
+            }
+          );
+        }
+      };
+      
       // Update items if provided
       if (items && Array.isArray(items)) {
         // Delete existing items
@@ -210,6 +258,7 @@ router.patch('/:id', (req, res) => {
           // Insert new items
           let inserted = 0;
           if (items.length === 0) {
+            sendNotifications();
             return res.json({ message: 'Order updated' });
           }
           
@@ -223,6 +272,7 @@ router.patch('/:id', (req, res) => {
                 if (err) console.error('Error inserting order item:', err);
                 inserted++;
                 if (inserted === items.length) {
+                  sendNotifications();
                   res.json({ message: 'Order updated' });
                 }
               }
@@ -230,6 +280,7 @@ router.patch('/:id', (req, res) => {
           });
         });
       } else {
+        sendNotifications();
         res.json({ message: 'Order updated' });
       }
     }

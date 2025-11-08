@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { formatCAD } from '../utils/currency'
+import { sendWhatsAppMessage, getDeliveryReminderMessage } from '../utils/whatsapp'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ greenhouses: 3, crops: 0, activeCrops: 0, pendingOrders: 0 })
@@ -283,7 +284,7 @@ export default function Dashboard() {
         ) : (
           <div className="space-y-2">
             {recentSales.map((sale) => (
-              <div key={sale.id} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
+              <div key={sale.id} className="flex items-center justify-between gap-2 p-3 border rounded hover:bg-gray-50">
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm sm:text-base truncate">
                     {sale.customer_name} - {sale.items && sale.items.length > 1 ? 'Multiple items' : (sale.items && sale.items[0] ? sale.items[0].variety_name : 'No items')}
@@ -293,13 +294,24 @@ export default function Dashboard() {
                     {sale.delivery_date && ` • Delivery: ${sale.delivery_date}`}
                   </p>
                 </div>
-                <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ml-2 flex-shrink-0 ${
-                  sale.delivery_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                  sale.delivery_status === 'packed' ? 'bg-blue-100 text-blue-700' :
-                  'bg-green-100 text-green-700'
-                }`}>
-                  {sale.delivery_status}
-                </span>
+                <div className="flex gap-2 items-center flex-shrink-0">
+                  {sale.phone && (
+                    <button
+                      onClick={() => sendWhatsAppMessage(sale.phone, getDeliveryReminderMessage(sale))}
+                      className="px-2 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 text-xs border border-green-200"
+                      title="Send WhatsApp reminder"
+                    >
+                      📱
+                    </button>
+                  )}
+                  <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
+                    sale.delivery_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                    sale.delivery_status === 'packed' ? 'bg-blue-100 text-blue-700' :
+                    'bg-green-100 text-green-700'
+                  }`}>
+                    {sale.delivery_status}
+                  </span>
+                </div>
               </div>
             ))}
           </div>

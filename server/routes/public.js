@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const db = require('../database')
+const emailService = require('../services/emailService')
 
 // Submit public order (no authentication required)
 router.post('/orders', (req, res) => {
@@ -131,6 +132,32 @@ router.post('/orders', (req, res) => {
                     console.log(`   Delivery: ${delivery_date}`)
                     console.log(`   Items: ${itemsWithPrices.length}`)
                     console.log(`   Total: $${totalAmount.toFixed(2)}`)
+                    
+                    // Fetch variety names for email notification
+                    db.all(
+                      `SELECT oi.*, sv.name as variety_name 
+                       FROM order_items oi 
+                       JOIN spinach_varieties sv ON oi.variety_id = sv.id 
+                       WHERE oi.order_id = ?`,
+                      [orderId],
+                      async (err, orderItems) => {
+                        if (!err && orderItems) {
+                          // Send admin notification email
+                          const orderData = {
+                            order_id: orderId,
+                            customer_name,
+                            phone,
+                            delivery_date,
+                            delivery_address,
+                            total_amount: totalAmount,
+                            items: orderItems,
+                            notes
+                          }
+                          
+                          await emailService.sendNewOrderNotification(orderData)
+                        }
+                      }
+                    )
                     
                     res.json({
                       success: true,

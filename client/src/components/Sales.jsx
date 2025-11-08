@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { formatCAD } from '../utils/currency'
+import { sendWhatsAppMessage, getOrderConfirmationMessage, getOrderPackedMessage, getPaymentFollowUpMessage } from '../utils/whatsapp'
 
 export default function Sales() {
   const [orders, setOrders] = useState([])
@@ -410,6 +411,24 @@ export default function Sales() {
                 >
                   ✏️ Edit
                 </button>
+                {order.phone && (
+                  <button
+                    onClick={() => {
+                      let message;
+                      if (order.delivery_status === 'packed') {
+                        message = getOrderPackedMessage(order);
+                      } else if (order.payment_status === 'pending') {
+                        message = getPaymentFollowUpMessage(order);
+                      } else {
+                        message = getOrderConfirmationMessage(order);
+                      }
+                      sendWhatsAppMessage(order.phone, message);
+                    }}
+                    className="px-3 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 text-sm font-medium border border-green-200"
+                  >
+                    📱 WhatsApp
+                  </button>
+                )}
                 {order.payment_status === 'pending' && (
                   <button
                     onClick={() => openPaymentModal(order)}

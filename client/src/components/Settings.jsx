@@ -53,9 +53,7 @@ export default function Settings() {
 
   const loadNotificationSettings = () => {
     // Load from backend
-    axios.get('/api/admin/settings', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
+    axios.get('/api/admin/settings')
       .then(res => {
         const settings = {
           email_enabled: res.data.email_enabled === 'true',
@@ -151,9 +149,7 @@ export default function Settings() {
       whatsapp_number: notificationSettings.whatsapp_number
     };
 
-    axios.post('/api/admin/settings', settings, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
+    axios.post('/api/admin/settings', settings)
       .then(() => {
         setMessage({ type: 'success', text: 'Notification settings saved successfully!' })
       })
@@ -174,8 +170,6 @@ export default function Settings() {
 
     axios.post('/api/admin/test-email', {
       email: notificationSettings.admin_email
-    }, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
       .then(() => {
         setMessage({ type: 'success', text: 'Test email sent! Check your inbox.' })

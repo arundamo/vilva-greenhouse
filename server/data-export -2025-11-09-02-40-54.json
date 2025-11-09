@@ -627,120 +627,120 @@
       "name": "Palak",
       "description": "Indian spinach variety",
       "days_to_harvest": 30,
+      "created_at": "2025-10-27 20:53:55",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0,
-      "created_at": "2025-10-27 20:53:55"
+      "price_per_100g": 0
     },
     {
       "id": 6,
       "name": "Red Mulai Keerai",
       "description": null,
       "days_to_harvest": 30,
+      "created_at": "2025-10-28 02:06:05",
       "price_per_bunch": 7,
       "price_per_kg": "",
-      "price_per_100g": "",
-      "created_at": "2025-10-28 02:06:05"
+      "price_per_100g": ""
     },
     {
       "id": 7,
       "name": "Red Thandu Keerai",
       "description": null,
       "days_to_harvest": 45,
+      "created_at": "2025-10-28 02:06:49",
       "price_per_bunch": 7,
       "price_per_kg": "",
-      "price_per_100g": "",
-      "created_at": "2025-10-28 02:06:49"
+      "price_per_100g": ""
     },
     {
       "id": 8,
       "name": "Methi",
       "description": null,
       "days_to_harvest": 30,
+      "created_at": "2025-10-28 02:07:54",
       "price_per_bunch": 2,
       "price_per_kg": "",
-      "price_per_100g": "",
-      "created_at": "2025-10-28 02:07:54"
+      "price_per_100g": ""
     },
     {
       "id": 9,
       "name": "Small Onions",
       "description": null,
       "days_to_harvest": 60,
+      "created_at": "2025-10-28 11:34:30",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0,
-      "created_at": "2025-10-28 11:34:30"
+      "price_per_100g": 0
     },
     {
       "id": 10,
       "name": "Ponnangani",
       "description": null,
       "days_to_harvest": 30,
+      "created_at": "2025-10-28 11:34:47",
       "price_per_bunch": 7,
       "price_per_kg": "",
-      "price_per_100g": "",
-      "created_at": "2025-10-28 11:34:47"
+      "price_per_100g": ""
     },
     {
       "id": 11,
       "name": "Mulai Keerai",
       "description": null,
       "days_to_harvest": 30,
+      "created_at": "2025-10-28 11:35:09",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0,
-      "created_at": "2025-10-28 11:35:09"
+      "price_per_100g": 0
     },
     {
       "id": 12,
       "name": "Thandu Keerai",
       "description": null,
       "days_to_harvest": 60,
+      "created_at": "2025-10-28 11:35:24",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0,
-      "created_at": "2025-10-28 11:35:24"
+      "price_per_100g": 0
     },
     {
       "id": 13,
       "name": "Pasalai Keerai",
       "description": null,
       "days_to_harvest": 30,
+      "created_at": "2025-10-28 11:35:38",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0,
-      "created_at": "2025-10-28 11:35:38"
+      "price_per_100g": 0
     },
     {
       "id": 14,
       "name": "Mint",
       "description": null,
       "days_to_harvest": 60,
+      "created_at": "2025-10-28 11:35:57",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0,
-      "created_at": "2025-10-28 11:35:57"
+      "price_per_100g": 0
     },
     {
       "id": 15,
       "name": "Coriander",
       "description": null,
       "days_to_harvest": 45,
+      "created_at": "2025-10-28 11:36:29",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0,
-      "created_at": "2025-10-28 11:36:29"
+      "price_per_100g": 0
     },
     {
       "id": 16,
       "name": "Pulicha Keerai",
       "description": null,
       "days_to_harvest": 45,
+      "created_at": "2025-10-28 18:10:07",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0,
-      "created_at": "2025-10-28 18:10:07"
+      "price_per_100g": 0
     }
   ],
   "crops": [
@@ -904,11 +904,11 @@
       "variety_id": 8,
       "sowing_date": "2025-09-11",
       "expected_harvest_date": "2025-10-11",
-      "actual_harvest_date": "2025-10-31",
+      "actual_harvest_date": null,
       "quantity_sowed": "200",
-      "quantity_harvested": 15,
+      "quantity_harvested": null,
       "unit": "kg",
-      "status": "harvested",
+      "status": "growing",
       "notes": "",
       "created_at": "2025-10-28 13:40:33"
     },
@@ -1002,11 +1002,11 @@
       "variety_id": 15,
       "sowing_date": "2025-09-14",
       "expected_harvest_date": "2025-10-29",
-      "actual_harvest_date": "2025-11-03",
+      "actual_harvest_date": null,
       "quantity_sowed": "60",
-      "quantity_harvested": 10,
+      "quantity_harvested": null,
       "unit": "kg",
-      "status": "harvested",
+      "status": "growing",
       "notes": "",
       "created_at": "2025-10-28 14:19:48"
     },
@@ -1322,87 +1322,6 @@
       "unit": "bunches",
       "notes": "",
       "created_at": "2025-10-29 03:12:52"
-    },
-    {
-      "id": 21,
-      "crop_id": 12,
-      "harvest_date": "2025-11-03",
-      "quantity_harvested": 4,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-03 03:46:02"
-    },
-    {
-      "id": 22,
-      "crop_id": 12,
-      "harvest_date": "2025-10-31",
-      "quantity_harvested": 2,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-03 03:46:25"
-    },
-    {
-      "id": 23,
-      "crop_id": 16,
-      "harvest_date": "2025-10-26",
-      "quantity_harvested": 3,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-03 03:47:00"
-    },
-    {
-      "id": 24,
-      "crop_id": 16,
-      "harvest_date": "2025-11-02",
-      "quantity_harvested": 1,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-03 03:47:11"
-    },
-    {
-      "id": 25,
-      "crop_id": 11,
-      "harvest_date": "2025-11-02",
-      "quantity_harvested": 2,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-03 03:47:43"
-    },
-    {
-      "id": 26,
-      "crop_id": 11,
-      "harvest_date": "2025-10-26",
-      "quantity_harvested": 2,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-03 03:47:51"
-    },
-    {
-      "id": 27,
-      "crop_id": 21,
-      "harvest_date": "2025-11-03",
-      "quantity_harvested": 10,
-      "unit": "bunches",
-      "notes": "Not sold",
-      "created_at": "2025-11-03 03:48:36"
-    },
-    {
-      "id": 28,
-      "crop_id": 14,
-      "harvest_date": "2025-10-31",
-      "quantity_harvested": 2,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-03 03:49:35"
-    },
-    {
-      "id": 29,
-      "crop_id": 31,
-      "harvest_date": "2025-11-02",
-      "quantity_harvested": 4,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-03 03:50:44"
     }
   ],
   "customers": [
@@ -1417,7 +1336,7 @@
     },
     {
       "id": 2,
-      "name": "Vijay - Avens St",
+      "name": "Vijay",
       "phone": "6666666666",
       "whatsapp": "0",
       "address": "VIsta Hills \nWaterloo",
@@ -1426,7 +1345,7 @@
     },
     {
       "id": 3,
-      "name": "Karthy - Vista Hills",
+      "name": "Karthy",
       "phone": "4444444444",
       "whatsapp": "0",
       "address": "Vista Hills,Waterloo",
@@ -1435,11 +1354,11 @@
     },
     {
       "id": 4,
-      "name": "Priya - Doon South",
-      "phone": "4169499877",
-      "whatsapp": "4169499877",
+      "name": "Priya",
+      "phone": "33333333",
+      "whatsapp": "",
       "address": "Doon South, Kitchener",
-      "notes": "",
+      "notes": null,
       "created_at": "2025-10-28 16:12:33"
     },
     {
@@ -1471,7 +1390,7 @@
     },
     {
       "id": 8,
-      "name": "Nedhiya - Flint Dr",
+      "name": "Nedhiya",
       "phone": "9999999999",
       "whatsapp": "",
       "address": "9 Flint Dr, Kitchener",
@@ -1516,39 +1435,12 @@
     },
     {
       "id": 13,
-      "name": "SK - Vista Hills",
+      "name": "Arun Kumar Damodaran",
       "phone": "1234567890",
-      "whatsapp": "",
-      "address": "Vista Hills, Waterloo",
+      "whatsapp": null,
+      "address": "130 Parkway Forest Drive\n109",
       "notes": null,
       "created_at": "2025-10-29 18:18:40"
-    },
-    {
-      "id": 14,
-      "name": "Preethi - Avens St",
-      "phone": "8253660600",
-      "whatsapp": "",
-      "address": "Avens St, Waterloo",
-      "notes": null,
-      "created_at": "2025-11-03 03:35:08"
-    },
-    {
-      "id": 15,
-      "name": "Shermin Shivas - Lucerne Ave",
-      "phone": "2222222222",
-      "whatsapp": "",
-      "address": "741 Lucerne Ave, Waterloo",
-      "notes": null,
-      "created_at": "2025-11-03 03:41:52"
-    },
-    {
-      "id": 16,
-      "name": "Nisha - Vista Hills",
-      "phone": "2263388496",
-      "whatsapp": "",
-      "address": "",
-      "notes": null,
-      "created_at": "2025-11-09 02:40:00"
     }
   ],
   "sales_orders": [
@@ -1800,162 +1692,27 @@
       "total_amount": 4,
       "delivery_date": "2025-10-29",
       "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "cash",
-      "payment_date": "2025-11-02",
+      "delivery_status": "packed",
+      "payment_status": "pending",
+      "payment_method": null,
+      "payment_date": null,
       "notes": "",
       "created_at": "2025-10-29 03:20:21"
     },
     {
-      "id": 20,
+      "id": 19,
       "customer_id": 13,
-      "order_date": "2025-11-03",
-      "requested_via": "whatsapp",
-      "total_amount": 7,
-      "delivery_date": "2025-11-02",
-      "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "online",
-      "payment_date": "2025-11-04",
-      "notes": "",
-      "created_at": "2025-11-03 03:25:00"
-    },
-    {
-      "id": 21,
-      "customer_id": 3,
-      "order_date": "2025-11-03",
-      "requested_via": "whatsapp",
-      "total_amount": 15,
-      "delivery_date": "2025-11-02",
-      "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "cash",
-      "payment_date": "2025-11-02",
-      "notes": "",
-      "created_at": "2025-11-03 03:26:25"
-    },
-    {
-      "id": 22,
-      "customer_id": 8,
-      "order_date": "2025-11-02",
-      "requested_via": "whatsapp",
-      "total_amount": 21,
-      "delivery_date": "2025-11-02",
-      "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "cash",
-      "payment_date": "2025-11-02",
-      "notes": "",
-      "created_at": "2025-11-03 03:28:46"
-    },
-    {
-      "id": 23,
-      "customer_id": "",
-      "order_date": "2025-11-02",
-      "requested_via": "whatsapp",
-      "total_amount": 9,
-      "delivery_date": "2025-11-02",
-      "delivery_address": "",
-      "delivery_status": "pending",
+      "order_date": "2025-10-29",
+      "requested_via": "online_form",
+      "total_amount": 0,
+      "delivery_date": "2025-10-29",
+      "delivery_address": "130 Parkway Forest Drive\n109",
+      "delivery_status": "unconfirmed",
       "payment_status": "pending",
       "payment_method": null,
       "payment_date": null,
-      "notes": "",
-      "created_at": "2025-11-03 03:33:12"
-    },
-    {
-      "id": 24,
-      "customer_id": 14,
-      "order_date": "2025-11-03",
-      "requested_via": "whatsapp",
-      "total_amount": 4,
-      "delivery_date": "2025-11-02",
-      "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "cash",
-      "payment_date": "2025-11-02",
-      "notes": "",
-      "created_at": "2025-11-03 03:35:39"
-    },
-    {
-      "id": 25,
-      "customer_id": 2,
-      "order_date": "2025-10-31",
-      "requested_via": "whatsapp",
-      "total_amount": 18,
-      "delivery_date": "2025-10-31",
-      "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "bank_transfer",
-      "payment_date": "2025-11-03",
-      "notes": "Adjusted 5$ overpay in this. Vijay paid 13$ total for this order",
-      "created_at": "2025-11-03 03:38:07"
-    },
-    {
-      "id": 26,
-      "customer_id": 15,
-      "order_date": "2025-11-02",
-      "requested_via": "whatsapp",
-      "total_amount": 9,
-      "delivery_date": "2025-11-02",
-      "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "cash",
-      "payment_date": "2025-11-02",
-      "notes": "",
-      "created_at": "2025-11-03 03:42:29"
-    },
-    {
-      "id": 27,
-      "customer_id": 8,
-      "order_date": "2025-11-08",
-      "requested_via": "whatsapp",
-      "total_amount": 21,
-      "delivery_date": "2025-11-09",
-      "delivery_address": "",
-      "delivery_status": "pending",
-      "payment_status": "pending",
-      "payment_method": null,
-      "payment_date": null,
-      "notes": "",
-      "created_at": "2025-11-09 02:18:31"
-    },
-    {
-      "id": 28,
-      "customer_id": 4,
-      "order_date": "2025-11-08",
-      "requested_via": "whatsapp",
-      "total_amount": 23,
-      "delivery_date": "2025-11-09",
-      "delivery_address": "",
-      "delivery_status": "pending",
-      "payment_status": "pending",
-      "payment_method": null,
-      "payment_date": null,
-      "notes": "",
-      "created_at": "2025-11-09 02:30:56"
-    },
-    {
-      "id": 29,
-      "customer_id": 16,
-      "order_date": "2025-11-08",
-      "requested_via": "whatsapp",
-      "total_amount": 7,
-      "delivery_date": "2025-11-09",
-      "delivery_address": "",
-      "delivery_status": "pending",
-      "payment_status": "pending",
-      "payment_method": null,
-      "payment_date": null,
-      "notes": "",
-      "created_at": "2025-11-09 02:40:25"
+      "notes": null,
+      "created_at": "2025-10-29 18:26:24"
     }
   ],
   "order_items": [
@@ -2278,206 +2035,6 @@
       "price_per_unit": 0,
       "subtotal": null,
       "created_at": "2025-10-29 18:26:24"
-    },
-    {
-      "id": 51,
-      "order_id": 20,
-      "variety_id": 6,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-03 03:25:00"
-    },
-    {
-      "id": 52,
-      "order_id": 21,
-      "variety_id": 6,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-03 03:26:25"
-    },
-    {
-      "id": 53,
-      "order_id": 21,
-      "variety_id": 7,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-03 03:26:25"
-    },
-    {
-      "id": 54,
-      "order_id": 21,
-      "variety_id": 8,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 1,
-      "subtotal": 1,
-      "created_at": "2025-11-03 03:26:25"
-    },
-    {
-      "id": 59,
-      "order_id": 22,
-      "variety_id": 6,
-      "quantity": 2,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 14,
-      "created_at": "2025-11-03 03:29:26"
-    },
-    {
-      "id": 60,
-      "order_id": 22,
-      "variety_id": 7,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-03 03:29:26"
-    },
-    {
-      "id": 61,
-      "order_id": 23,
-      "variety_id": 6,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-03 03:33:12"
-    },
-    {
-      "id": 62,
-      "order_id": 23,
-      "variety_id": 8,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 2,
-      "subtotal": 2,
-      "created_at": "2025-11-03 03:33:13"
-    },
-    {
-      "id": 63,
-      "order_id": 24,
-      "variety_id": 8,
-      "quantity": 2,
-      "unit": "bunches",
-      "price_per_unit": 2,
-      "subtotal": 4,
-      "created_at": "2025-11-03 03:35:39"
-    },
-    {
-      "id": 66,
-      "order_id": 26,
-      "variety_id": 6,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-03 03:42:29"
-    },
-    {
-      "id": 67,
-      "order_id": 26,
-      "variety_id": 8,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 2,
-      "subtotal": 2,
-      "created_at": "2025-11-03 03:42:29"
-    },
-    {
-      "id": 68,
-      "order_id": 25,
-      "variety_id": 6,
-      "quantity": 2,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 14,
-      "created_at": "2025-11-03 22:40:49"
-    },
-    {
-      "id": 69,
-      "order_id": 25,
-      "variety_id": 8,
-      "quantity": 2,
-      "unit": "bunches",
-      "price_per_unit": 2,
-      "subtotal": 4,
-      "created_at": "2025-11-03 22:40:49"
-    },
-    {
-      "id": 70,
-      "order_id": 27,
-      "variety_id": 6,
-      "quantity": 2,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 14,
-      "created_at": "2025-11-09 02:18:31"
-    },
-    {
-      "id": 71,
-      "order_id": 27,
-      "variety_id": 7,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-09 02:18:31"
-    },
-    {
-      "id": 76,
-      "order_id": 28,
-      "variety_id": 7,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-09 02:39:14"
-    },
-    {
-      "id": 77,
-      "order_id": 28,
-      "variety_id": 6,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-09 02:39:14"
-    },
-    {
-      "id": 78,
-      "order_id": 28,
-      "variety_id": 10,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-09 02:39:14"
-    },
-    {
-      "id": 79,
-      "order_id": 28,
-      "variety_id": 8,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 2,
-      "subtotal": 2,
-      "created_at": "2025-11-09 02:39:14"
-    },
-    {
-      "id": 80,
-      "order_id": 29,
-      "variety_id": 6,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-09 02:40:25"
     }
   ],
   "sales_crop_mapping": [],
@@ -2485,15 +2042,15 @@
     {
       "id": 1,
       "username": "admin",
-      "password_hash": "$2b$10$voYpzOIAaofGS8v5.iVSMupGeJSSmh41AY2kfsb.rZO44aBB5hUwm",
+      "password_hash": "$2b$10$DZe2F98vFtwVmyXhelC6c.cjRBULy7M8QeuvbYAsu13fc9WGxDEmm",
       "role": "admin",
       "full_name": "Administrator",
       "email": null,
       "phone": null,
       "active": 1,
-      "created_at": "2025-11-03 01:42:46",
-      "last_login": "2025-11-09 02:38:50"
+      "created_at": "2025-10-29 19:45:04",
+      "last_login": "2025-10-29 22:21:25"
     }
   ],
-  "exported_at": "2025-11-09T02:40:48.667Z"
+  "exported_at": "2025-10-30T13:28:03.895Z"
 }

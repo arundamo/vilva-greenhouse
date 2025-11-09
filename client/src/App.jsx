@@ -11,6 +11,7 @@ import PublicOrderForm from './components/PublicOrderForm';
 import Login from './components/Login';
 import Home from './components/Home';
 import Customers from './components/Customers';
+import CropDemand from './components/CropDemand';
 
 export default function App() {
   const location = useLocation();
@@ -106,6 +107,7 @@ export default function App() {
         { path: '/activities', label: 'Activities', icon: '📝' },
         { path: '/customers', label: 'Customers', icon: '👥' },
         { path: '/sales', label: 'Sales', icon: '💰' },
+        { path: '/crop-demand', label: 'Crop Demand', icon: '📋' },
         { path: '/settings', label: 'Settings', icon: '⚙️' },
       ]
     : [
@@ -208,6 +210,7 @@ export default function App() {
               <Route path="/activities" element={<Activities />} />
               <Route path="/customers" element={<Customers />} />
               <Route path="/sales" element={<Sales />} />
+              <Route path="/crop-demand" element={<CropDemand />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </>

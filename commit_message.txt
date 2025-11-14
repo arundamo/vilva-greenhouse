@@ -1,0 +1,9 @@
+feat: Add crop demand report and fix email integration
+
+- Add crop demand aggregation API endpoint filtering by order status
+- Create CropDemand.jsx component with filters and grouped display
+- Fix Settings.jsx to use correct auth_token from localStorage
+- Fix nodemailer API usage (createTransport vs createTransporter)
+- Add customer_id validation to crop demand query to exclude orphaned orders
+- Add production-to-local database sync documentation
+- Add diagnostic scripts for debugging order data issues

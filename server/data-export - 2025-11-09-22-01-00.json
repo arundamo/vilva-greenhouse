@@ -1403,51 +1403,6 @@
       "unit": "bunches",
       "notes": "",
       "created_at": "2025-11-03 03:50:44"
-    },
-    {
-      "id": 30,
-      "crop_id": 15,
-      "harvest_date": "2025-11-10",
-      "quantity_harvested": 2,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-10 02:44:52"
-    },
-    {
-      "id": 31,
-      "crop_id": 24,
-      "harvest_date": "2025-11-09",
-      "quantity_harvested": 4,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-10 02:47:42"
-    },
-    {
-      "id": 32,
-      "crop_id": 16,
-      "harvest_date": "2025-11-09",
-      "quantity_harvested": 1,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-10 02:48:07"
-    },
-    {
-      "id": 33,
-      "crop_id": 30,
-      "harvest_date": "2025-11-09",
-      "quantity_harvested": 3,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-10 02:49:02"
-    },
-    {
-      "id": 34,
-      "crop_id": 31,
-      "harvest_date": "2025-11-09",
-      "quantity_harvested": 1,
-      "unit": "bunches",
-      "notes": "",
-      "created_at": "2025-11-10 02:49:24"
     }
   ],
   "customers": [
@@ -1483,7 +1438,7 @@
       "name": "Priya - Doon South",
       "phone": "4169499877",
       "whatsapp": "4169499877",
-      "address": "368 Thomas Slee Dr, Kitchener",
+      "address": "Doon South, Kitchener",
       "notes": "",
       "created_at": "2025-10-28 16:12:33"
     },
@@ -1591,8 +1546,8 @@
       "name": "Nisha - Vista Hills",
       "phone": "2263388496",
       "whatsapp": "",
-      "address": "762 snowberry ct, waterloo",
-      "notes": "",
+      "address": "",
+      "notes": null,
       "created_at": "2025-11-09 02:40:00"
     }
   ],
@@ -1965,10 +1920,10 @@
       "total_amount": 21,
       "delivery_date": "2025-11-09",
       "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "cash",
-      "payment_date": "2025-11-09",
+      "delivery_status": "pending",
+      "payment_status": "pending",
+      "payment_method": null,
+      "payment_date": null,
       "notes": "",
       "created_at": "2025-11-09 02:18:31"
     },
@@ -1980,10 +1935,10 @@
       "total_amount": 23,
       "delivery_date": "2025-11-09",
       "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "bank_transfer",
-      "payment_date": "2025-11-09",
+      "delivery_status": "pending",
+      "payment_status": "pending",
+      "payment_method": null,
+      "payment_date": null,
       "notes": "",
       "created_at": "2025-11-09 02:30:56"
     },
@@ -1995,27 +1950,12 @@
       "total_amount": 7,
       "delivery_date": "2025-11-09",
       "delivery_address": "",
-      "delivery_status": "packed",
+      "delivery_status": "pending",
       "payment_status": "pending",
       "payment_method": null,
       "payment_date": null,
       "notes": "",
       "created_at": "2025-11-09 02:40:25"
-    },
-    {
-      "id": 30,
-      "customer_id": 14,
-      "order_date": "2025-11-08",
-      "requested_via": "whatsapp",
-      "total_amount": 11,
-      "delivery_date": "2025-11-09",
-      "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "bank_transfer",
-      "payment_date": "2025-11-09",
-      "notes": "",
-      "created_at": "2025-11-09 03:38:45"
     }
   ],
   "order_items": [
@@ -2538,26 +2478,6 @@
       "price_per_unit": 7,
       "subtotal": 7,
       "created_at": "2025-11-09 02:40:25"
-    },
-    {
-      "id": 81,
-      "order_id": 30,
-      "variety_id": 8,
-      "quantity": 2,
-      "unit": "bunches",
-      "price_per_unit": 2,
-      "subtotal": 4,
-      "created_at": "2025-11-09 03:38:45"
-    },
-    {
-      "id": 82,
-      "order_id": 30,
-      "variety_id": 6,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-09 03:38:45"
     }
   ],
   "sales_crop_mapping": [],
@@ -2572,8 +2492,8 @@
       "phone": null,
       "active": 1,
       "created_at": "2025-11-03 01:42:46",
-      "last_login": "2025-11-10 02:39:18"
+      "last_login": "2025-11-09 02:38:50"
     }
   ],
-  "exported_at": "2025-11-10T03:01:39.862Z"
+  "exported_at": "2025-11-09T02:40:48.667Z"
 }

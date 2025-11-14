@@ -20,7 +20,11 @@ const cleanExpiredSessions = () => {
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
   
+  console.log('=== Login attempt ===');
+  console.log('Username:', username);
+  
   if (!username || !password) {
+    console.log('❌ Missing credentials');
     return res.status(400).json({ error: 'Username and password are required' });
   }
   
@@ -30,38 +34,49 @@ router.post('/login', (req, res) => {
     [username],
     (err, user) => {
       if (err) {
-        console.error('Login DB error:', err);
+        console.error('❌ Login DB error:', err);
         return res.status(500).json({ error: 'Database error' });
       }
       
       if (!user) {
+        console.log('❌ User not found or inactive:', username);
         return res.status(401).json({ error: 'Invalid username or password' });
       }
+      
+      console.log('✅ User found:', user.username, 'Role:', user.role);
       
       // Compare password
       bcrypt.compare(password, user.password_hash, (err, match) => {
         if (err) {
-          console.error('Password compare error:', err);
+          console.error('❌ Password compare error:', err);
           return res.status(500).json({ error: 'Authentication error' });
         }
         
         if (!match) {
+          console.log('❌ Password mismatch for user:', username);
           return res.status(401).json({ error: 'Invalid username or password' });
         }
+        
+        console.log('✅ Password matched');
+        console.log('✅ Password matched');
         
         // Create session
         const token = generateToken();
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
         
+        console.log('Creating session for user:', user.id);
+        
         db.run(
           'INSERT INTO sessions (user_id, session_token, expires_at) VALUES (?, ?, ?)',
           [user.id, token, expiresAt.toISOString()],
           function(err) {
             if (err) {
-              console.error('Create session error:', err);
+              console.error('❌ Create session error:', err);
               return res.status(500).json({ error: 'Failed to create session' });
             }
+            
+            console.log('✅ Session created successfully');
             
             // Update last login
             db.run(
@@ -71,6 +86,8 @@ router.post('/login', (req, res) => {
             
             // Clean expired sessions
             cleanExpiredSessions();
+            
+            console.log('✅ Login successful for user:', user.username);
             
             // Return user info and token
             res.json({

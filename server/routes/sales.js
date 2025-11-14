@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
   const { status, customer_id } = req.query;
   let query = `
     SELECT so.*, 
-      c.name as customer_name, c.phone, c.whatsapp
+      c.name as customer_name, c.phone, c.whatsapp, c.address as customer_address
     FROM sales_orders so
     JOIN customers c ON so.customer_id = c.id
   `;

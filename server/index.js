@@ -1,9 +1,17 @@
-require('dotenv').config();
-
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
 const express = require('express');
 const cors = require('cors');
 const db = require('./database');
+
+// Debug: Check if email env vars are loaded
+console.log('=== Environment Variables Check ===');
+console.log('EMAIL_USER:', process.env.EMAIL_USER ? '✅ Set' : '❌ Not set');
+console.log('EMAIL_PASSWORD:', process.env.EMAIL_PASSWORD ? '✅ Set' : '❌ Not set');
+console.log('SMTP_HOST:', process.env.SMTP_HOST ? '✅ Set' : '❌ Not set');
+console.log('EMAIL_FROM:', process.env.EMAIL_FROM ? '✅ Set' : '❌ Not set');
+console.log('===================================');
 
 const app = express();
 

@@ -2,20 +2,49 @@ const nodemailer = require('nodemailer');
 
 // Create email transporter
 const createTransporter = () => {
+  // Debug: Log what we're getting from env
+  console.log('Email config check:', {
+    hasUser: !!process.env.EMAIL_USER,
+    hasPassword: !!process.env.EMAIL_PASSWORD,
+    hasSMTPHost: !!process.env.SMTP_HOST,
+    emailUser: process.env.EMAIL_USER,
+    smtpHost: process.env.SMTP_HOST
+  });
+
   // Check if email is configured
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
     console.warn('Email service not configured. Set EMAIL_USER and EMAIL_PASSWORD in .env');
     return null;
   }
 
-  // Use nodemailer.createTransport (correct API)
-  return nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE || 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD
-    }
-  });
+  // Support both service-based (Gmail, etc) and SMTP configuration
+  let transportConfig;
+  
+  if (process.env.SMTP_HOST) {
+    // Custom SMTP configuration (for Brevo, SendGrid, etc.)
+    console.log('Using SMTP configuration');
+    transportConfig = {
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    };
+  } else {
+    // Service-based configuration (Gmail, etc.)
+    console.log('Using service-based configuration');
+    transportConfig = {
+      service: process.env.EMAIL_SERVICE || 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    };
+  }
+
+  return nodemailer.createTransport(transportConfig);
 };
 
 // Format currency for emails
@@ -236,15 +265,21 @@ Thank you!
 // Send email function
 const sendEmail = async (to, templateName, data) => {
   try {
+    console.log('=== Attempting to send email ===');
+    console.log('To:', to);
+    console.log('Template:', templateName);
+    
     const transporter = createTransporter();
     
     if (!transporter) {
-      console.log('Email not configured, skipping email:', templateName);
+      console.log('❌ Email not configured, skipping email:', templateName);
       return { success: false, error: 'Email service not configured' };
     }
 
+    console.log('✅ Transporter created successfully');
+
     if (!to || !to.includes('@')) {
-      console.log('Invalid email address:', to);
+      console.log('❌ Invalid email address:', to);
       return { success: false, error: 'Invalid email address' };
     }
 
@@ -258,12 +293,14 @@ const sendEmail = async (to, templateName, data) => {
       text: template.text
     };
 
+    console.log('📧 Sending email with subject:', template.subject);
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', info.messageId);
+    console.log('✅ Email sent successfully:', info.messageId);
     
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('❌ Error sending email:', error.message);
+    console.error('Full error:', error);
     return { success: false, error: error.message };
   }
 };

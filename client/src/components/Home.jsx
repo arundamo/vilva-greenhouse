@@ -18,6 +18,20 @@ export default function Home() {
         console.error('Error parsing user:', err)
       }
     }
+
+    // Load ElevenLabs ConvAI widget script
+    const script = document.createElement('script')
+    script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed'
+    script.async = true
+    script.type = 'text/javascript'
+    document.body.appendChild(script)
+
+    return () => {
+      // Cleanup script when component unmounts
+      if (document.body.contains(script)) {
+        document.body.removeChild(script)
+      }
+    }
   }, [])
 
   const handleLogout = () => {
@@ -234,6 +248,9 @@ export default function Home() {
           <p className="mt-1">Growing fresh, healthy greens with care and dedication</p>
         </div>
       </div>
+
+      {/* ElevenLabs AI Chat Agent */}
+      <elevenlabs-convai agent-id="agent_7401ka1qwanvfwq9zgkvfkx20hvt"></elevenlabs-convai>
     </div>
   )
 }

@@ -4,6 +4,10 @@ import { formatCAD } from '../utils/currency'
 import { sendWhatsAppMessage, getOrderConfirmationMessage, getOrderPackedMessage, getPaymentFollowUpMessage } from '../utils/whatsapp'
 
 export default function Sales() {
+  const openGoogleMaps = (address) => {
+    const encodedAddress = encodeURIComponent(address)
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank')
+  }
   const [orders, setOrders] = useState([])
 
   const addItem = () => {
@@ -392,11 +396,21 @@ export default function Sales() {
               </div>
             )}
 
-            {order.delivery_address && (
-              <div className="mb-3">
-                <p className="text-sm text-gray-600">
-                  📍 {order.delivery_address}
+            {(order.delivery_address || order.customer_address) && (
+              <div className="mb-3 flex items-center gap-2">
+                <p className="text-sm text-gray-600 flex-1">
+                  📍 {order.delivery_address || order.customer_address}
+                  {!order.delivery_address && order.customer_address && (
+                    <span className="text-xs text-gray-400 ml-1">(Customer address)</span>
+                  )}
                 </p>
+                <button
+                  onClick={() => openGoogleMaps(order.delivery_address || order.customer_address)}
+                  className="px-3 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-xs font-medium border border-blue-200 whitespace-nowrap"
+                  title="Open in Google Maps"
+                >
+                  🗺️ Navigate
+                </button>
               </div>
             )}
 

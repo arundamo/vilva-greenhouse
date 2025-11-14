@@ -214,4 +214,122 @@ router.get('/varieties', (req, res) => {
   )
 })
 
+// Get order details for feedback (public endpoint)
+router.get('/feedback/:orderId', (req, res) => {
+  const { orderId } = req.params
+  
+  db.get(
+    `SELECT so.id, so.order_date, so.delivery_date, c.name as customer_name, so.total_amount
+     FROM sales_orders so
+     JOIN customers c ON so.customer_id = c.id
+     WHERE so.id = ? AND so.delivery_status = 'delivered'`,
+    [orderId],
+    (err, order) => {
+      if (err) {
+        console.error(err)
+        return res.status(500).json({ error: 'Database error' })
+      }
+      
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found or not delivered yet' })
+      }
+      
+      // Check if feedback already submitted
+      db.get(
+        'SELECT id FROM order_feedback WHERE order_id = ?',
+        [orderId],
+        (err, feedback) => {
+          if (err) {
+            console.error(err)
+            return res.status(500).json({ error: 'Database error' })
+          }
+          
+          if (feedback) {
+            return res.status(400).json({ error: 'Feedback already submitted for this order' })
+          }
+          
+          // Get order items
+          db.all(
+            `SELECT oi.*, sv.name as variety_name
+             FROM order_items oi
+             JOIN spinach_varieties sv ON oi.variety_id = sv.id
+             WHERE oi.order_id = ?`,
+            [orderId],
+            (err, items) => {
+              if (err) {
+                console.error(err)
+                return res.status(500).json({ error: 'Database error' })
+              }
+              
+              res.json({ ...order, items })
+            }
+          )
+        }
+      )
+    }
+  )
+})
+
+// Submit feedback for an order (public endpoint)
+router.post('/feedback/:orderId', (req, res) => {
+  const { orderId } = req.params
+  const { rating, comments, delivery_quality, product_freshness, customer_name } = req.body
+  
+  // Validate rating
+  if (!rating || rating < 1 || rating > 5) {
+    return res.status(400).json({ error: 'Rating must be between 1 and 5' })
+  }
+  
+  // Verify order exists and is delivered
+  db.get(
+    'SELECT id FROM sales_orders WHERE id = ? AND delivery_status = "delivered"',
+    [orderId],
+    (err, order) => {
+      if (err) {
+        console.error(err)
+        return res.status(500).json({ error: 'Database error' })
+      }
+      
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found or not delivered yet' })
+      }
+      
+      // Check if feedback already exists
+      db.get(
+        'SELECT id FROM order_feedback WHERE order_id = ?',
+        [orderId],
+        (err, existingFeedback) => {
+          if (err) {
+            console.error(err)
+            return res.status(500).json({ error: 'Database error' })
+          }
+          
+          if (existingFeedback) {
+            return res.status(400).json({ error: 'Feedback already submitted for this order' })
+          }
+          
+          // Insert feedback
+          db.run(
+            `INSERT INTO order_feedback 
+             (order_id, rating, comments, delivery_quality, product_freshness, customer_name)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [orderId, rating, comments || '', delivery_quality, product_freshness, customer_name],
+            function(err) {
+              if (err) {
+                console.error(err)
+                return res.status(500).json({ error: 'Failed to submit feedback' })
+              }
+              
+              res.status(201).json({ 
+                message: 'Thank you for your feedback!',
+                feedbackId: this.lastID
+              })
+            }
+          )
+        }
+      )
+    }
+  )
+})
+
 module.exports = router

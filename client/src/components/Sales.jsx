@@ -467,6 +467,19 @@ export default function Sales() {
                     Mark Delivered
                   </button>
                 )}
+                {order.delivery_status === 'delivered' && (
+                  <button
+                    onClick={() => {
+                      const feedbackUrl = `${window.location.origin}/feedback/${order.id}`;
+                      navigator.clipboard.writeText(feedbackUrl);
+                      alert(`Feedback link copied!\n\n${feedbackUrl}\n\nShare this link with the customer.`);
+                    }}
+                    className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-sm font-medium"
+                    title="Get feedback link to share with customer"
+                  >
+                    📝 Get Feedback Link
+                  </button>
+                )}
                 <button
                   onClick={() => handleDeleteOrder(order.id)}
                   className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium"

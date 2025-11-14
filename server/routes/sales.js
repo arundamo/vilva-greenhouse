@@ -113,6 +113,42 @@ router.post('/', (req, res) => {
             if (err) console.error('Error inserting order item:', err);
             inserted++;
             if (inserted === items.length) {
+              // Send email notification for new order
+              db.get(
+                `SELECT c.name as customer_name, c.phone 
+                 FROM customers c WHERE c.id = ?`,
+                [customer_id],
+                (err, customer) => {
+                  if (!err && customer) {
+                    // Fetch order items with variety names for email
+                    db.all(
+                      `SELECT oi.*, sv.name as variety_name 
+                       FROM order_items oi 
+                       JOIN spinach_varieties sv ON oi.variety_id = sv.id 
+                       WHERE oi.order_id = ?`,
+                      [orderId],
+                      async (err, orderItems) => {
+                        if (!err && orderItems) {
+                          const orderData = {
+                            order_id: orderId,
+                            customer_name: customer.customer_name,
+                            phone: customer.phone,
+                            delivery_date: delivery_date || 'Not specified',
+                            delivery_address: delivery_address || 'Not specified',
+                            total_amount: total_amount,
+                            items: orderItems,
+                            notes: notes || ''
+                          };
+                          
+                          console.log(`📧 Sending email notification for new order #${orderId}`);
+                          await emailService.sendNewOrderNotification(orderData);
+                        }
+                      }
+                    );
+                  }
+                }
+              );
+              
               res.status(201).json({ id: orderId, message: 'Sales order created' });
             }
           }
@@ -120,6 +156,59 @@ router.post('/', (req, res) => {
       });
     }
   );
+});
+
+// Get crop demand report (aggregated quantities from pending orders)
+// This must come BEFORE /:id routes to avoid being matched as an ID
+router.get('/crop-demand', (req, res) => {
+  const { start_date, end_date, status } = req.query;
+  
+  let query = `
+    SELECT 
+      sv.id as variety_id,
+      sv.name as variety_name,
+      oi.unit,
+      SUM(oi.quantity) as total_quantity,
+      COUNT(DISTINCT so.id) as order_count,
+      GROUP_CONCAT(DISTINCT c.name) as customers
+    FROM order_items oi
+    JOIN sales_orders so ON oi.order_id = so.id
+    JOIN spinach_varieties sv ON oi.variety_id = sv.id
+    LEFT JOIN customers c ON so.customer_id = c.id
+    WHERE 1=1
+      AND so.customer_id IS NOT NULL 
+      AND so.customer_id != ''
+  `;
+  
+  const params = [];
+  
+  // Filter by status (default to pending and packed)
+  if (status) {
+    query += ` AND so.delivery_status = ?`;
+    params.push(status);
+  } else {
+    query += ` AND so.delivery_status IN ('pending', 'packed', 'unconfirmed')`;
+  }
+  
+  // Filter by date range
+  if (start_date) {
+    query += ` AND so.delivery_date >= ?`;
+    params.push(start_date);
+  }
+  if (end_date) {
+    query += ` AND so.delivery_date <= ?`;
+    params.push(end_date);
+  }
+  
+  query += ` GROUP BY sv.id, sv.name, oi.unit ORDER BY sv.name, oi.unit`;
+  
+  db.all(query, params, (err, rows) => {
+    if (err) {
+      console.error('Crop demand report error:', err);
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(rows);
+  });
 });
 
 // Update sales order with multiple items
@@ -296,56 +385,53 @@ router.delete('/:id', (req, res) => {
   });
 });
 
-// Get crop demand report (aggregated quantities from pending orders)
-router.get('/crop-demand', (req, res) => {
-  const { start_date, end_date, status } = req.query;
-  
-  let query = `
-    SELECT 
-      sv.id as variety_id,
-      sv.name as variety_name,
-      oi.unit,
-      SUM(oi.quantity) as total_quantity,
-      COUNT(DISTINCT so.id) as order_count,
-      GROUP_CONCAT(DISTINCT c.name) as customers
-    FROM order_items oi
-    JOIN sales_orders so ON oi.order_id = so.id
-    JOIN spinach_varieties sv ON oi.variety_id = sv.id
-    LEFT JOIN customers c ON so.customer_id = c.id
-    WHERE 1=1
-      AND so.customer_id IS NOT NULL 
-      AND so.customer_id != ''
-  `;
-  
-  const params = [];
-  
-  // Filter by status (default to pending and packed)
-  if (status) {
-    query += ` AND so.delivery_status = ?`;
-    params.push(status);
-  } else {
-    query += ` AND so.delivery_status IN ('pending', 'packed', 'unconfirmed')`;
-  }
-  
-  // Filter by date range
-  if (start_date) {
-    query += ` AND so.delivery_date >= ?`;
-    params.push(start_date);
-  }
-  if (end_date) {
-    query += ` AND so.delivery_date <= ?`;
-    params.push(end_date);
-  }
-  
-  query += ` GROUP BY sv.id, sv.name, oi.unit ORDER BY sv.name, oi.unit`;
-  
-  db.all(query, params, (err, rows) => {
-    if (err) {
-      console.error('Crop demand report error:', err);
-      return res.status(500).json({ error: err.message });
+// Get all feedback
+router.get('/feedback', (req, res) => {
+  db.all(
+    `SELECT 
+      f.*, 
+      so.order_date,
+      so.delivery_date,
+      c.name as customer_name,
+      c.phone
+     FROM order_feedback f
+     JOIN sales_orders so ON f.order_id = so.id
+     JOIN customers c ON so.customer_id = c.id
+     ORDER BY f.submitted_at DESC`,
+    (err, rows) => {
+      if (err) {
+        console.error('Feedback fetch error:', err);
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(rows);
     }
-    res.json(rows);
-  });
+  );
+});
+
+// Get feedback for a specific order
+router.get('/feedback/:orderId', (req, res) => {
+  const { orderId } = req.params;
+  
+  db.get(
+    `SELECT f.*, c.name as customer_name
+     FROM order_feedback f
+     JOIN sales_orders so ON f.order_id = so.id
+     JOIN customers c ON so.customer_id = c.id
+     WHERE f.order_id = ?`,
+    [orderId],
+    (err, row) => {
+      if (err) {
+        console.error('Feedback fetch error:', err);
+        return res.status(500).json({ error: err.message });
+      }
+      
+      if (!row) {
+        return res.status(404).json({ error: 'Feedback not found' });
+      }
+      
+      res.json(row);
+    }
+  );
 });
 
 module.exports = router;

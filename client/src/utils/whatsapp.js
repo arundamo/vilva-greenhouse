@@ -42,9 +42,9 @@ const formatCAD = (amount) => {
  * Order confirmation message template
  */
 export const getOrderConfirmationMessage = (order) => {
-  const itemsList = order.items
-    .map(item => `• ${item.variety_name} - ${item.quantity} ${item.unit} @ ${formatCAD(item.price_per_unit)}`)
-    .join('\n');
+  const itemsList = order.items && order.items.length > 0
+    ? order.items.map(item => `• ${item.variety_name} - ${item.quantity} ${item.unit} @ ${formatCAD(item.price_per_unit)}`).join('\n')
+    : 'Items listed in your order';
 
   return `🌱 *Vilva Greenhouse Farm* 🌱
 
@@ -52,8 +52,8 @@ Hello ${order.customer_name}!
 
 Your order has been confirmed:
 
-*Order #${order.order_id}*
-*Delivery Date:* ${order.delivery_date}
+*Order #${order.id}*
+*Delivery Date:* ${order.delivery_date || 'TBD'}
 
 *Items:*
 ${itemsList}
@@ -69,7 +69,7 @@ We'll keep you updated on your order status. Thank you for choosing Vilva Greenh
 export const getOrderPackedMessage = (order) => {
   return `📦 Hello ${order.customer_name}!
 
-Your order #${order.order_id} has been packed and is ready for delivery on ${order.delivery_date}.
+Your order #${order.id} has been packed and is ready for delivery on ${order.delivery_date || 'TBD'}.
 
 *Total Amount:* ${formatCAD(order.total_amount)}
 
@@ -84,9 +84,9 @@ Your order #${order.order_id} has been packed and is ready for delivery on ${ord
 export const getDeliveryReminderMessage = (order) => {
   return `🚚 Hello ${order.customer_name}!
 
-This is a reminder that your order #${order.order_id} is scheduled for delivery today.
+This is a reminder that your order #${order.id} is scheduled for delivery today.
 
-*Delivery Address:* ${order.delivery_address}
+*Delivery Address:* ${order.delivery_address || 'As discussed'}
 *Total Amount:* ${formatCAD(order.total_amount)}
 
 Please ensure someone is available to receive the delivery.
@@ -101,10 +101,10 @@ Thank you!
 export const getPaymentFollowUpMessage = (order) => {
   return `💰 Hello ${order.customer_name}!
 
-This is a friendly reminder about the payment for order #${order.order_id}.
+This is a friendly reminder about the payment for order #${order.id}.
 
 *Amount Due:* ${formatCAD(order.total_amount)}
-*Delivery Date:* ${order.delivery_date}
+*Delivery Date:* ${order.delivery_date || 'TBD'}
 
 Please let us know if you have any questions.
 
@@ -118,7 +118,7 @@ Thank you!
 export const getPaymentReceivedMessage = (order) => {
   return `✅ Hello ${order.customer_name}!
 
-We have received your payment of ${formatCAD(order.total_amount)} for order #${order.order_id}.
+We have received your payment of ${formatCAD(order.total_amount)} for order #${order.id}.
 
 Thank you for your business! We look forward to serving you again.
 
@@ -145,7 +145,7 @@ export const getCustomOrderMessage = (order, customText) => {
 
 Hello ${order.customer_name}!
 
-*Order #${order.order_id}*
+*Order #${order.id}*
 
 ${customText}
 

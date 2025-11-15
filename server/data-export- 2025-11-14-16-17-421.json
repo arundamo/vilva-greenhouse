@@ -627,120 +627,120 @@
       "name": "Palak",
       "description": "Indian spinach variety",
       "days_to_harvest": 30,
-      "created_at": "2025-10-27 20:53:55",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0
+      "price_per_100g": 0,
+      "created_at": "2025-10-27 20:53:55"
     },
     {
       "id": 6,
       "name": "Red Mulai Keerai",
       "description": null,
       "days_to_harvest": 30,
-      "created_at": "2025-10-28 02:06:05",
       "price_per_bunch": 7,
       "price_per_kg": "",
-      "price_per_100g": ""
+      "price_per_100g": "",
+      "created_at": "2025-10-28 02:06:05"
     },
     {
       "id": 7,
       "name": "Red Thandu Keerai",
       "description": null,
       "days_to_harvest": 45,
-      "created_at": "2025-10-28 02:06:49",
       "price_per_bunch": 7,
       "price_per_kg": "",
-      "price_per_100g": ""
+      "price_per_100g": "",
+      "created_at": "2025-10-28 02:06:49"
     },
     {
       "id": 8,
       "name": "Methi",
       "description": null,
       "days_to_harvest": 30,
-      "created_at": "2025-10-28 02:07:54",
       "price_per_bunch": 2,
       "price_per_kg": "",
-      "price_per_100g": ""
+      "price_per_100g": "",
+      "created_at": "2025-10-28 02:07:54"
     },
     {
       "id": 9,
       "name": "Small Onions",
       "description": null,
       "days_to_harvest": 60,
-      "created_at": "2025-10-28 11:34:30",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0
+      "price_per_100g": 0,
+      "created_at": "2025-10-28 11:34:30"
     },
     {
       "id": 10,
       "name": "Ponnangani",
       "description": null,
       "days_to_harvest": 30,
-      "created_at": "2025-10-28 11:34:47",
       "price_per_bunch": 7,
       "price_per_kg": "",
-      "price_per_100g": ""
+      "price_per_100g": "",
+      "created_at": "2025-10-28 11:34:47"
     },
     {
       "id": 11,
       "name": "Mulai Keerai",
       "description": null,
       "days_to_harvest": 30,
-      "created_at": "2025-10-28 11:35:09",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0
+      "price_per_100g": 0,
+      "created_at": "2025-10-28 11:35:09"
     },
     {
       "id": 12,
       "name": "Thandu Keerai",
       "description": null,
       "days_to_harvest": 60,
-      "created_at": "2025-10-28 11:35:24",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0
+      "price_per_100g": 0,
+      "created_at": "2025-10-28 11:35:24"
     },
     {
       "id": 13,
       "name": "Pasalai Keerai",
       "description": null,
       "days_to_harvest": 30,
-      "created_at": "2025-10-28 11:35:38",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0
+      "price_per_100g": 0,
+      "created_at": "2025-10-28 11:35:38"
     },
     {
       "id": 14,
       "name": "Mint",
       "description": null,
       "days_to_harvest": 60,
-      "created_at": "2025-10-28 11:35:57",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0
+      "price_per_100g": 0,
+      "created_at": "2025-10-28 11:35:57"
     },
     {
       "id": 15,
       "name": "Coriander",
       "description": null,
       "days_to_harvest": 45,
-      "created_at": "2025-10-28 11:36:29",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0
+      "price_per_100g": 0,
+      "created_at": "2025-10-28 11:36:29"
     },
     {
       "id": 16,
       "name": "Pulicha Keerai",
       "description": null,
       "days_to_harvest": 45,
-      "created_at": "2025-10-28 18:10:07",
       "price_per_bunch": 0,
       "price_per_kg": 0,
-      "price_per_100g": 0
+      "price_per_100g": 0,
+      "created_at": "2025-10-28 18:10:07"
     }
   ],
   "crops": [
@@ -1458,8 +1458,7 @@
       "whatsapp": "9876543210",
       "address": "Chennai, Tamil Nadu",
       "notes": null,
-      "created_at": "2025-10-27 20:53:55",
-      "email": null
+      "created_at": "2025-10-27 20:53:55"
     },
     {
       "id": 2,
@@ -1468,8 +1467,7 @@
       "whatsapp": "0",
       "address": "VIsta Hills \nWaterloo",
       "notes": null,
-      "created_at": "2025-10-28 15:36:33",
-      "email": null
+      "created_at": "2025-10-28 15:36:33"
     },
     {
       "id": 3,
@@ -1478,8 +1476,7 @@
       "whatsapp": "0",
       "address": "Vista Hills,Waterloo",
       "notes": null,
-      "created_at": "2025-10-28 15:40:01",
-      "email": null
+      "created_at": "2025-10-28 15:40:01"
     },
     {
       "id": 4,
@@ -1488,8 +1485,7 @@
       "whatsapp": "4169499877",
       "address": "368 Thomas Slee Dr, Kitchener",
       "notes": "",
-      "created_at": "2025-10-28 16:12:33",
-      "email": null
+      "created_at": "2025-10-28 16:12:33"
     },
     {
       "id": 5,
@@ -1498,8 +1494,7 @@
       "whatsapp": "",
       "address": "191 Huck cres, Kitchener",
       "notes": null,
-      "created_at": "2025-10-28 16:52:09",
-      "email": null
+      "created_at": "2025-10-28 16:52:09"
     },
     {
       "id": 6,
@@ -1508,8 +1503,7 @@
       "whatsapp": "",
       "address": "220B Ira Needle Blvd, Waterloo",
       "notes": null,
-      "created_at": "2025-10-28 16:55:27",
-      "email": null
+      "created_at": "2025-10-28 16:55:27"
     },
     {
       "id": 7,
@@ -1518,8 +1512,7 @@
       "whatsapp": "",
       "address": "",
       "notes": null,
-      "created_at": "2025-10-28 16:56:45",
-      "email": null
+      "created_at": "2025-10-28 16:56:45"
     },
     {
       "id": 8,
@@ -1528,8 +1521,7 @@
       "whatsapp": "",
       "address": "9 Flint Dr, Kitchener",
       "notes": null,
-      "created_at": "2025-10-28 16:57:58",
-      "email": null
+      "created_at": "2025-10-28 16:57:58"
     },
     {
       "id": 9,
@@ -1538,8 +1530,7 @@
       "whatsapp": "",
       "address": "622 Spinnaker Cresent, Waterloo",
       "notes": null,
-      "created_at": "2025-10-28 17:00:11",
-      "email": null
+      "created_at": "2025-10-28 17:00:11"
     },
     {
       "id": 10,
@@ -1548,8 +1539,7 @@
       "whatsapp": "",
       "address": "751 Pasture Rose St, Waterloo (Vista Hills)",
       "notes": null,
-      "created_at": "2025-10-29 03:16:14",
-      "email": null
+      "created_at": "2025-10-29 03:16:14"
     },
     {
       "id": 11,
@@ -1558,8 +1548,7 @@
       "whatsapp": "",
       "address": "270 Rasberry Pl, Waterloo (Vista Hills)",
       "notes": null,
-      "created_at": "2025-10-29 03:18:18",
-      "email": null
+      "created_at": "2025-10-29 03:18:18"
     },
     {
       "id": 12,
@@ -1568,8 +1557,7 @@
       "whatsapp": "",
       "address": "Vista Hills, Waterloo",
       "notes": null,
-      "created_at": "2025-10-29 03:20:03",
-      "email": null
+      "created_at": "2025-10-29 03:20:03"
     },
     {
       "id": 13,
@@ -1578,8 +1566,7 @@
       "whatsapp": "",
       "address": "Vista Hills, Waterloo",
       "notes": null,
-      "created_at": "2025-10-29 18:18:40",
-      "email": null
+      "created_at": "2025-10-29 18:18:40"
     },
     {
       "id": 14,
@@ -1588,8 +1575,7 @@
       "whatsapp": "",
       "address": "Avens St, Waterloo",
       "notes": null,
-      "created_at": "2025-11-03 03:35:08",
-      "email": null
+      "created_at": "2025-11-03 03:35:08"
     },
     {
       "id": 15,
@@ -1598,8 +1584,7 @@
       "whatsapp": "",
       "address": "741 Lucerne Ave, Waterloo",
       "notes": null,
-      "created_at": "2025-11-03 03:41:52",
-      "email": null
+      "created_at": "2025-11-03 03:41:52"
     },
     {
       "id": 16,
@@ -1608,28 +1593,7 @@
       "whatsapp": "",
       "address": "762 snowberry ct, waterloo",
       "notes": "",
-      "created_at": "2025-11-09 02:40:00",
-      "email": null
-    },
-    {
-      "id": 18,
-      "name": "Pavithra",
-      "phone": "4164022815",
-      "whatsapp": null,
-      "address": "437 Avens St, Waterloo, ON Canada N2V0B5",
-      "notes": null,
-      "created_at": "2025-11-14 21:21:00",
-      "email": null
-    },
-    {
-      "id": 19,
-      "name": "Arun Kumar Damodaran",
-      "phone": "6476679995",
-      "whatsapp": null,
-      "address": "437 Avens Street",
-      "notes": null,
-      "created_at": "2025-11-14 21:57:45",
-      "email": null
+      "created_at": "2025-11-09 02:40:00"
     }
   ],
   "sales_orders": [
@@ -2031,10 +1995,10 @@
       "total_amount": 7,
       "delivery_date": "2025-11-09",
       "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "bank_transfer",
-      "payment_date": "2025-11-10",
+      "delivery_status": "packed",
+      "payment_status": "pending",
+      "payment_method": null,
+      "payment_date": null,
       "notes": "",
       "created_at": "2025-11-09 02:40:25"
     },
@@ -2052,21 +2016,6 @@
       "payment_date": "2025-11-09",
       "notes": "",
       "created_at": "2025-11-09 03:38:45"
-    },
-    {
-      "id": 32,
-      "customer_id": 19,
-      "order_date": "2025-11-14",
-      "requested_via": "online_form",
-      "total_amount": 7,
-      "delivery_date": "2025-11-15",
-      "delivery_address": "437 Avens Street",
-      "delivery_status": "unconfirmed",
-      "payment_status": "pending",
-      "payment_method": null,
-      "payment_date": null,
-      "notes": null,
-      "created_at": "2025-11-14 21:57:45"
     }
   ],
   "order_items": [
@@ -2609,26 +2558,6 @@
       "price_per_unit": 7,
       "subtotal": 7,
       "created_at": "2025-11-09 03:38:45"
-    },
-    {
-      "id": 83,
-      "order_id": 31,
-      "variety_id": 8,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 2,
-      "subtotal": 2,
-      "created_at": "2025-11-14 21:21:45"
-    },
-    {
-      "id": 84,
-      "order_id": 32,
-      "variety_id": 6,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 7,
-      "subtotal": 7,
-      "created_at": "2025-11-14 21:57:45"
     }
   ],
   "sales_crop_mapping": [],
@@ -2636,51 +2565,15 @@
     {
       "id": 1,
       "username": "admin",
-      "password_hash": "$2b$10$efnqnsikSFMUFENs4i602O/JTAyRFm9Nu.aLThbylpCDbdCqus.ne",
+      "password_hash": "$2b$10$voYpzOIAaofGS8v5.iVSMupGeJSSmh41AY2kfsb.rZO44aBB5hUwm",
       "role": "admin",
       "full_name": "Administrator",
       "email": null,
       "phone": null,
       "active": 1,
-      "created_at": "2025-10-29 19:45:04",
-      "last_login": "2025-11-14 21:59:42"
-    },
-    {
-      "id": 2,
-      "username": "arundamo",
-      "password_hash": "$2b$10$.AvaJhw2K6GQLpwfNdhhWOasdVHEGBNPz/JDIJgqpPhuLkW4pCNPy",
-      "role": "admin",
-      "full_name": "Arun Kumar Damodaran",
-      "email": "arunkumar.rd@gmail.com",
-      "phone": "6476679995",
-      "active": 1,
-      "created_at": "2025-10-30 16:55:39",
-      "last_login": "2025-10-30 16:57:36"
-    },
-    {
-      "id": 3,
-      "username": "paviarun",
-      "password_hash": "$2b$10$Q.fuK2IbY3WXNTtkvw1gt..6wKjg2uyfp9hL1ijINUZiH4ZXeluoO",
-      "role": "admin",
-      "full_name": "Pavithra Rangarajalu",
-      "email": "pavithravss@gmail.com",
-      "phone": "4164022815",
-      "active": 1,
-      "created_at": "2025-10-30 16:55:52",
-      "last_login": "2025-10-30 19:34:04"
-    },
-    {
-      "id": 4,
-      "username": "User1",
-      "password_hash": "$2b$10$l0LXz9rY7EYKtsWgacXW1eGFYetnRv3NggrOPR1TVCRIcpFLnxP9m",
-      "role": "public",
-      "full_name": "Test User",
-      "email": "",
-      "phone": "",
-      "active": 1,
-      "created_at": "2025-10-30 16:56:26",
-      "last_login": "2025-10-30 19:34:14"
+      "created_at": "2025-11-03 01:42:46",
+      "last_login": "2025-11-10 02:39:18"
     }
   ],
-  "exported_at": "2025-11-15T02:52:32.690Z"
+  "exported_at": "2025-11-10T03:01:39.862Z"
 }

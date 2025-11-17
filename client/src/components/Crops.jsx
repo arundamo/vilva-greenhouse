@@ -67,12 +67,34 @@ export default function Crops() {
     }).catch(console.error)
   }
 
-  const loadCrops = () => {
+  const loadCrops = async () => {
     // Always load all crops; filter client-side to support derived statuses like "ready"
-    axios.get('/api/crops').then(res => {
-      setAllCrops(res.data)
+    try {
+      const cropsRes = await axios.get('/api/crops')
+      const cropsData = cropsRes.data
+      
+      // Load harvest records for each crop
+      const cropsWithHarvests = await Promise.all(
+        cropsData.map(async (crop) => {
+          try {
+            const harvestRes = await axios.get(`/api/harvests/crop/${crop.id}`)
+            const harvests = harvestRes.data
+            const totalBunches = harvests
+              .filter(h => h.unit === 'bunches')
+              .reduce((sum, h) => sum + parseFloat(h.quantity_harvested || 0), 0)
+            return { ...crop, totalBunchesHarvested: totalBunches }
+          } catch (err) {
+            return { ...crop, totalBunchesHarvested: 0 }
+          }
+        })
+      )
+      
+      setAllCrops(cropsWithHarvests)
       setLoading(false)
-    }).catch(console.error)
+    } catch (err) {
+      console.error(err)
+      setLoading(false)
+    }
   }
 
   const loadHarvestRecords = (cropId) => {
@@ -358,7 +380,7 @@ export default function Crops() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-gray-800">Spinach Crops</h2>
+        <h2 className="text-3xl font-bold text-gray-800">Crops</h2>
         <div className="flex gap-3">
           <button 
             onClick={() => setShowVarietyModal(true)}
@@ -459,6 +481,12 @@ export default function Crops() {
                 <span>Quantity Sowed:</span>
                 <span className="font-medium">{crop.quantity_sowed}</span>
               </div>
+              {crop.totalBunchesHarvested > 0 && (
+                <div className="flex justify-between">
+                  <span>Bunches Harvested:</span>
+                  <span className="font-medium text-purple-700">{crop.totalBunchesHarvested} bunches</span>
+                </div>
+              )}
               {crop.quantity_harvested && (
                 <div className="flex justify-between">
                   <span>Harvested:</span>

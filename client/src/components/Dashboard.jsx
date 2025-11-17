@@ -10,6 +10,21 @@ export default function Dashboard() {
   const [cropReports, setCropReports] = useState([])
   const [customerReports, setCustomerReports] = useState([])
   const [loading, setLoading] = useState(true)
+  
+  // Accordion states
+  const [expandedSections, setExpandedSections] = useState({
+    activities: true,
+    pendingOrders: true,
+    cropReports: true,
+    customerReports: true
+  })
+
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }))
+  }
 
   // Using shared CAD formatter from utils
 
@@ -247,238 +262,286 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Activities */}
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-        <h3 className="text-lg sm:text-xl font-semibold mb-4">Recent Activities</h3>
-        {recentActivities.length === 0 ? (
-          <p className="text-gray-500">No recent activities</p>
-        ) : (
-          <div className="space-y-2">
-            {recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm sm:text-base truncate">{activity.activity_type.replace('_', ' ')} - {activity.greenhouse_name} / {activity.bed_name}</p>
-                  <p className="text-xs sm:text-sm text-gray-500 truncate">
-                    {activity.variety_name} • {activity.activity_date}
-                    {activity.description && ` • ${activity.description}`}
-                  </p>
-                </div>
-                <span className="text-xl sm:text-2xl ml-2 flex-shrink-0">
-                  {activity.activity_type === 'watering' && '💧'}
-                  {activity.activity_type === 'fertilizer' && '🌾'}
-                  {activity.activity_type === 'weeding' && '🪴'}
-                  {activity.activity_type === 'pest_control' && '🐛'}
-                  {activity.activity_type === 'inspection' && '👀'}
-                  {activity.activity_type === 'other' && '📝'}
-                </span>
+      <div className="bg-white rounded-lg shadow">
+        <button
+          onClick={() => toggleSection('activities')}
+          className="w-full px-4 sm:px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        >
+          <h3 className="text-lg sm:text-xl font-semibold">Recent Activities</h3>
+          <span className="text-2xl transform transition-transform duration-200" style={{ transform: expandedSections.activities ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+            ▼
+          </span>
+        </button>
+        {expandedSections.activities && (
+          <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+            {recentActivities.length === 0 ? (
+              <p className="text-gray-500">No recent activities</p>
+            ) : (
+              <div className="space-y-2">
+                {recentActivities.map((activity) => (
+                  <div key={activity.id} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm sm:text-base truncate">{activity.activity_type.replace('_', ' ')} - {activity.greenhouse_name} / {activity.bed_name}</p>
+                      <p className="text-xs sm:text-sm text-gray-500 truncate">
+                        {activity.variety_name} • {activity.activity_date}
+                        {activity.description && ` • ${activity.description}`}
+                      </p>
+                    </div>
+                    <span className="text-xl sm:text-2xl ml-2 flex-shrink-0">
+                      {activity.activity_type === 'watering' && '💧'}
+                      {activity.activity_type === 'fertilizer' && '🌾'}
+                      {activity.activity_type === 'weeding' && '🪴'}
+                      {activity.activity_type === 'pest_control' && '🐛'}
+                      {activity.activity_type === 'inspection' && '👀'}
+                      {activity.activity_type === 'other' && '📝'}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
 
       {/* Pending Sales Orders */}
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-        <h3 className="text-lg sm:text-xl font-semibold mb-4">Pending Sales Orders</h3>
-        {recentSales.length === 0 ? (
-          <p className="text-gray-500">No pending orders</p>
-        ) : (
-          <div className="space-y-2">
-            {recentSales.map((sale) => (
-              <div key={sale.id} className="flex items-center justify-between gap-2 p-3 border rounded hover:bg-gray-50">
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm sm:text-base truncate">
-                    {sale.customer_name} - {sale.items && sale.items.length > 1 ? 'Multiple items' : (sale.items && sale.items[0] ? sale.items[0].variety_name : 'No items')}
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-500 truncate">
-                    {formatCAD(sale.total_amount)} • {sale.requested_via}
-                    {sale.delivery_date && ` • Delivery: ${sale.delivery_date}`}
-                  </p>
-                </div>
-                <div className="flex gap-2 items-center flex-shrink-0">
-                  {sale.phone && (
-                    <button
-                      onClick={() => sendWhatsAppMessage(sale.phone, getDeliveryReminderMessage(sale))}
-                      className="px-2 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 text-xs border border-green-200"
-                      title="Send WhatsApp reminder"
-                    >
-                      📱
-                    </button>
-                  )}
-                  <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
-                    sale.delivery_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                    sale.delivery_status === 'packed' ? 'bg-blue-100 text-blue-700' :
-                    'bg-green-100 text-green-700'
-                  }`}>
-                    {sale.delivery_status}
-                  </span>
-                </div>
+      <div className="bg-white rounded-lg shadow">
+        <button
+          onClick={() => toggleSection('pendingOrders')}
+          className="w-full px-4 sm:px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        >
+          <h3 className="text-lg sm:text-xl font-semibold">Pending Sales Orders</h3>
+          <span className="text-2xl transform transition-transform duration-200" style={{ transform: expandedSections.pendingOrders ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+            ▼
+          </span>
+        </button>
+        {expandedSections.pendingOrders && (
+          <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+            {recentSales.length === 0 ? (
+              <p className="text-gray-500">No pending orders</p>
+            ) : (
+              <div className="space-y-2">
+                {recentSales.map((sale) => (
+                  <div key={sale.id} className="flex items-center justify-between gap-2 p-3 border rounded hover:bg-gray-50">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm sm:text-base truncate">
+                        {sale.customer_name} - {sale.items && sale.items.length > 1 ? 'Multiple items' : (sale.items && sale.items[0] ? sale.items[0].variety_name : 'No items')}
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-500 truncate">
+                        {formatCAD(sale.total_amount)} • {sale.requested_via}
+                        {sale.delivery_date && ` • Delivery: ${sale.delivery_date}`}
+                      </p>
+                    </div>
+                    <div className="flex gap-2 items-center flex-shrink-0">
+                      {sale.phone && (
+                        <button
+                          onClick={() => sendWhatsAppMessage(sale.phone, getDeliveryReminderMessage(sale))}
+                          className="px-2 py-1 bg-green-50 text-green-600 rounded hover:bg-green-100 text-xs border border-green-200"
+                          title="Send WhatsApp reminder"
+                        >
+                          📱
+                        </button>
+                      )}
+                      <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
+                        sale.delivery_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                        sale.delivery_status === 'packed' ? 'bg-blue-100 text-blue-700' :
+                        'bg-green-100 text-green-700'
+                      }`}>
+                        {sale.delivery_status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
 
       {/* Crop Performance Reports */}
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-        <h3 className="text-lg sm:text-xl font-semibold mb-4">📊 Crop Performance Reports</h3>
-        {cropReports.length === 0 ? (
-          <p className="text-gray-500">No crop data available</p>
-        ) : (
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
-            <div className="inline-block min-w-full align-middle">
-              <div className="overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variety</th>
-                      <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sowed</th>
-                      <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Growing</th>
-                      <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Harvests</th>
-                      <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Harvested</th>
-                      <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sold</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {cropReports.map((report, index) => {
-                      const completedCrops = report.timesHarvested + report.timesSold
-                      const successRate = report.timesSowed > 0 
-                        ? Math.round((completedCrops / report.timesSowed) * 100)
-                        : 0
-                      
-                      return (
-                        <tr key={index} className="hover:bg-gray-50">
-                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                            <span className="font-medium text-green-700 text-sm">{report.variety}</span>
-                          </td>
-                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
-                            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs sm:text-sm font-semibold">
-                              {report.timesSowed}
-                            </span>
-                          </td>
-                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden sm:table-cell">
-                            <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                              {report.growing}
-                            </span>
-                          </td>
-                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden md:table-cell">
-                            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
-                              {report.totalHarvestCount}
-                            </span>
-                          </td>
-                          <td className="px-3 sm:px-6 py-4 text-center hidden md:table-cell">
-                            <div className="space-y-1">
-                              {Object.entries(report.harvestByUnit).map(([unit, qty]) => (
-                                <div key={unit} className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs sm:text-sm font-semibold inline-block mr-1">
-                                  {qty.toFixed(unit === 'grams' ? 0 : 1)} {unit}
-                                </div>
-                              ))}
-                              {Object.keys(report.harvestByUnit).length === 0 && (
-                                <span className="text-gray-400 text-sm">—</span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
-                            <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs sm:text-sm font-semibold">
-                              {report.timesSold}
-                            </span>
-                          </td>
+      <div className="bg-white rounded-lg shadow">
+        <button
+          onClick={() => toggleSection('cropReports')}
+          className="w-full px-4 sm:px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        >
+          <h3 className="text-lg sm:text-xl font-semibold">📊 Crop Performance Reports</h3>
+          <span className="text-2xl transform transition-transform duration-200" style={{ transform: expandedSections.cropReports ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+            ▼
+          </span>
+        </button>
+        {expandedSections.cropReports && (
+          <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+            {cropReports.length === 0 ? (
+              <p className="text-gray-500">No crop data available</p>
+            ) : (
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <div className="inline-block min-w-full align-middle">
+                  <div className="overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variety</th>
+                          <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sowed</th>
+                          <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Growing</th>
+                          <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Harvests</th>
+                          <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Harvested</th>
+                          <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sold</th>
                         </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {cropReports.map((report, index) => {
+                          const completedCrops = report.timesHarvested + report.timesSold
+                          const successRate = report.timesSowed > 0 
+                            ? Math.round((completedCrops / report.timesSowed) * 100)
+                            : 0
+                          
+                          return (
+                            <tr key={index} className="hover:bg-gray-50">
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                <span className="font-medium text-green-700 text-sm">{report.variety}</span>
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
+                                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs sm:text-sm font-semibold">
+                                  {report.timesSowed}
+                                </span>
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden sm:table-cell">
+                                <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                                  {report.growing}
+                                </span>
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden md:table-cell">
+                                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
+                                  {report.totalHarvestCount}
+                                </span>
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 text-center hidden md:table-cell">
+                                <div className="space-y-1">
+                                  {Object.entries(report.harvestByUnit).map(([unit, qty]) => (
+                                    <div key={unit} className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs sm:text-sm font-semibold inline-block mr-1">
+                                      {qty.toFixed(unit === 'grams' ? 0 : 1)} {unit}
+                                    </div>
+                                  ))}
+                                  {Object.keys(report.harvestByUnit).length === 0 && (
+                                    <span className="text-gray-400 text-sm">—</span>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
+                                <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs sm:text-sm font-semibold">
+                                  {report.timesSold}
+                                </span>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>
 
       {/* Customer Purchase Reports */}
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-        <h3 className="text-lg sm:text-xl font-semibold mb-4">👥 Customer Purchase Reports</h3>
-        {customerReports.length === 0 ? (
-          <p className="text-gray-500">No customer data available</p>
-        ) : (
-          <>
-            {/* Grand Total Summary */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-3 sm:p-4 rounded-lg border border-blue-200">
-                <p className="text-xs sm:text-sm text-blue-600 font-medium">Total Customers</p>
-                <p className="text-2xl sm:text-3xl font-bold text-blue-700">{customerReports.length}</p>
-              </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 p-3 sm:p-4 rounded-lg border border-green-200">
-                <p className="text-xs sm:text-sm text-green-600 font-medium">Total Orders</p>
-                <p className="text-2xl sm:text-3xl font-bold text-green-700">
-                  {customerReports.reduce((sum, c) => sum + c.totalOrders, 0)}
-                </p>
-              </div>
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-3 sm:p-4 rounded-lg border border-purple-200">
-                <p className="text-xs sm:text-sm text-purple-600 font-medium">Total Sales</p>
-                <p className="text-2xl sm:text-3xl font-bold text-purple-700">
-                  {formatCAD(customerReports.reduce((sum, c) => sum + c.totalAmount, 0))}
-                </p>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto -mx-4 sm:mx-0">
-              <div className="inline-block min-w-full align-middle">
-                <div className="overflow-hidden">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                        <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
-                        <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                        <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Preferred</th>
-                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Varieties</th>
-                        <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Last Order</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {customerReports.map((customer, index) => (
-                        <tr key={index} className="hover:bg-gray-50">
-                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                            <div>
-                              <p className="font-medium text-gray-900 text-sm">{customer.customer_name}</p>
-                              <p className="text-xs text-gray-500">📞 {customer.phone}</p>
-                            </div>
-                          </td>
-                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
-                            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs sm:text-sm font-semibold">
-                              {customer.totalOrders}
-                            </span>
-                          </td>
-                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
-                            <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs sm:text-sm font-semibold">
-                              {formatCAD(customer.totalAmount)}
-                            </span>
-                          </td>
-                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden md:table-cell">
-                            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs sm:text-sm font-semibold">
-                              {customer.preferredVariety}
-                            </span>
-                          </td>
-                          <td className="px-3 sm:px-6 py-4 hidden lg:table-cell">
-                            <div className="space-y-1">
-                              {Object.entries(customer.varietiesPurchased).map(([variety, data]) => (
-                                <div key={variety} className="text-xs sm:text-sm">
-                                  <span className="font-medium text-gray-700">{variety}</span>: 
-                                  <span className="text-gray-600"> {data.count}× ({data.totalQuantity.toFixed(1)} {data.unit})</span>
-                                </div>
-                              ))}
-                            </div>
-                          </td>
-                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center text-xs sm:text-sm text-gray-600 hidden sm:table-cell">
-                            {customer.lastOrderDate}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+      <div className="bg-white rounded-lg shadow">
+        <button
+          onClick={() => toggleSection('customerReports')}
+          className="w-full px-4 sm:px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        >
+          <h3 className="text-lg sm:text-xl font-semibold">👥 Customer Purchase Reports</h3>
+          <span className="text-2xl transform transition-transform duration-200" style={{ transform: expandedSections.customerReports ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+            ▼
+          </span>
+        </button>
+        {expandedSections.customerReports && (
+          <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+            {customerReports.length === 0 ? (
+              <p className="text-gray-500">No customer data available</p>
+            ) : (
+              <>
+                {/* Grand Total Summary */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-3 sm:p-4 rounded-lg border border-blue-200">
+                    <p className="text-xs sm:text-sm text-blue-600 font-medium">Total Customers</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-blue-700">{customerReports.length}</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 p-3 sm:p-4 rounded-lg border border-green-200">
+                    <p className="text-xs sm:text-sm text-green-600 font-medium">Total Orders</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-green-700">
+                      {customerReports.reduce((sum, c) => sum + c.totalOrders, 0)}
+                    </p>
+                  </div>
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-3 sm:p-4 rounded-lg border border-purple-200">
+                    <p className="text-xs sm:text-sm text-purple-600 font-medium">Total Sales</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-purple-700">
+                      {formatCAD(customerReports.reduce((sum, c) => sum + c.totalAmount, 0))}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </>
+
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                  <div className="inline-block min-w-full align-middle">
+                    <div className="overflow-hidden">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                            <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
+                            <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Preferred</th>
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Varieties</th>
+                            <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Last Order</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {customerReports.map((customer, index) => (
+                            <tr key={index} className="hover:bg-gray-50">
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                <div>
+                                  <p className="font-medium text-gray-900 text-sm">{customer.customer_name}</p>
+                                  <p className="text-xs text-gray-500">📞 {customer.phone}</p>
+                                </div>
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
+                                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs sm:text-sm font-semibold">
+                                  {customer.totalOrders}
+                                </span>
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
+                                <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs sm:text-sm font-semibold">
+                                  {formatCAD(customer.totalAmount)}
+                                </span>
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden md:table-cell">
+                                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs sm:text-sm font-semibold">
+                                  {customer.preferredVariety}
+                                </span>
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 hidden lg:table-cell">
+                                <div className="space-y-1">
+                                  {Object.entries(customer.varietiesPurchased).map(([variety, data]) => (
+                                    <div key={variety} className="text-xs sm:text-sm">
+                                      <span className="font-medium text-gray-700">{variety}</span>: 
+                                      <span className="text-gray-600"> {data.count}× ({data.totalQuantity.toFixed(1)} {data.unit})</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center text-xs sm:text-sm text-gray-600 hidden sm:table-cell">
+                                {customer.lastOrderDate}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         )}
       </div>
     </div>

@@ -18,6 +18,8 @@ const exportData = {
   sales_orders: [],
   order_items: [],
   sales_crop_mapping: [],
+  notifications: [],
+  order_feedback: [],
   users: [],
   // sessions excluded - they're temporary
   exported_at: new Date().toISOString()
@@ -34,6 +36,8 @@ const tables = [
   'sales_orders',
   'order_items',
   'sales_crop_mapping',
+  'notifications',
+  'order_feedback',
   'users'
 ];
 
@@ -42,7 +46,12 @@ let completed = 0;
 tables.forEach(table => {
   db.all(`SELECT * FROM ${table}`, (err, rows) => {
     if (err) {
-      console.error(`❌ Error exporting ${table}:`, err);
+      if (err.code === 'SQLITE_ERROR' && err.message.includes('no such table')) {
+        console.log(`⊘ Skipping ${table} (table does not exist)`);
+        exportData[table] = [];
+      } else {
+        console.error(`❌ Error exporting ${table}:`, err);
+      }
     } else {
       exportData[table] = rows;
       console.log(`✓ Exported ${rows.length} rows from ${table}`);

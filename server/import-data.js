@@ -33,6 +33,8 @@ console.log(`📄 Loading data exported at: ${exportData.exported_at}\n`);
 
 // Clear existing data (except users table to preserve admin)
 const tablesToClear = [
+  'order_feedback',
+  'notifications',
   'sales_crop_mapping',
   'order_items',
   'sales_orders',
@@ -75,6 +77,8 @@ db.serialize(() => {
       'sales_orders',
       'order_items',
       'sales_crop_mapping',
+      'notifications',
+      'order_feedback',
       'users'
     ];
     

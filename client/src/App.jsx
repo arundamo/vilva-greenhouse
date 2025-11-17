@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Dashboard from './components/Dashboard';
 import Greenhouses from './components/Greenhouses';
@@ -17,6 +17,7 @@ import CropDemand from './components/CropDemand';
 
 export default function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [menuPinned, setMenuPinned] = useState(() => {
     // Load pinned state from localStorage
@@ -64,6 +65,8 @@ export default function App() {
   
   const handleLoginSuccess = (userData) => {
     setUser(userData);
+    // Redirect to dashboard after successful login
+    navigate('/dashboard');
   };
   
   const handleLogout = () => {

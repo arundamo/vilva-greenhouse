@@ -54,7 +54,11 @@ db.serialize(() => {
   tablesToClear.forEach(table => {
     db.run(`DELETE FROM ${table}`, (err) => {
       if (err) {
-        console.error(`Error clearing ${table}:`, err);
+        if (err.code === 'SQLITE_ERROR' && err.message.includes('no such table')) {
+          console.log(`⊘ Skipping ${table} (table does not exist)`);
+        } else {
+          console.error(`Error clearing ${table}:`, err);
+        }
       } else {
         console.log(`✓ Cleared ${table}`);
       }

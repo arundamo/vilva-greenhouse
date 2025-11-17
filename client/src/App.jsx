@@ -67,18 +67,15 @@ export default function App() {
   };
   
   const handleLogout = () => {
-    const token = localStorage.getItem('auth_token');
-    
-    if (token) {
-      axios.post('/api/auth/logout')
-        .catch(err => console.error('Logout error:', err));
-    }
-    
-    // Clear local storage and state
+    // Clear local storage and state immediately
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
+    
+    // Send logout request to server (but don't wait for it)
+    axios.post('/api/auth/logout')
+      .catch(err => console.error('Logout error:', err));
   };
   
   // Public routes that don't require authentication
@@ -108,7 +105,7 @@ export default function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/order" element={<PublicOrderForm />} />
         <Route path="/feedback/:orderId" element={<PublicFeedback />} />
-        <Route path="/admin" element={user ? <Navigate to="/dashboard" /> : <Login onLoginSuccess={handleLoginSuccess} />} />
+        <Route path="/admin" element={<Login onLoginSuccess={handleLoginSuccess} />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     );

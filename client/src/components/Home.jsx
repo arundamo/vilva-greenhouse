@@ -35,17 +35,17 @@ export default function Home() {
   }, [])
 
   const handleLogout = () => {
-    const token = localStorage.getItem('auth_token')
-    
-    if (token) {
-      axios.post('/api/auth/logout').catch(err => console.error('Logout error:', err))
-    }
-    
+    // Clear local storage and state immediately
     localStorage.removeItem('auth_token')
     localStorage.removeItem('user')
     delete axios.defaults.headers.common['Authorization']
     setUser(null)
-    navigate('/')
+    
+    // Send logout request to server (but don't wait for it)
+    axios.post('/api/auth/logout').catch(err => console.error('Logout error:', err))
+    
+    // Force reload to clear all state
+    window.location.href = '/'
   }
 
   return (

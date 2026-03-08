@@ -40,8 +40,20 @@ export default function Greenhouses() {
 
   const loadGreenhouseDetails = (id) => {
     axios.get(`/api/greenhouses/${id}`).then(res => {
-      setSelectedGH(res.data)
-      setBeds(res.data.beds || [])
+      const bedsData = res.data.beds || []
+      const occupiedBeds = bedsData.filter((bed) => {
+        const hasCrops = Array.isArray(bed.crops) && bed.crops.length > 0
+        if (hasCrops) return true
+        return bed.status === 'occupied' || !!bed.crop_id
+      }).length
+
+      setSelectedGH({ ...res.data, occupied_beds: occupiedBeds })
+      setBeds(bedsData)
+      setGreenhouses(prev => prev.map(gh =>
+        gh.id === res.data.id
+          ? { ...gh, occupied_beds: occupiedBeds, total_beds: bedsData.length || gh.total_beds }
+          : gh
+      ))
     }).catch(console.error)
   }
 

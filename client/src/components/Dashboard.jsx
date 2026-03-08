@@ -112,6 +112,7 @@ export default function Dashboard() {
           timesSowed: 0,
           timesHarvested: 0,
           timesSold: 0,
+          totalSoldAmount: 0,
           growing: 0,
           totalQuantitySowed: 0,
           totalHarvestCount: 0,
@@ -153,7 +154,12 @@ export default function Dashboard() {
         if (sale.items && sale.items.length > 0) {
           sale.items.forEach(item => {
             const vName = item.variety_name
-            if (varietyMap[vName]) varietyMap[vName].timesSold++
+            if (varietyMap[vName]) {
+              varietyMap[vName].timesSold++
+              const itemSubtotal = parseFloat(item.subtotal)
+              const computedSubtotal = parseFloat(item.quantity || 0) * parseFloat(item.price_per_unit || 0)
+              varietyMap[vName].totalSoldAmount += !isNaN(itemSubtotal) ? itemSubtotal : (isNaN(computedSubtotal) ? 0 : computedSubtotal)
+            }
           })
         }
       })
@@ -325,6 +331,7 @@ export default function Dashboard() {
                       <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Harvests</th>
                       <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Harvested</th>
                       <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Sold</th>
+                      <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Total Sold Amount</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -343,6 +350,7 @@ export default function Dashboard() {
                           </div>
                         </td>
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center"><span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs sm:text-sm font-semibold">{report.timesSold}</span></td>
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center"><span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs sm:text-sm font-semibold">{formatCAD(report.totalSoldAmount)}</span></td>
                       </tr>
                     ))}
                   </tbody>

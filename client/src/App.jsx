@@ -14,6 +14,7 @@ import Login from './components/Login';
 import Home from './components/Home';
 import Customers from './components/Customers';
 import CropDemand from './components/CropDemand';
+import NearbyFinder from './components/NearbyFinder';
 
 export default function App() {
   const location = useLocation();
@@ -86,6 +87,7 @@ export default function App() {
                         location.pathname === '/home' || 
                         location.pathname === '/' || 
                         location.pathname === '/admin' ||
+                        location.pathname === '/nearby' ||
                         location.pathname.startsWith('/feedback/');
   
   // Show loading state
@@ -107,6 +109,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/order" element={<PublicOrderForm />} />
+        <Route path="/nearby" element={<NearbyFinder />} />
         <Route path="/feedback/:orderId" element={<PublicFeedback />} />
         <Route path="/admin" element={<Login onLoginSuccess={handleLoginSuccess} />} />
         <Route path="*" element={<Navigate to="/" />} />

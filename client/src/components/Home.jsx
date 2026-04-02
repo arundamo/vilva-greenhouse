@@ -65,13 +65,6 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => navigate('/nearby')}
-                className="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 font-medium text-sm"
-                title="Find nearby doctors & schools"
-              >
-                📍 Nearby
-              </button>
-              <button
                 onClick={() => navigate('/order')}
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-medium text-sm sm:text-base"
               >

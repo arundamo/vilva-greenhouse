@@ -5,6 +5,26 @@ const bcrypt = require('bcrypt');
 const dbPath = path.join(__dirname, 'vilva-farm.db');
 const db = new sqlite3.Database(dbPath);
 
+function ensureColumn(tableName, columnName, columnDefinition) {
+  db.all(`PRAGMA table_info(${tableName})`, (err, columns) => {
+    if (err) {
+      console.error(`❌ Error reading schema for ${tableName}:`, err.message);
+      return;
+    }
+
+    const exists = (columns || []).some((column) => column.name === columnName);
+    if (exists) return;
+
+    db.run(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDefinition}`, (alterErr) => {
+      if (alterErr) {
+        console.error(`❌ Error adding ${columnName} to ${tableName}:`, alterErr.message);
+      } else {
+        console.log(`✓ Added ${columnName} to ${tableName}`);
+      }
+    });
+  });
+}
+
 // Initialize database schema for Vilva Greenhouse Farm
 db.serialize(() => {
   // Greenhouses table (G1, G2, G3)
@@ -136,6 +156,66 @@ db.serialize(() => {
     FOREIGN KEY (sales_order_id) REFERENCES sales_orders(id),
     FOREIGN KEY (crop_id) REFERENCES crops(id)
   )`);
+
+  // Microgreens cultivator info (PDF data and manual entries)
+  db.run(`CREATE TABLE IF NOT EXISTS microgreen_cultivator_info (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    crop TEXT NOT NULL,
+    cultivar TEXT,
+    avg_1020_sow_weight_grams TEXT,
+    medium TEXT,
+    blackout_weight_time TEXT,
+    soak_time TEXT,
+    grow_time TEXT,
+    trueleaf_emerges TEXT,
+    avg_harvest_grams TEXT,
+    growing_notes TEXT,
+    ease_of_grow TEXT,
+    seed_source TEXT,
+    how_to_grow_video_link TEXT,
+    soak_duration_hrs TEXT,
+    stack_duration TEXT,
+    blackout_duration TEXT,
+    humidity_dome TEXT,
+    under_lights TEXT,
+    hours_to_harvest TEXT,
+    sterilize INTEGER DEFAULT 0,
+    source_page INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(crop, cultivar)
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS microgreen_pdf_page_data (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    page_number INTEGER NOT NULL UNIQUE,
+    page_text TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  // Ensure newly introduced columns are present in existing databases
+  ensureColumn('microgreen_cultivator_info', 'avg_1020_sow_weight_grams', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'medium', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'blackout_weight_time', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'soak_time', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'grow_time', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'trueleaf_emerges', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'avg_harvest_grams', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'growing_notes', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'ease_of_grow', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'seed_source', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'how_to_grow_video_link', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'soak_duration_hrs', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'stack_duration', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'blackout_duration', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'humidity_dome', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'under_lights', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'hours_to_harvest', 'TEXT');
+  ensureColumn('microgreen_cultivator_info', 'sterilize', 'INTEGER DEFAULT 0');
+  ensureColumn('microgreen_cultivator_info', 'source_page', 'INTEGER');
+  ensureColumn('microgreen_cultivator_info', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP');
+  ensureColumn('microgreen_pdf_page_data', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP');
 
   // Seed initial data
   db.get('SELECT COUNT(*) as count FROM greenhouses', (err, row) => {

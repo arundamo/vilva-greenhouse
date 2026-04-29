@@ -14,6 +14,7 @@ import Login from './components/Login';
 import Home from './components/Home';
 import Customers from './components/Customers';
 import CropDemand from './components/CropDemand';
+import Microgreens from './components/Microgreens';
 
 export default function App() {
   const location = useLocation();
@@ -129,6 +130,7 @@ export default function App() {
         { path: '/customers', label: 'Customers', icon: '👥' },
         { path: '/sales', label: 'Sales', icon: '💰' },
         { path: '/crop-demand', label: 'Crop Demand', icon: '📋' },
+        { path: '/microgreens', label: 'Microgreens', icon: '🌾' },
         { path: '/feedback', label: 'Feedback', icon: '⭐' },
         { path: '/settings', label: 'Settings', icon: '⚙️' },
       ]
@@ -231,13 +233,15 @@ export default function App() {
 
         {/* Navigation Links */}
         <nav className="p-4 space-y-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
-          {navLinks.map((link) => (
+          {navLinks.map((link) => {
+            const isActive = location.pathname === link.path || location.pathname.startsWith(`${link.path}/`);
+            return (
             <Link 
               key={link.path} 
               to={link.path}
               onClick={() => !menuPinned && setMobileMenuOpen(false)}
               className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
-                location.pathname === link.path
+                isActive
                   ? 'bg-green-100 text-green-700 font-semibold shadow-sm'
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
@@ -245,7 +249,8 @@ export default function App() {
               <span className="text-xl">{link.icon}</span>
               <span>{link.label}</span>
             </Link>
-          ))}
+            );
+          })}
         </nav>
 
         {/* Sidebar Footer */}
@@ -277,6 +282,7 @@ export default function App() {
               <Route path="/customers" element={<Customers />} />
               <Route path="/sales" element={<Sales />} />
               <Route path="/crop-demand" element={<CropDemand />} />
+              <Route path="/microgreens/*" element={<Microgreens />} />
               <Route path="/feedback" element={<Feedback />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/dashboard" />} />

@@ -13,6 +13,9 @@ console.log('🔧 Running database migrations...\n');
 try {
   execSync('node server/add-online-form-via.js', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
   execSync('node server/add-variety-prices.js', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+  execSync('node server/migrations/add-customer-email.js', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+  execSync('node server/migrations/add-notifications.js', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+  execSync('node server/migrations/add-order-feedback.js', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
   console.log('\n✓ Migrations completed\n');
 } catch (err) {
   console.log('⚠️  Migrations may have already run or failed:', err.message);

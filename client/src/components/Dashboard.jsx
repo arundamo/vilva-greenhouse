@@ -3,25 +3,62 @@ import axios from 'axios'
 import { formatCAD } from '../utils/currency'
 import { sendWhatsAppMessage, getDeliveryReminderMessage } from '../utils/whatsapp'
 
+const getLocalDateString = (date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const getDefaultSections = () => ([
+  { id: 'activities', label: 'Recent Activities', visible: true, expanded: true },
+  { id: 'pendingOrders', label: 'Pending Sales Orders', visible: true, expanded: true },
+  { id: 'salesByDate', label: 'Sales by Date Range', visible: true, expanded: true },
+  { id: 'cropReports', label: 'Crop Performance Reports', visible: true, expanded: true },
+  { id: 'customerReports', label: 'Customer Purchase Reports', visible: true, expanded: true }
+])
+
 export default function Dashboard() {
-  const [stats, setStats] = useState({ greenhouses: 3, crops: 0, activeCrops: 0, pendingOrders: 0 })
+  const today = new Date()
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1)
+
+    const [stats, setStats] = useState({
+      totalSales: 0,
+      salesThisMonth: 0,
+      totalOrders: 0,
+      totalCustomers: 0,
+      pendingOrders: 0,
+    })
   const [recentActivities, setRecentActivities] = useState([])
   const [recentSales, setRecentSales] = useState([])
   const [cropReports, setCropReports] = useState([])
   const [customerReports, setCustomerReports] = useState([])
+  const [salesByDate, setSalesByDate] = useState([])
+  const [salesFromDate, setSalesFromDate] = useState(() => getLocalDateString(monthStart))
+  const [salesToDate, setSalesToDate] = useState(() => getLocalDateString(today))
+  const [salesByDateLoading, setSalesByDateLoading] = useState(false)
+  const [salesByDateError, setSalesByDateError] = useState('')
   const [loading, setLoading] = useState(true)
   const [showSettings, setShowSettings] = useState(false)
   
   // Load section configuration from localStorage
   const [sectionConfig, setSectionConfig] = useState(() => {
     const saved = localStorage.getItem('dashboardSectionConfig')
-    return saved ? JSON.parse(saved) : {
-      sections: [
-        { id: 'activities', label: 'Recent Activities', visible: true, expanded: true },
-        { id: 'pendingOrders', label: 'Pending Sales Orders', visible: true, expanded: true },
-        { id: 'cropReports', label: 'Crop Performance Reports', visible: true, expanded: true },
-        { id: 'customerReports', label: 'Customer Purchase Reports', visible: true, expanded: true }
-      ]
+    if (!saved) {
+      return { sections: getDefaultSections() }
+    }
+
+    try {
+      const parsed = JSON.parse(saved)
+      const savedSections = parsed?.sections || []
+      const savedMap = new Map(savedSections.map(section => [section.id, section]))
+      const mergedSections = getDefaultSections().map(section => ({
+        ...section,
+        ...(savedMap.get(section.id) || {})
+      }))
+      return { sections: mergedSections }
+    } catch {
+      return { sections: getDefaultSections() }
     }
   })
 
@@ -59,12 +96,36 @@ export default function Dashboard() {
 
   const resetToDefaults = () => {
     setSectionConfig({
-      sections: [
-        { id: 'activities', label: 'Recent Activities', visible: true, expanded: true },
-        { id: 'pendingOrders', label: 'Pending Sales Orders', visible: true, expanded: true },
-        { id: 'cropReports', label: 'Crop Performance Reports', visible: true, expanded: true },
-        { id: 'customerReports', label: 'Customer Purchase Reports', visible: true, expanded: true }
-      ]
+      sections: getDefaultSections()
+    })
+  }
+
+  const loadSalesByDate = (fromDate = salesFromDate, toDate = salesToDate) => {
+    if (!fromDate || !toDate) {
+      setSalesByDateError('Please choose both from and to dates.')
+      return
+    }
+    if (fromDate > toDate) {
+      setSalesByDateError('From date cannot be after To date.')
+      return
+    }
+
+    setSalesByDateLoading(true)
+    setSalesByDateError('')
+
+    axios.get('/api/sales', {
+      params: {
+        start_date: fromDate,
+        end_date: toDate
+      }
+    }).then((res) => {
+      setSalesByDate(res.data || [])
+    }).catch((err) => {
+      console.error(err)
+      setSalesByDate([])
+      setSalesByDateError(err.response?.data?.error || 'Failed to load sales for selected date range.')
+    }).finally(() => {
+      setSalesByDateLoading(false)
     })
   }
 
@@ -75,11 +136,27 @@ export default function Dashboard() {
       axios.get('/api/sales?status=pending'),
       axios.get('/api/sales'),
     ]).then(async ([crops, activities, pendingSales, allSales]) => {
-      const activeCrops = crops.data.filter(c => c.status === 'growing' || c.status === 'ready').length;
+      const now = new Date()
+      const currentMonth = now.getMonth()
+      const currentYear = now.getFullYear()
+
+      const totalSales = (allSales.data || []).reduce((sum, sale) => sum + parseFloat(sale.total_amount || 0), 0)
+      const salesThisMonth = (allSales.data || []).reduce((sum, sale) => {
+        const orderDate = sale.order_date ? new Date(sale.order_date) : null
+        if (!orderDate || Number.isNaN(orderDate.getTime())) return sum
+        if (orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear) {
+          return sum + parseFloat(sale.total_amount || 0)
+        }
+        return sum
+      }, 0)
+
+      const uniqueCustomers = new Set((allSales.data || []).map(sale => sale.customer_id).filter(Boolean))
+
       setStats({
-        greenhouses: 3,
-        crops: crops.data.length,
-        activeCrops,
+        totalSales,
+        salesThisMonth,
+        totalOrders: (allSales.data || []).length,
+        totalCustomers: uniqueCustomers.size,
         pendingOrders: pendingSales.data.length,
       })
       setRecentActivities(activities.data.slice(0, 5))
@@ -101,6 +178,10 @@ export default function Dashboard() {
       console.error(err)
       setLoading(false)
     })
+  }, [])
+
+  useEffect(() => {
+    loadSalesByDate(getLocalDateString(monthStart), getLocalDateString(today))
   }, [])
 
   const generateCropReports = (crops, salesOrders) => {
@@ -310,6 +391,136 @@ export default function Dashboard() {
       </div>
     ),
 
+    salesByDate: () => {
+      const totalOrders = salesByDate.length
+      const totalSalesValue = salesByDate.reduce((sum, sale) => sum + parseFloat(sale.total_amount || 0), 0)
+
+      return (
+        <div className="bg-white rounded-lg shadow">
+          <button onClick={() => toggleSection('salesByDate')} className="w-full px-4 sm:px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+            <h3 className="text-lg sm:text-xl font-semibold">Sales by Date Range</h3>
+            <span className="text-2xl transform transition-transform duration-200" style={{ transform: sectionConfig.sections.find(s => s.id === 'salesByDate')?.expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
+          </button>
+          {sectionConfig.sections.find(s => s.id === 'salesByDate')?.expanded && (
+            <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">From Date</label>
+                  <input
+                    type="date"
+                    value={salesFromDate}
+                    onChange={(e) => setSalesFromDate(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">To Date</label>
+                  <input
+                    type="date"
+                    value={salesToDate}
+                    onChange={(e) => setSalesToDate(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="sm:col-span-2 flex items-end gap-2">
+                  <button
+                    onClick={() => loadSalesByDate()}
+                    disabled={salesByDateLoading}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 text-sm font-medium"
+                  >
+                    {salesByDateLoading ? 'Loading...' : 'Apply Filter'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      const start = getLocalDateString(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
+                      const end = getLocalDateString(new Date())
+                      setSalesFromDate(start)
+                      setSalesToDate(end)
+                      loadSalesByDate(start, end)
+                    }}
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm font-medium"
+                  >
+                    This Month
+                  </button>
+                </div>
+              </div>
+
+              {salesByDateError && (
+                <div className="p-3 border border-red-200 bg-red-50 rounded text-sm text-red-700">
+                  {salesByDateError}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
+                  <p className="text-sm text-blue-700">Orders in Range</p>
+                  <p className="text-2xl font-bold text-blue-800">{totalOrders}</p>
+                </div>
+                <div className="bg-green-50 border border-green-100 rounded-lg p-4">
+                  <p className="text-sm text-green-700">Total Sales Value</p>
+                  <p className="text-2xl font-bold text-green-800">{formatCAD(totalSalesValue)}</p>
+                </div>
+              </div>
+
+              {salesByDateLoading ? (
+                <p className="text-gray-500 text-sm">Loading sales details...</p>
+              ) : salesByDate.length === 0 ? (
+                <p className="text-gray-500 text-sm">No sales found in this date range.</p>
+              ) : (
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Items</th>
+                        <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Payment Method</th>
+                        <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Amount</th>
+                        <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Delivery</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {salesByDate.map((sale) => (
+                        <tr key={sale.id} className="hover:bg-gray-50">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-700">{sale.order_date}</td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">{sale.customer_name}</td>
+                          <td className="px-3 sm:px-6 py-4 text-sm text-gray-600 hidden md:table-cell">
+                            {sale.items?.length
+                              ? sale.items.map(item => item.variety_name).join(', ')
+                              : 'No items'}
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden sm:table-cell">
+                            <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold capitalize">
+                              {sale.payment_method || 'Not set'}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
+                            <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs sm:text-sm font-semibold">
+                              {formatCAD(sale.total_amount)}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center hidden sm:table-cell">
+                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                              sale.delivery_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                              sale.delivery_status === 'packed' ? 'bg-blue-100 text-blue-700' :
+                              sale.delivery_status === 'delivered' ? 'bg-green-100 text-green-700' :
+                              'bg-gray-100 text-gray-700'
+                            }`}>
+                              {sale.delivery_status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )
+    },
+
     cropReports: () => (
       <div className="bg-white rounded-lg shadow">
         <button onClick={() => toggleSection('cropReports')} className="w-full px-4 sm:px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
@@ -453,40 +664,50 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
         <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-xs sm:text-sm">Greenhouses</p>
-              <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.greenhouses}</p>
-              <p className="text-xs text-gray-500 hidden sm:block">G1, G2, G3</p>
-            </div>
-            <span className="text-3xl sm:text-4xl">🏡</span>
-          </div>
-        </div>
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-500 text-xs sm:text-sm">Active Crops</p>
-              <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.activeCrops}</p>
-              <p className="text-xs text-gray-500 hidden sm:block">Growing now</p>
-            </div>
-            <span className="text-3xl sm:text-4xl">🌱</span>
-          </div>
-        </div>
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-500 text-xs sm:text-sm">Total Crops</p>
-              <p className="text-2xl sm:text-3xl font-bold text-blue-600">{stats.crops}</p>
+              <p className="text-gray-500 text-xs sm:text-sm">Total Sales</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-600">{formatCAD(stats.totalSales)}</p>
               <p className="text-xs text-gray-500 hidden sm:block">All time</p>
             </div>
-            <span className="text-3xl sm:text-4xl">📊</span>
+            <span className="text-3xl sm:text-4xl">💵</span>
           </div>
         </div>
         <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
+              <p className="text-gray-500 text-xs sm:text-sm">Sales This Month</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-600">{formatCAD(stats.salesThisMonth)}</p>
+              <p className="text-xs text-gray-500 hidden sm:block">Current month</p>
+            </div>
+            <span className="text-3xl sm:text-4xl">📅</span>
+          </div>
+        </div>
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-xs sm:text-sm">Total Orders</p>
+              <p className="text-2xl sm:text-3xl font-bold text-blue-600">{stats.totalOrders}</p>
+              <p className="text-xs text-gray-500 hidden sm:block">All orders</p>
+            </div>
+            <span className="text-3xl sm:text-4xl">🧾</span>
+          </div>
+        </div>
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+          <div className="flex items-center justify-between">
+            <div>
+                <p className="text-gray-500 text-xs sm:text-sm">Total Customers</p>
+                <p className="text-2xl sm:text-3xl font-bold text-purple-600">{stats.totalCustomers}</p>
+                <p className="text-xs text-gray-500 hidden sm:block">With orders</p>
+              </div>
+              <span className="text-3xl sm:text-4xl">👥</span>
+            </div>
+          </div>
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+            <div className="flex items-center justify-between">
+              <div>
               <p className="text-gray-500 text-xs sm:text-sm">Pending Orders</p>
               <p className="text-2xl sm:text-3xl font-bold text-orange-600">{stats.pendingOrders}</p>
               <p className="text-xs text-gray-500 hidden sm:block">To deliver</p>
@@ -501,7 +722,7 @@ export default function Dashboard() {
         .filter(section => section.visible)
         .map(section => (
           <div key={section.id}>
-            {sections[section.id]()}
+            {sections[section.id] ? sections[section.id]() : null}
           </div>
         ))}
 

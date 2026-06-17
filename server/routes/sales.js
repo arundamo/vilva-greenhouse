@@ -5,7 +5,7 @@ const emailService = require('../services/emailService');
 
 // Get all sales orders with items
 router.get('/', (req, res) => {
-  const { status, customer_id } = req.query;
+  const { status, customer_id, start_date, end_date } = req.query;
   let query = `
     SELECT so.*, 
       c.name as customer_name, c.phone, c.whatsapp, c.address as customer_address
@@ -22,6 +22,14 @@ router.get('/', (req, res) => {
   if (customer_id) {
     conditions.push('so.customer_id = ?');
     params.push(customer_id);
+  }
+  if (start_date) {
+    conditions.push('so.order_date >= ?');
+    params.push(start_date);
+  }
+  if (end_date) {
+    conditions.push('so.order_date <= ?');
+    params.push(end_date);
   }
   
   if (conditions.length > 0) {

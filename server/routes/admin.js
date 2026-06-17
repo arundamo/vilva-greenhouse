@@ -53,6 +53,121 @@ router.get('/export', requireAuth, requireAdmin, (req, res) => {
   })
 })
 
+// GET /api/admin/export/:type - Export selected module as JSON (admin only)
+router.get('/export/:type', requireAuth, requireAdmin, (req, res) => {
+  const exportType = String(req.params.type || '').toLowerCase()
+  const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')
+
+  if (!['sales', 'customers', 'crops'].includes(exportType)) {
+    return res.status(400).json({ error: 'Invalid export type. Supported types: sales, customers, crops' })
+  }
+
+  if (exportType === 'customers') {
+    return db.all('SELECT * FROM customers ORDER BY created_at DESC', (err, rows) => {
+      if (err) return res.status(500).json({ error: 'Failed exporting customers' })
+
+      const payload = {
+        type: 'customers',
+        exported_at: new Date().toISOString(),
+        count: (rows || []).length,
+        customers: rows || [],
+      }
+
+      res.setHeader('Content-Type', 'application/json')
+      res.setHeader('Content-Disposition', `attachment; filename="customers-export-${ts}.json"`)
+      return res.status(200).send(JSON.stringify(payload, null, 2))
+    })
+  }
+
+  if (exportType === 'crops') {
+    const cropsQuery = `
+      SELECT c.*, rb.bed_name, rb.side, g.name as greenhouse_name, sv.name as variety_name
+      FROM crops c
+      LEFT JOIN raised_beds rb ON c.raised_bed_id = rb.id
+      LEFT JOIN greenhouses g ON rb.greenhouse_id = g.id
+      LEFT JOIN spinach_varieties sv ON c.variety_id = sv.id
+      ORDER BY c.created_at DESC
+    `
+
+    return db.all(cropsQuery, (err, rows) => {
+      if (err) return res.status(500).json({ error: 'Failed exporting crops' })
+
+      const payload = {
+        type: 'crops',
+        exported_at: new Date().toISOString(),
+        count: (rows || []).length,
+        crops: rows || [],
+      }
+
+      res.setHeader('Content-Type', 'application/json')
+      res.setHeader('Content-Disposition', `attachment; filename="crops-export-${ts}.json"`)
+      return res.status(200).send(JSON.stringify(payload, null, 2))
+    })
+  }
+
+  // sales export (with line items)
+  const salesQuery = `
+    SELECT so.*, c.name as customer_name, c.phone, c.whatsapp, c.email as customer_email
+    FROM sales_orders so
+    LEFT JOIN customers c ON so.customer_id = c.id
+    ORDER BY so.order_date DESC, so.id DESC
+  `
+
+  return db.all(salesQuery, (err, salesRows) => {
+    if (err) return res.status(500).json({ error: 'Failed exporting sales' })
+
+    if (!salesRows || salesRows.length === 0) {
+      const payload = {
+        type: 'sales',
+        exported_at: new Date().toISOString(),
+        count: 0,
+        sales: [],
+      }
+
+      res.setHeader('Content-Type', 'application/json')
+      res.setHeader('Content-Disposition', `attachment; filename="sales-export-${ts}.json"`)
+      return res.status(200).send(JSON.stringify(payload, null, 2))
+    }
+
+    const salesIds = salesRows.map((row) => row.id)
+    const placeholders = salesIds.map(() => '?').join(',')
+
+    const itemsQuery = `
+      SELECT oi.*, sv.name as variety_name
+      FROM order_items oi
+      LEFT JOIN spinach_varieties sv ON oi.variety_id = sv.id
+      WHERE oi.order_id IN (${placeholders})
+      ORDER BY oi.order_id, oi.id
+    `
+
+    return db.all(itemsQuery, salesIds, (itemsErr, itemsRows) => {
+      if (itemsErr) return res.status(500).json({ error: 'Failed exporting sales items' })
+
+      const itemsByOrderId = {}
+      ;(itemsRows || []).forEach((item) => {
+        if (!itemsByOrderId[item.order_id]) itemsByOrderId[item.order_id] = []
+        itemsByOrderId[item.order_id].push(item)
+      })
+
+      const sales = salesRows.map((sale) => ({
+        ...sale,
+        items: itemsByOrderId[sale.id] || [],
+      }))
+
+      const payload = {
+        type: 'sales',
+        exported_at: new Date().toISOString(),
+        count: sales.length,
+        sales,
+      }
+
+      res.setHeader('Content-Type', 'application/json')
+      res.setHeader('Content-Disposition', `attachment; filename="sales-export-${ts}.json"`)
+      return res.status(200).send(JSON.stringify(payload, null, 2))
+    })
+  })
+})
+
 // GET /api/admin/settings - Get all notification settings
 router.get('/settings', requireAuth, requireAdmin, (req, res) => {
   db.all('SELECT * FROM notification_settings', (err, rows) => {

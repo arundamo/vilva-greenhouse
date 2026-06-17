@@ -2330,36 +2330,6 @@
       "notes": null,
       "created_at": "2026-06-15 23:00:24",
       "email": null
-    },
-    {
-      "id": 28,
-      "name": "Chanda Vistahills",
-      "phone": "2265077356",
-      "whatsapp": null,
-      "address": "Chockcherry Cr, Waterloo",
-      "notes": null,
-      "created_at": "2026-06-16 03:14:25",
-      "email": null
-    },
-    {
-      "id": 29,
-      "name": "Renu / Medha Vistahills ",
-      "phone": "6472836692",
-      "whatsapp": null,
-      "address": "751 pasture rose, Waterloo",
-      "notes": null,
-      "created_at": "2026-06-16 23:13:02",
-      "email": null
-    },
-    {
-      "id": 30,
-      "name": "Leena Vistahills",
-      "phone": "2269780559",
-      "whatsapp": null,
-      "address": "295 Buttonbush st, waterloo",
-      "notes": null,
-      "created_at": "2026-06-17 00:47:53",
-      "email": null
     }
   ],
   "sales_orders": [
@@ -2998,7 +2968,7 @@
       "customer_id": 4,
       "order_date": "2026-06-15",
       "requested_via": "whatsapp",
-      "total_amount": 19.5,
+      "total_amount": 22.5,
       "delivery_date": "2026-06-15",
       "delivery_address": "",
       "delivery_status": "delivered",
@@ -3127,66 +3097,6 @@
       "payment_date": "2026-06-16",
       "notes": "",
       "created_at": "2026-06-15 23:00:47"
-    },
-    {
-      "id": 56,
-      "customer_id": 28,
-      "order_date": "2026-06-16",
-      "requested_via": "whatsapp",
-      "total_amount": 10,
-      "delivery_date": "2016-06-15",
-      "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "cash",
-      "payment_date": "2026-06-15",
-      "notes": "",
-      "created_at": "2026-06-16 03:14:48"
-    },
-    {
-      "id": 57,
-      "customer_id": 3,
-      "order_date": "2026-06-12",
-      "requested_via": "whatsapp",
-      "total_amount": 8,
-      "delivery_date": "2026-06-14",
-      "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "cash",
-      "payment_date": "2026-06-14",
-      "notes": "Subscription: 1 / 8 bunches ",
-      "created_at": "2026-06-16 03:27:34"
-    },
-    {
-      "id": 58,
-      "customer_id": 29,
-      "order_date": "2026-06-16",
-      "requested_via": "whatsapp",
-      "total_amount": 5,
-      "delivery_date": "2026-06-16",
-      "delivery_address": "",
-      "delivery_status": "delivered",
-      "payment_status": "paid",
-      "payment_method": "cash",
-      "payment_date": "2026-06-16",
-      "notes": "",
-      "created_at": "2026-06-16 23:13:22"
-    },
-    {
-      "id": 59,
-      "customer_id": 30,
-      "order_date": "2026-06-17",
-      "requested_via": "whatsapp",
-      "total_amount": 5,
-      "delivery_date": "2026-06-16",
-      "delivery_address": "",
-      "delivery_status": "packed",
-      "payment_status": "pending",
-      "payment_method": null,
-      "payment_date": null,
-      "notes": "",
-      "created_at": "2026-06-17 00:48:48"
     }
   ],
   "order_items": [
@@ -3991,6 +3901,46 @@
       "created_at": "2026-06-15 22:40:16"
     },
     {
+      "id": 110,
+      "order_id": 47,
+      "variety_id": 17,
+      "quantity": 1,
+      "unit": "bunches",
+      "price_per_unit": 8,
+      "subtotal": 8,
+      "created_at": "2026-06-15 22:41:59"
+    },
+    {
+      "id": 111,
+      "order_id": 47,
+      "variety_id": 18,
+      "quantity": 1,
+      "unit": "bunches",
+      "price_per_unit": 8,
+      "subtotal": 8,
+      "created_at": "2026-06-15 22:41:59"
+    },
+    {
+      "id": 112,
+      "order_id": 47,
+      "variety_id": 8,
+      "quantity": 1,
+      "unit": "bunches",
+      "price_per_unit": 2.5,
+      "subtotal": 2.5,
+      "created_at": "2026-06-15 22:41:59"
+    },
+    {
+      "id": 113,
+      "order_id": 47,
+      "variety_id": 14,
+      "quantity": 2,
+      "unit": "bunches",
+      "price_per_unit": 2,
+      "subtotal": 4,
+      "created_at": "2026-06-15 22:41:59"
+    },
+    {
       "id": 114,
       "order_id": 48,
       "variety_id": 8,
@@ -4089,86 +4039,6 @@
       "price_per_unit": 2.5,
       "subtotal": 5,
       "created_at": "2026-06-15 23:00:47"
-    },
-    {
-      "id": 126,
-      "order_id": 47,
-      "variety_id": 17,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 5,
-      "subtotal": 5,
-      "created_at": "2026-06-16 02:21:01"
-    },
-    {
-      "id": 127,
-      "order_id": 47,
-      "variety_id": 18,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 8,
-      "subtotal": 8,
-      "created_at": "2026-06-16 02:21:01"
-    },
-    {
-      "id": 128,
-      "order_id": 47,
-      "variety_id": 8,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 2.5,
-      "subtotal": 2.5,
-      "created_at": "2026-06-16 02:21:01"
-    },
-    {
-      "id": 129,
-      "order_id": 47,
-      "variety_id": 14,
-      "quantity": 2,
-      "unit": "bunches",
-      "price_per_unit": 2,
-      "subtotal": 4,
-      "created_at": "2026-06-16 02:21:01"
-    },
-    {
-      "id": 130,
-      "order_id": 56,
-      "variety_id": 8,
-      "quantity": 4,
-      "unit": "bunches",
-      "price_per_unit": 2.5,
-      "subtotal": 10,
-      "created_at": "2026-06-16 03:14:48"
-    },
-    {
-      "id": 131,
-      "order_id": 57,
-      "variety_id": 6,
-      "quantity": 1,
-      "unit": "bunches",
-      "price_per_unit": 8,
-      "subtotal": 8,
-      "created_at": "2026-06-16 03:27:34"
-    },
-    {
-      "id": 132,
-      "order_id": 58,
-      "variety_id": 8,
-      "quantity": 2,
-      "unit": "bunches",
-      "price_per_unit": 2.5,
-      "subtotal": 5,
-      "created_at": "2026-06-16 23:13:22"
-    },
-    {
-      "id": 133,
-      "order_id": 59,
-      "variety_id": 8,
-      "quantity": 2,
-      "unit": "bunches",
-      "price_per_unit": 2.5,
-      "subtotal": 5,
-      "created_at": "2026-06-17 00:48:48"
     }
   ],
   "sales_crop_mapping": [],
@@ -4183,7 +4053,7 @@
       "phone": null,
       "active": 1,
       "created_at": "2026-05-27 21:06:09",
-      "last_login": "2026-06-17 00:46:38"
+      "last_login": "2026-06-16 02:08:26"
     },
     {
       "id": 2,
@@ -4222,5 +4092,5 @@
       "last_login": "2025-10-30 19:34:14"
     }
   ],
-  "exported_at": "2026-06-17T02:26:09.437Z"
+  "exported_at": "2026-06-16T02:09:29.685Z"
 }

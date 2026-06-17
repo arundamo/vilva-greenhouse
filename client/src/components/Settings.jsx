@@ -5,8 +5,14 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState('password')
   const [currentUser, setCurrentUser] = useState(null)
   const [users, setUsers] = useState([])
+  const [greenhouses, setGreenhouses] = useState([])
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
+  const [bedConfig, setBedConfig] = useState({
+    greenhouse_id: 'all',
+    beds_per_side: '10',
+    area_sqft: '32'
+  })
 
   // Password change form
   const [passwordForm, setPasswordForm] = useState({
@@ -37,6 +43,7 @@ export default function Settings() {
     loadCurrentUser()
     loadUsers()
     loadNotificationSettings()
+    loadGreenhouses()
   }, [])
 
   const loadCurrentUser = () => {
@@ -48,6 +55,12 @@ export default function Settings() {
   const loadUsers = () => {
     axios.get('/api/auth/users')
       .then(res => setUsers(res.data))
+      .catch(err => console.error(err))
+  }
+
+  const loadGreenhouses = () => {
+    axios.get('/api/greenhouses')
+      .then(res => setGreenhouses(res.data || []))
       .catch(err => console.error(err))
   }
 
@@ -184,6 +197,77 @@ export default function Settings() {
       .finally(() => setLoading(false))
   }
 
+  const handleConfigureBeds = (e) => {
+    e.preventDefault()
+    setMessage({ type: '', text: '' })
+
+    const bedsPerSide = parseInt(bedConfig.beds_per_side, 10)
+    const areaSqft = parseFloat(bedConfig.area_sqft)
+
+    if (!Number.isInteger(bedsPerSide) || bedsPerSide < 1) {
+      setMessage({ type: 'error', text: 'Beds per side must be a positive whole number.' })
+      return
+    }
+
+    if (Number.isNaN(areaSqft) || areaSqft <= 0) {
+      setMessage({ type: 'error', text: 'Area per bed must be a positive number.' })
+      return
+    }
+
+    const payload = {
+      beds_per_side: bedsPerSide,
+      area_sqft: areaSqft
+    }
+
+    if (bedConfig.greenhouse_id !== 'all') {
+      payload.greenhouse_id = parseInt(bedConfig.greenhouse_id, 10)
+    }
+
+    setLoading(true)
+    axios.post('/api/greenhouses/beds/configure', payload)
+      .then((res) => {
+        const totalAdded = res.data?.total_added || 0
+        setMessage({
+          type: 'success',
+          text: totalAdded > 0
+            ? `Bed configuration updated. Added ${totalAdded} new bed(s).`
+            : 'Bed configuration checked. No new beds were needed.'
+        })
+        loadGreenhouses()
+      })
+      .catch((err) => {
+        setMessage({ type: 'error', text: err.response?.data?.error || 'Failed to configure beds' })
+      })
+      .finally(() => setLoading(false))
+  }
+
+  const downloadBlobResponse = (data, fileName) => {
+    const blob = new Blob([data], { type: 'application/json' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    window.URL.revokeObjectURL(url)
+  }
+
+  const handleExportType = async (type) => {
+    try {
+      setLoading(true)
+      const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')
+      const res = await axios.get(`/api/admin/export/${type}`, { responseType: 'blob' })
+      downloadBlobResponse(res.data, `${type}-export-${ts}.json`)
+      setMessage({ type: 'success', text: `${type.charAt(0).toUpperCase() + type.slice(1)} export downloaded successfully.` })
+    } catch (err) {
+      console.error(err)
+      setMessage({ type: 'error', text: err.response?.data?.error || `Failed to export ${type}` })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -237,6 +321,16 @@ export default function Settings() {
                 }`}
               >
                 ⬇️ Export Data
+              </button>
+              <button
+                onClick={() => setActiveTab('beds')}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'beds'
+                    ? 'border-green-600 text-green-600'
+                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                🛏️ Greenhouse Beds
               </button>
             </>
           )}
@@ -593,23 +687,15 @@ export default function Settings() {
       {activeTab === 'export' && currentUser?.role === 'admin' && (
         <div className="bg-white rounded-lg shadow p-6 space-y-4">
           <h3 className="text-lg font-semibold">Export Database Snapshot</h3>
-          <p className="text-sm text-gray-600">Download a full JSON snapshot of all tables for backup or to sync locally.</p>
-          <div>
+          <p className="text-sm text-gray-600">Download full or module-wise JSON export files for backup and reporting.</p>
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={async () => {
                 try {
                   setLoading(true)
                   const res = await axios.get('/api/admin/export', { responseType: 'blob' })
-                  const blob = new Blob([res.data], { type: 'application/json' })
-                  const url = window.URL.createObjectURL(blob)
-                  const a = document.createElement('a')
-                  a.href = url
                   const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')
-                  a.download = `data-export-${ts}.json`
-                  document.body.appendChild(a)
-                  a.click()
-                  a.remove()
-                  window.URL.revokeObjectURL(url)
+                  downloadBlobResponse(res.data, `data-export-${ts}.json`)
                   setMessage({ type: 'success', text: 'Export downloaded successfully.' })
                 } catch (err) {
                   console.error(err)
@@ -623,9 +709,118 @@ export default function Settings() {
             >
               {loading ? 'Preparing...' : 'Download JSON Export'}
             </button>
+            <button
+              onClick={() => handleExportType('sales')}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+              disabled={loading}
+            >
+              {loading ? 'Preparing...' : 'Export Sales JSON'}
+            </button>
+            <button
+              onClick={() => handleExportType('customers')}
+              className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700"
+              disabled={loading}
+            >
+              {loading ? 'Preparing...' : 'Export Customers JSON'}
+            </button>
+            <button
+              onClick={() => handleExportType('crops')}
+              className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700"
+              disabled={loading}
+            >
+              {loading ? 'Preparing...' : 'Export Crops JSON'}
+            </button>
           </div>
           <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-800">
-            Tip: Use this export with <code>server/import-data.js</code> on your local machine to sync production → local.
+            Tip: Use full export for migration. Use Sales/Customers/Crops exports for targeted reporting and backups.
+          </div>
+        </div>
+      )}
+
+      {/* Bed Configuration Tab (Admin) */}
+      {activeTab === 'beds' && currentUser?.role === 'admin' && (
+        <div className="bg-white rounded-lg shadow p-6 space-y-5">
+          <div>
+            <h3 className="text-lg font-semibold">Configure Greenhouse Beds</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Set the target number of beds per side (L and R). Missing beds will be added automatically.
+            </p>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded p-3 text-sm text-amber-800">
+            Existing beds and crop history are never removed by this action. This only adds missing beds.
+          </div>
+
+          <form onSubmit={handleConfigureBeds} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Apply To</label>
+              <select
+                value={bedConfig.greenhouse_id}
+                onChange={(e) => setBedConfig({ ...bedConfig, greenhouse_id: e.target.value })}
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500"
+              >
+                <option value="all">All Greenhouses</option>
+                {greenhouses.map((gh) => (
+                  <option key={gh.id} value={String(gh.id)}>
+                    {gh.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Beds per side</label>
+              <input
+                type="number"
+                min="1"
+                value={bedConfig.beds_per_side}
+                onChange={(e) => setBedConfig({ ...bedConfig, beds_per_side: e.target.value })}
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Bed area (sq ft)</label>
+              <input
+                type="number"
+                min="1"
+                step="0.1"
+                value={bedConfig.area_sqft}
+                onChange={(e) => setBedConfig({ ...bedConfig, area_sqft: e.target.value })}
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+
+            <div className="md:col-span-3">
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+              >
+                {loading ? 'Applying...' : 'Apply Bed Configuration'}
+              </button>
+            </div>
+          </form>
+
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700">Greenhouse</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700">Total Beds</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700">Occupied</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {greenhouses.map((gh) => (
+                  <tr key={gh.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-2 text-sm font-medium text-gray-800">{gh.name}</td>
+                    <td className="px-4 py-2 text-sm">{gh.total_beds}</td>
+                    <td className="px-4 py-2 text-sm">{gh.occupied_beds}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

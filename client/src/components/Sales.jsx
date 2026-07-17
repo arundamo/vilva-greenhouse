@@ -277,6 +277,10 @@ export default function Sales() {
     return Number.isNaN(quantity) ? 0 : quantity
   }
 
+  const formatQuantity = (value) => (
+    Number.isInteger(value) ? value : parseFloat(value.toFixed(2))
+  )
+
   const harvestList = useMemo(() => {
     if (filter !== 'pending') return []
     const pendingOrders = orders.filter(order => order.delivery_status === 'pending')
@@ -364,7 +368,7 @@ export default function Sales() {
                 {harvestList.map((item) => (
                   <div key={item.key} className="flex items-center justify-between bg-green-50 border border-green-100 rounded px-3 py-2">
                     <span className="font-medium text-green-800">{item.variety_name}</span>
-                    <span className="text-sm font-semibold text-green-700">{item.quantity} {item.unit}</span>
+                    <span className="text-sm font-semibold text-green-700">{formatQuantity(item.quantity)} {item.unit}</span>
                   </div>
                 ))}
               </div>

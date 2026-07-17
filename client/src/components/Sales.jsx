@@ -281,12 +281,14 @@ export default function Sales() {
           const key = `${item.variety_name || 'Unknown item'}-${unit}`
           if (!acc[key]) {
             acc[key] = {
+              key,
               variety_name: item.variety_name || 'Unknown item',
               unit,
               quantity: 0
             }
           }
-          acc[key].quantity += parseFloat(item.quantity) || 0
+          const quantity = parseFloat(item.quantity)
+          acc[key].quantity += Number.isNaN(quantity) ? 0 : quantity
         })
         return acc
       }, {})
@@ -353,7 +355,7 @@ export default function Sales() {
             {harvestList.length > 0 ? (
               <div className="space-y-2">
                 {harvestList.map((item) => (
-                  <div key={`${item.variety_name}-${item.unit}`} className="flex items-center justify-between bg-green-50 border border-green-100 rounded px-3 py-2">
+                  <div key={item.key} className="flex items-center justify-between bg-green-50 border border-green-100 rounded px-3 py-2">
                     <span className="font-medium text-green-800">{item.variety_name}</span>
                     <span className="text-sm font-semibold text-green-700">{item.quantity} {item.unit}</span>
                   </div>

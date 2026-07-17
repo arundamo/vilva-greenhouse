@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 import { formatCAD } from '../utils/currency'
 import { sendWhatsAppMessage, getOrderConfirmationMessage, getOrderPackedMessage, getPaymentFollowUpMessage } from '../utils/whatsapp'
@@ -272,8 +272,10 @@ export default function Sales() {
     }
   }
 
-  const harvestList = filter === 'pending'
-    ? Object.values(
+  const harvestList = useMemo(() => {
+    if (filter !== 'pending') return []
+
+    return Object.values(
       orders.reduce((acc, order) => {
         const orderItems = order.items || []
         orderItems.forEach((item) => {
@@ -293,7 +295,7 @@ export default function Sales() {
         return acc
       }, {})
     ).sort((a, b) => a.variety_name.localeCompare(b.variety_name))
-    : []
+  }, [orders, filter])
 
   if (loading) return <div className="text-center py-10">Loading...</div>
 

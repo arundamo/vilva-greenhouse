@@ -272,11 +272,17 @@ export default function Sales() {
     }
   }
 
+  const parseQuantityValue = (value) => {
+    const quantity = parseFloat(value)
+    return Number.isNaN(quantity) ? 0 : quantity
+  }
+
   const harvestList = useMemo(() => {
     if (filter !== 'pending') return []
+    const pendingOrders = orders.filter(order => order.delivery_status === 'pending')
 
     return Object.values(
-      orders.reduce((acc, order) => {
+      pendingOrders.reduce((acc, order) => {
         const orderItems = order.items || []
         orderItems.forEach((item) => {
           const unit = item.unit || ''
@@ -289,8 +295,7 @@ export default function Sales() {
               quantity: 0
             }
           }
-          const quantity = parseFloat(item.quantity)
-          acc[key].quantity += Number.isNaN(quantity) ? 0 : quantity
+          acc[key].quantity += parseQuantityValue(item.quantity)
         })
         return acc
       }, {})

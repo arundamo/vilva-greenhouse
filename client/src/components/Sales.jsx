@@ -46,6 +46,9 @@ export default function Sales() {
   const [editingCustomer, setEditingCustomer] = useState(null)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const [showHarvestList, setShowHarvestList] = useState(false)
+  const [harvestListData, setHarvestListData] = useState([])
+  const [harvestListLoading, setHarvestListLoading] = useState(false)
   const [paymentData, setPaymentData] = useState({
     payment_method: 'cash',
     payment_date: new Date().toISOString().slice(0, 10)
@@ -272,18 +275,119 @@ export default function Sales() {
     }
   }
 
+  const generateHarvestList = () => {
+    setHarvestListLoading(true)
+    axios.get('/api/sales?status=pending').then(res => {
+      const pendingOrders = res.data
+      const aggregated = {}
+      const parseQty = (val) => { const n = parseFloat(val); return isNaN(n) ? 0 : n }
+
+      pendingOrders.forEach(order => {
+        const date = order.order_date
+        if (order.items && order.items.length > 0) {
+          order.items.forEach(item => {
+            const key = `${date}|${item.variety_name}`
+            if (aggregated[key]) {
+              aggregated[key].quantity += parseQty(item.quantity)
+            } else {
+              aggregated[key] = {
+                date,
+                item_name: item.variety_name,
+                quantity: parseQty(item.quantity),
+                unit: item.unit
+              }
+            }
+          })
+        }
+      })
+
+      const sortedList = Object.values(aggregated).sort((a, b) => {
+        if (a.date < b.date) return -1
+        if (a.date > b.date) return 1
+        return a.item_name.localeCompare(b.item_name)
+      })
+
+      setHarvestListData(sortedList)
+      setHarvestListLoading(false)
+      setShowHarvestList(true)
+    }).catch(err => {
+      console.error(err)
+      alert('Failed to generate harvest list: ' + (err.response?.data?.error || err.message))
+      setHarvestListLoading(false)
+    })
+  }
+
+  const formatHarvestQty = (q) => {
+    // q is already a number from aggregation; guard against unexpected NaN
+    const n = isNaN(q) ? 0 : q
+    return n % 1 === 0 ? String(n) : n.toFixed(2)
+  }
+
+  const escapeHtml = (str) =>
+    String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+
+  const handlePrintHarvestList = () => {
+    const rows = harvestListData.map(row =>
+      `<tr><td>${escapeHtml(row.date)}</td><td class="green">${escapeHtml(row.item_name)}</td><td class="right">${escapeHtml(formatHarvestQty(row.quantity))} ${escapeHtml(row.unit)}</td></tr>`
+    ).join('')
+    const win = window.open('', '_blank', 'width=640,height=700')
+    win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Harvest List</title>
+  <style>
+    body{font-family:Arial,sans-serif;padding:24px;color:#111}
+    h1{font-size:1.2rem;margin:0 0 4px}
+    p.meta{color:#6b7280;font-size:.875rem;margin:0 0 16px}
+    table{width:100%;border-collapse:collapse;font-size:.875rem}
+    th{background:#f3f4f6;border:1px solid #d1d5db;padding:8px;text-align:left;font-weight:600}
+    td{border:1px solid #d1d5db;padding:8px}
+    .green{color:#15803d;font-weight:500}
+    .right{text-align:right}
+    button{margin-top:20px;padding:8px 18px;background:#16a34a;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.875rem}
+    @media print{button{display:none}}
+  </style>
+</head>
+<body>
+  <h1>&#127807; Harvest List</h1>
+  <p class="meta">Pending orders &mdash; Generated: ${new Date().toLocaleDateString()}</p>
+  <table>
+    <thead><tr><th>Date</th><th>Item</th><th class="right">Quantity</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="3" style="text-align:center;color:#9ca3af">No pending orders found.</td></tr>'}</tbody>
+  </table>
+  <button onclick="window.print()">&#128424; Print</button>
+</body>
+</html>`)
+    win.document.close()
+    win.focus()
+  }
+
   if (loading) return <div className="text-center py-10">Loading...</div>
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-gray-800">Sales & Orders</h2>
-        <button 
-          onClick={() => setShowModal(true)}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-        >
-          + New Order
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={generateHarvestList}
+            disabled={harvestListLoading}
+            className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 disabled:opacity-50 text-sm sm:text-base"
+          >
+            {harvestListLoading ? 'Loading...' : '🌾 Harvest List'}
+          </button>
+          <button 
+            onClick={() => setShowModal(true)}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm sm:text-base"
+          >
+            + New Order
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -906,6 +1010,62 @@ export default function Sales() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Harvest List Modal */}
+      {showHarvestList && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">🌾 Harvest List</h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={handlePrintHarvestList}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium"
+                >
+                  🖨️ Print
+                </button>
+                <button
+                  onClick={() => setShowHarvestList(false)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <div className="harvest-list-print">
+              <p className="text-sm text-gray-500 mb-4 text-center">
+                Pending orders — Generated: {new Date().toLocaleDateString()}
+              </p>
+
+              {harvestListData.length === 0 ? (
+                <p className="text-center text-gray-500 py-8">No pending orders found.</p>
+              ) : (
+                <table className="w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Date</th>
+                      <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Item</th>
+                      <th className="border border-gray-300 px-4 py-2 text-right font-semibold">Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {harvestListData.map((row, idx) => (
+                      <tr key={`${row.date}-${row.item_name}`} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="border border-gray-300 px-4 py-2">{row.date}</td>
+                        <td className="border border-gray-300 px-4 py-2 font-medium text-green-700">{row.item_name}</td>
+                        <td className="border border-gray-300 px-4 py-2 text-right">
+                          {formatHarvestQty(row.quantity)} {row.unit}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
         </div>
       )}

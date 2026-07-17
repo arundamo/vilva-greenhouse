@@ -25,5 +25,9 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "nodemon": "^3.0.1"
+  },
+  "allowScripts": {
+    "bcrypt@6.0.0": true,
+    "sqlite3@5.1.7": true
   }
 }

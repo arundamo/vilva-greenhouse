@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 import { formatCAD } from '../utils/currency'
 import { sendWhatsAppMessage, getOrderConfirmationMessage, getOrderPackedMessage, getPaymentFollowUpMessage } from '../utils/whatsapp'
@@ -272,6 +272,40 @@ export default function Sales() {
     }
   }
 
+  const parseQuantityValue = (value) => {
+    const quantity = parseFloat(value)
+    return Number.isNaN(quantity) ? 0 : quantity
+  }
+
+  const formatQuantity = (value) => (
+    Number.isInteger(value) ? value : parseFloat(value.toFixed(2))
+  )
+
+  const harvestList = useMemo(() => {
+    if (filter !== 'pending') return []
+    const pendingOrders = orders.filter(order => order.delivery_status === 'pending')
+
+    return Object.values(
+      pendingOrders.reduce((acc, order) => {
+        const orderItems = order.items || []
+        orderItems.forEach((item) => {
+          const unit = item.unit || ''
+          const key = `${item.variety_name || 'Unknown item'}-${unit}`
+          if (!acc[key]) {
+            acc[key] = {
+              key,
+              variety_name: item.variety_name || 'Unknown item',
+              unit,
+              quantity: 0
+            }
+          }
+          acc[key].quantity += parseQuantityValue(item.quantity)
+        })
+        return acc
+      }, {})
+    ).sort((a, b) => a.variety_name.localeCompare(b.variety_name))
+  }, [orders, filter])
+
   if (loading) return <div className="text-center py-10">Loading...</div>
 
   return (
@@ -326,6 +360,24 @@ export default function Sales() {
       </div>
 
       <div className="space-y-4">
+        {filter === 'pending' && (
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">Harvest List</h3>
+            {harvestList.length > 0 ? (
+              <div className="space-y-2">
+                {harvestList.map((item) => (
+                  <div key={item.key} className="flex items-center justify-between bg-green-50 border border-green-100 rounded px-3 py-2">
+                    <span className="font-medium text-green-800">{item.variety_name}</span>
+                    <span className="text-sm font-semibold text-green-700">{formatQuantity(item.quantity)} {item.unit}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">No items in pending orders.</p>
+            )}
+          </div>
+        )}
+
         {orders.map((order) => (
           <div key={order.id} className={`bg-white rounded-lg shadow p-4 sm:p-6 hover:shadow-lg transition-shadow ${order.delivery_status === 'unconfirmed' ? 'border-2 border-orange-300' : ''}`}>
             <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4">

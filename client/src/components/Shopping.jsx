@@ -8,8 +8,12 @@ export default function Shopping() {
   const [varieties, setVarieties] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
+    setLoading(true)
+    setError('')
+
     axios.get('/api/public/varieties')
       .then(res => {
         setVarieties(res.data)
@@ -20,7 +24,7 @@ export default function Shopping() {
         setError('Failed to load crops. Please try again.')
         setLoading(false)
       })
-  }, [])
+  }, [retryCount])
 
   const getPriceRows = (variety) => {
     const priceRows = [
@@ -47,7 +51,7 @@ export default function Shopping() {
         <div className="max-w-md w-full bg-white border border-red-200 rounded-xl p-6 text-center">
           <p className="text-red-700 font-medium">{error}</p>
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => setRetryCount((count) => count + 1)}
             className="mt-4 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
           >
             Retry

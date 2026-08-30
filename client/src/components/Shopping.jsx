@@ -7,6 +7,7 @@ export default function Shopping() {
   const navigate = useNavigate()
   const [varieties, setVarieties] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     axios.get('/api/public/varieties')
@@ -16,6 +17,7 @@ export default function Shopping() {
       })
       .catch(err => {
         console.error(err)
+        setError('Failed to load crops. Please try again.')
         setLoading(false)
       })
   }, [])
@@ -34,6 +36,22 @@ export default function Shopping() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-slate-600">Loading shop...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white border border-red-200 rounded-xl p-6 text-center">
+          <p className="text-red-700 font-medium">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+          >
+            Retry
+          </button>
         </div>
       </div>
     )

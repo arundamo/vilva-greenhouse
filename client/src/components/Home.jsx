@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 export default function Home() {
@@ -49,207 +49,117 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
-      {/* Hero Section */}
-      <div className="bg-white shadow-md">
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="text-4xl">🌿</div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-green-800">
-                  Vilva Greenhouse Farm
-                </h1>
-                <p className="text-sm text-gray-600">Fresh Spinach & Greens</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-green-700">Vilva Greenhouse</h1>
+            <p className="text-xs sm:text-sm text-slate-500">Fresh crops, simple ordering</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/shopping"
+              className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100"
+            >
+              Shop
+            </Link>
+            <button
+              onClick={() => navigate('/order')}
+              className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+            >
+              Order
+            </button>
+            {user ? (
+              <>
+                <span className="hidden sm:inline text-sm text-slate-600">👤 {user.username}</span>
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 text-sm"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => navigate('/admin')}
+                className="hidden sm:inline-block px-3 py-2 rounded-lg border border-green-600 text-green-700 hover:bg-green-50 text-sm"
+              >
+                Admin
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 py-12">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center mb-10">
+          <div>
+            <p className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mb-4">
+              Greenhouse fresh every day
+            </p>
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-slate-900 mb-4">
+              Fresh crops from farm to your table
+            </h2>
+            <p className="text-base sm:text-lg text-slate-600 mb-6">
+              Explore our available crops, see pricing, and place your order in a few steps.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to="/shopping"
+                className="px-6 py-3 rounded-xl bg-green-600 text-white font-medium hover:bg-green-700"
+              >
+                View Shopping Page
+              </Link>
               <button
                 onClick={() => navigate('/order')}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-medium text-sm sm:text-base"
+                className="px-6 py-3 rounded-xl border border-slate-300 text-slate-700 font-medium hover:bg-slate-100"
               >
-                Order Now
+                Quick Order
               </button>
-              {user ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-700 hidden sm:inline">👤 {user.username}</span>
-                  <button
-                    onClick={handleLogout}
-                    className="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 font-medium text-sm"
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => navigate('/admin')}
-                  className="hidden sm:inline-block bg-white text-green-700 border border-green-600 px-3 py-2 rounded-lg hover:bg-green-50 font-medium text-sm"
-                  title="Admin Login"
-                >
-                  Admin
-                </button>
-              )}
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12">
-        {/* Welcome Section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">
-            Welcome to Vilva Greenhouse Farm
-          </h2>
-          <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-4">
-            We are passionate about growing the freshest, healthiest spinach and greens 
-            using sustainable greenhouse farming practices. Our state-of-the-art greenhouses 
-            ensure optimal growing conditions year-round, delivering premium quality produce 
-            directly to your table.
-          </p>
-          <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
-            Located in the heart of agricultural excellence, Vilva Greenhouse Farm combines 
-            traditional farming wisdom with modern technology to bring you the best greens 
-            nature has to offer.
-          </p>
-        </div>
-
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="text-4xl mb-3">🏡</div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">3 Greenhouses</h3>
-            <p className="text-gray-600">
-              Modern controlled-environment facilities with optimal conditions for growing premium greens
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="text-4xl mb-3">🌱</div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Multiple Varieties</h3>
-            <p className="text-gray-600">
-              Choose from various spinach varieties, each with unique flavors and nutritional benefits
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="text-4xl mb-3">🚚</div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Fresh Delivery</h3>
-            <p className="text-gray-600">
-              Farm-fresh produce delivered to your doorstep, harvested and packed with care
-            </p>
-          </div>
-        </div>
-
-        {/* Products Section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
-            Our Products
-          </h2>
-          
-          <div className="space-y-4">
-            <div className="border-l-4 border-green-600 pl-4 py-2">
-              <h3 className="text-xl font-bold text-green-700 mb-1">Fresh Spinach</h3>
-              <p className="text-gray-600">
-                Premium quality spinach varieties including Baby Spinach, Red Spinach, and more. 
-                Rich in iron, vitamins, and minerals.
-              </p>
-            </div>
-
-            <div className="border-l-4 border-green-600 pl-4 py-2">
-              <h3 className="text-xl font-bold text-green-700 mb-1">Leafy Greens</h3>
-              <p className="text-gray-600">
-                A variety of nutritious leafy greens perfect for salads, cooking, and healthy meals.
-              </p>
-            </div>
-
-            <div className="border-l-4 border-green-600 pl-4 py-2">
-              <h3 className="text-xl font-bold text-green-700 mb-1">Custom Orders</h3>
-              <p className="text-gray-600">
-                Need a specific quantity or variety? We accommodate bulk orders and special requests.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Why Choose Us */}
-        <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-lg shadow-lg p-6 sm:p-8 mb-8 text-white">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6">
-            Why Choose Vilva Greenhouse Farm?
-          </h2>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex gap-3">
-              <div className="text-2xl">✓</div>
-              <div>
-                <h4 className="font-bold mb-1">100% Natural</h4>
-                <p className="text-green-50">No harmful chemicals or pesticides</p>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <h3 className="text-xl font-semibold mb-4">Why customers choose Vilva</h3>
+            <div className="space-y-4">
+              <div className="flex gap-3">
+                <span>🌱</span>
+                <p>Freshly harvested leafy crops with consistent quality.</p>
               </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="text-2xl">✓</div>
-              <div>
-                <h4 className="font-bold mb-1">Always Fresh</h4>
-                <p className="text-green-50">Harvested on order for maximum freshness</p>
+              <div className="flex gap-3">
+                <span>💰</span>
+                <p>Transparent pricing by bunch, kg, and 100g where available.</p>
               </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="text-2xl">✓</div>
-              <div>
-                <h4 className="font-bold mb-1">Quality Assured</h4>
-                <p className="text-green-50">Carefully grown and inspected</p>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="text-2xl">✓</div>
-              <div>
-                <h4 className="font-bold mb-1">Fair Pricing</h4>
-                <p className="text-green-50">Direct from farm, no middlemen</p>
+              <div className="flex gap-3">
+                <span>🚚</span>
+                <p>Simple ordering and delivery coordination by our team.</p>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Call to Action */}
-        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">
-            Ready to Order?
-          </h2>
-          <p className="text-gray-600 text-lg mb-6">
-            Experience the freshness of greenhouse-grown greens delivered to your door
-          </p>
-          <button
-            onClick={() => navigate('/order')}
-            className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 font-medium text-lg inline-flex items-center gap-2"
-          >
-            <span>Place Your Order</span>
-            <span>→</span>
-          </button>
-          <p className="text-sm text-gray-500 mt-4">
-            We'll contact you within 24 hours to confirm your order
-          </p>
-        </div>
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <p className="text-sm text-slate-500">Greenhouses</p>
+            <p className="text-2xl font-bold text-slate-900">3</p>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <p className="text-sm text-slate-500">Crop varieties</p>
+            <p className="text-2xl font-bold text-slate-900">Multiple</p>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <p className="text-sm text-slate-500">Order response</p>
+            <p className="text-2xl font-bold text-slate-900">Within 24h</p>
+          </div>
+        </section>
+      </main>
 
-        {/* Contact Info */}
-        <div className="mt-8 text-center text-gray-600">
-          <p className="text-sm">
-            Have questions? Contact us for more information about our products and services.
-          </p>
+      <footer className="border-t border-slate-200 bg-white">
+        <div className="max-w-6xl mx-auto px-4 py-6 text-sm text-slate-600 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+          <p>© 2026 Vilva Greenhouse Farm</p>
+          <p>Fresh crops • Modern greenhouse farming</p>
         </div>
-      </div>
+      </footer>
 
-      {/* Footer */}
-      <div className="bg-white border-t mt-12">
-        <div className="max-w-6xl mx-auto px-4 py-6 text-center text-sm text-gray-600">
-          <p>© 2025 Vilva Greenhouse Farm. All rights reserved.</p>
-          <p className="mt-1">Growing fresh, healthy greens with care and dedication</p>
-        </div>
-      </div>
-
-      {/* ElevenLabs AI Chat Agent */}
       <elevenlabs-convai agent-id="agent_7401ka1qwanvfwq9zgkvfkx20hvt"></elevenlabs-convai>
     </div>
   )

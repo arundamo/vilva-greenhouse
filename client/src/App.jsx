@@ -12,6 +12,7 @@ import PublicFeedback from './components/PublicFeedback';
 import Feedback from './components/Feedback';
 import Login from './components/Login';
 import Home from './components/Home';
+import Shopping from './components/Shopping';
 import Customers from './components/Customers';
 import CropDemand from './components/CropDemand';
 import Microgreens from './components/Microgreens';
@@ -85,6 +86,7 @@ export default function App() {
   // Public routes that don't require authentication
   const isPublicRoute = location.pathname === '/order' || 
                         location.pathname === '/home' || 
+                        location.pathname === '/shopping' || 
                         location.pathname === '/' || 
                         location.pathname === '/admin' ||
                         location.pathname.startsWith('/feedback/');
@@ -107,6 +109,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/shopping" element={<Shopping />} />
         <Route path="/order" element={<PublicOrderForm />} />
         <Route path="/feedback/:orderId" element={<PublicFeedback />} />
         <Route path="/admin" element={<Login onLoginSuccess={handleLoginSuccess} />} />
@@ -136,6 +139,7 @@ export default function App() {
       ]
     : [
         { path: '/home', label: 'Home', icon: '🏠' },
+        { path: '/shopping', label: 'Shopping', icon: '🛒' },
         { path: '/order', label: 'Order Form', icon: '📝' },
       ];
   
@@ -290,6 +294,7 @@ export default function App() {
           ) : (
             <>
               <Route path="/home" element={<Home />} />
+              <Route path="/shopping" element={<Shopping />} />
               <Route path="/order" element={<PublicOrderForm />} />
               <Route path="*" element={<Navigate to="/home" />} />
             </>

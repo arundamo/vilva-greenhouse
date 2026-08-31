@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { formatCAD } from '../utils/currency'
 
 export default function PublicOrderForm() {
+  const location = useLocation()
   const [varieties, setVarieties] = useState([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [orderSubmitted, setOrderSubmitted] = useState(false)
   const [orderDetails, setOrderDetails] = useState(null)
+  const [prefilledFromCart, setPrefilledFromCart] = useState(false)
   const [formData, setFormData] = useState({
     customer_name: '',
     phone: '',
@@ -16,6 +19,37 @@ export default function PublicOrderForm() {
     notes: '',
     items: [{ variety_id: '', quantity: '', unit: 'bunches' }]
   })
+
+  useEffect(() => {
+    const normalizeItems = (items) => {
+      if (!Array.isArray(items)) return []
+      return items
+        .map((item) => ({
+          variety_id: String(item.variety_id || ''),
+          quantity: String(item.quantity || '1'),
+          unit: item.unit || 'bunches'
+        }))
+        .filter((item) => item.variety_id)
+    }
+
+    const stateItems = normalizeItems(location.state?.cartItems)
+
+    let storedItems = []
+    try {
+      const raw = localStorage.getItem('public_order_cart_items')
+      storedItems = normalizeItems(raw ? JSON.parse(raw) : [])
+    } catch (error) {
+      console.error('Failed to parse cart items from storage:', error)
+    }
+
+    const initialItems = stateItems.length > 0 ? stateItems : storedItems
+    if (initialItems.length > 0) {
+      setFormData((prev) => ({ ...prev, items: initialItems }))
+      setPrefilledFromCart(true)
+    }
+
+    localStorage.removeItem('public_order_cart_items')
+  }, [location.state])
 
   // Using shared CAD formatter from utils
 
@@ -211,6 +245,15 @@ export default function PublicOrderForm() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 py-6 sm:py-12 px-4">
       <div className="max-w-3xl mx-auto">
+        <div className="mb-4 sm:mb-6">
+          <Link
+            to="/"
+            className="inline-flex items-center rounded-lg border border-green-200 bg-white px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
+          >
+            ← Home
+          </Link>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
           <div className="flex justify-center items-center gap-3 mb-4">
@@ -224,6 +267,12 @@ export default function PublicOrderForm() {
         {/* Order Form */}
         <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-6">Place Your Order</h2>
+
+          {prefilledFromCart && (
+            <div className="mb-6 rounded-lg border border-lime-200 bg-lime-50 p-3 text-sm text-lime-800">
+              Cart items have been added. Fill in your details below to complete checkout.
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Customer Details */}

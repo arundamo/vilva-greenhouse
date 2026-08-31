@@ -214,6 +214,77 @@ router.get('/varieties', (req, res) => {
   )
 })
 
+// Marketplace crops listing (public endpoint)
+router.get('/marketplace-crops', (req, res) => {
+  db.all(
+    `SELECT
+      sv.id as variety_id,
+      sv.id as crop_id,
+      sv.name as variety_name,
+      sv.price_per_bunch,
+      sv.price_per_kg,
+      sv.price_per_100g
+    FROM spinach_varieties sv
+    WHERE EXISTS (
+      SELECT 1
+      FROM crops c
+      WHERE c.variety_id = sv.id
+        AND c.status IN ('sowing', 'growing', 'ready', 'harvested')
+    )
+    ORDER BY sv.name ASC`,
+    (err, rows) => {
+      if (err) {
+        console.error(err)
+        return res.status(500).json({ error: 'Database error' })
+      }
+      res.json(rows)
+    }
+  )
+})
+
+// Submit contact form (public endpoint)
+router.post('/contact', (req, res) => {
+  const { name, email, phone, subject, message } = req.body
+
+  if (!name || !subject || !message) {
+    return res.status(400).json({ error: 'Name, subject and message are required' })
+  }
+
+  db.run(
+    `INSERT INTO contact_messages (name, email, phone, subject, message, status)
+     VALUES (?, ?, ?, ?, ?, 'new')`,
+    [name, email || null, phone || null, subject, message],
+    function(err) {
+      if (err) {
+        console.error(err)
+        return res.status(500).json({ error: 'Failed to submit contact form' })
+      }
+
+      const messageId = this.lastID
+
+      db.get(
+        `SELECT setting_value FROM notification_settings WHERE setting_key = 'admin_email'`,
+        async (settingsErr, row) => {
+          const adminEmail = settingsErr ? null : row?.setting_value
+
+          if (adminEmail) {
+            await emailService.sendContactNotification(
+              { id: messageId, name, email, phone, subject, message },
+              adminEmail
+            )
+          }
+        }
+      )
+
+      return res.status(201).json({
+        success: true,
+        message: 'Your message has been submitted. Our team will reply soon.',
+        id: messageId
+      })
+    }
+  )
+})
+
 // Get order details for feedback (public endpoint)
 router.get('/feedback/:orderId', (req, res) => {
   const { orderId } = req.params

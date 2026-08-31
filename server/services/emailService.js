@@ -19,13 +19,13 @@ const createTransporter = () => {
 
   // Support both service-based (Gmail, etc) and SMTP configuration
   let transportConfig;
-  
+
   if (process.env.SMTP_HOST) {
     // Custom SMTP configuration (for Brevo, SendGrid, etc.)
     console.log('Using SMTP configuration');
     transportConfig = {
       host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
+      port: parseInt(process.env.SMTP_PORT || '587', 10),
       secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
       auth: {
         user: process.env.EMAIL_USER,
@@ -54,16 +54,15 @@ const formatCAD = (amount) => {
   return `$${safe.toFixed(2)} CAD`;
 };
 
-// Email Templates
+// Email templates
 const templates = {
-  // Admin notification for new orders
   newOrderAdmin: (orderData) => ({
-    subject: `🆕 New Order #${orderData.order_id} - ${orderData.customer_name}`,
+    subject: `New Order #${orderData.order_id} - ${orderData.customer_name}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #16a34a;">New Order Received!</h2>
+        <h2 style="color: #16a34a;">New Order Received</h2>
         <p>A new order has been submitted through the online form.</p>
-        
+
         <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Order Details</h3>
           <p><strong>Order #:</strong> ${orderData.order_id}</p>
@@ -75,7 +74,7 @@ const templates = {
 
         <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Order Items</h3>
-          ${orderData.items.map(item => `
+          ${orderData.items.map((item) => `
             <p>• ${item.variety_name} - ${item.quantity} ${item.unit} @ ${formatCAD(item.price_per_unit)} = ${formatCAD(item.subtotal)}</p>
           `).join('')}
           <hr style="border: 1px solid #e5e7eb; margin: 10px 0;">
@@ -95,7 +94,7 @@ const templates = {
       </div>
     `,
     text: `
-New Order Received!
+New Order Received
 
 Order #: ${orderData.order_id}
 Customer: ${orderData.customer_name}
@@ -103,7 +102,7 @@ Phone: ${orderData.phone}
 Delivery Date: ${orderData.delivery_date}
 
 Order Items:
-${orderData.items.map(item => `• ${item.variety_name} - ${item.quantity} ${item.unit} @ ${formatCAD(item.price_per_unit)} = ${formatCAD(item.subtotal)}`).join('\n')}
+${orderData.items.map((item) => `• ${item.variety_name} - ${item.quantity} ${item.unit} @ ${formatCAD(item.price_per_unit)} = ${formatCAD(item.subtotal)}`).join('\n')}
 
 Total: ${formatCAD(orderData.total_amount)}
 
@@ -111,15 +110,14 @@ ${orderData.notes ? `Notes: ${orderData.notes}` : ''}
     `
   }),
 
-  // Customer order confirmation
   orderConfirmation: (orderData) => ({
-    subject: `✅ Order Confirmed #${orderData.order_id} - Vilva Greenhouse`,
+    subject: `Order Confirmed #${orderData.order_id} - Vilva Greenhouse`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #16a34a;">Thank You for Your Order!</h2>
+        <h2 style="color: #16a34a;">Thank You for Your Order</h2>
         <p>Hi ${orderData.customer_name},</p>
         <p>Your order has been confirmed and is being prepared.</p>
-        
+
         <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Order Summary</h3>
           <p><strong>Order #:</strong> ${orderData.order_id}</p>
@@ -130,7 +128,7 @@ ${orderData.notes ? `Notes: ${orderData.notes}` : ''}
 
         <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Items</h3>
-          ${orderData.items.map(item => `
+          ${orderData.items.map((item) => `
             <p>• ${item.variety_name} - ${item.quantity} ${item.unit} @ ${formatCAD(item.price_per_unit)} = ${formatCAD(item.subtotal)}</p>
           `).join('')}
           <hr style="border: 1px solid #e5e7eb; margin: 10px 0;">
@@ -138,16 +136,16 @@ ${orderData.notes ? `Notes: ${orderData.notes}` : ''}
         </div>
 
         <p style="color: #6b7280; font-size: 14px;">
-          We'll contact you if there are any updates. For questions, please call us or reply to this email.
+          We will contact you if there are any updates. For questions, please call us or reply to this email.
         </p>
 
         <p style="color: #16a34a; font-weight: bold;">
-          🌱 Fresh • Organic • Locally Grown 🌱
+          Fresh • Organic • Locally Grown
         </p>
       </div>
     `,
     text: `
-Thank You for Your Order!
+Thank You for Your Order
 
 Hi ${orderData.customer_name},
 
@@ -158,50 +156,46 @@ Order Date: ${orderData.order_date}
 Delivery Date: ${orderData.delivery_date}
 
 Items:
-${orderData.items.map(item => `• ${item.variety_name} - ${item.quantity} ${item.unit} @ ${formatCAD(item.price_per_unit)} = ${formatCAD(item.subtotal)}`).join('\n')}
+${orderData.items.map((item) => `• ${item.variety_name} - ${item.quantity} ${item.unit} @ ${formatCAD(item.price_per_unit)} = ${formatCAD(item.subtotal)}`).join('\n')}
 
 Total: ${formatCAD(orderData.total_amount)}
 
-🌱 Vilva Greenhouse Farm
+Vilva Greenhouse Farm
     `
   }),
 
-  // Order status update
   orderStatusUpdate: (orderData, status) => {
     const statusMessages = {
       packed: {
-        emoji: '📦',
         title: 'Order Packed',
         message: 'Your order has been packed and is ready for delivery.'
       },
       delivered: {
-        emoji: '🚚',
         title: 'Order Delivered',
         message: 'Your order has been delivered. We hope you enjoy your fresh produce!'
       }
     };
 
-    const statusInfo = statusMessages[status] || { emoji: '📋', title: 'Order Update', message: 'Your order status has been updated.' };
+    const statusInfo = statusMessages[status] || {
+      title: 'Order Update',
+      message: 'Your order status has been updated.'
+    };
 
     return {
-      subject: `${statusInfo.emoji} ${statusInfo.title} - Order #${orderData.order_id}`,
+      subject: `${statusInfo.title} - Order #${orderData.order_id}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #16a34a;">${statusInfo.emoji} ${statusInfo.title}</h2>
+          <h2 style="color: #16a34a;">${statusInfo.title}</h2>
           <p>Hi ${orderData.customer_name},</p>
           <p>${statusInfo.message}</p>
-          
+
           <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <p><strong>Order #:</strong> ${orderData.order_id}</p>
             <p><strong>Status:</strong> ${status.charAt(0).toUpperCase() + status.slice(1)}</p>
           </div>
 
           <p style="color: #6b7280; font-size: 14px;">
-            Thank you for choosing Vilva Greenhouse Farm!
-          </p>
-
-          <p style="color: #16a34a; font-weight: bold;">
-            🌱 Fresh • Organic • Locally Grown 🌱
+            Thank you for choosing Vilva Greenhouse Farm.
           </p>
         </div>
       `,
@@ -215,20 +209,19 @@ ${statusInfo.message}
 Order #: ${orderData.order_id}
 Status: ${status}
 
-Thank you for choosing Vilva Greenhouse Farm!
+Thank you for choosing Vilva Greenhouse Farm.
       `
     };
   },
 
-  // Payment receipt
   paymentReceipt: (orderData) => ({
-    subject: `💰 Payment Received - Order #${orderData.order_id}`,
+    subject: `Payment Received - Order #${orderData.order_id}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #16a34a;">Payment Received</h2>
         <p>Hi ${orderData.customer_name},</p>
         <p>We have received your payment for Order #${orderData.order_id}.</p>
-        
+
         <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Payment Details</h3>
           <p><strong>Order #:</strong> ${orderData.order_id}</p>
@@ -238,11 +231,7 @@ Thank you for choosing Vilva Greenhouse Farm!
         </div>
 
         <p style="color: #6b7280; font-size: 14px;">
-          This email serves as your payment receipt. Thank you for your business!
-        </p>
-
-        <p style="color: #16a34a; font-weight: bold;">
-          🌱 Vilva Greenhouse Farm 🌱
+          This email serves as your payment receipt. Thank you for your business.
         </p>
       </div>
     `,
@@ -257,98 +246,188 @@ Amount Paid: ${formatCAD(orderData.total_amount)}
 Payment Method: ${orderData.payment_method}
 Payment Date: ${orderData.payment_date}
 
-Thank you!
+Thank you.
+    `
+  }),
+
+  contactAdminNotification: (contactData) => ({
+    subject: `Contact Form: ${contactData.subject}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #16a34a;">New Contact Message</h2>
+        <p>A new message was submitted from the public contact form.</p>
+
+        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p><strong>Name:</strong> ${contactData.name}</p>
+          <p><strong>Email:</strong> ${contactData.email || 'Not provided'}</p>
+          <p><strong>Phone:</strong> ${contactData.phone || 'Not provided'}</p>
+          <p><strong>Subject:</strong> ${contactData.subject}</p>
+        </div>
+
+        <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0;">Message</h3>
+          <p style="white-space: pre-wrap;">${contactData.message}</p>
+        </div>
+
+        <p style="color: #6b7280; font-size: 14px;">
+          Please review and reply from the admin panel.
+        </p>
+      </div>
+    `,
+    text: `
+New Contact Message
+
+Name: ${contactData.name}
+Email: ${contactData.email || 'Not provided'}
+Phone: ${contactData.phone || 'Not provided'}
+Subject: ${contactData.subject}
+
+Message:
+${contactData.message}
+    `
+  }),
+
+  contactReplyToCustomer: (replyData) => ({
+    subject: `Re: ${replyData.subject} - Vilva Greenhouse Farms`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #16a34a;">Reply from Vilva Greenhouse Farms</h2>
+        <p>Hi ${replyData.name},</p>
+        <p>Thank you for contacting us. Here is our response:</p>
+
+        <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0;">Our Reply</h3>
+          <p style="white-space: pre-wrap;">${replyData.reply}</p>
+        </div>
+
+        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p><strong>Your Original Subject:</strong> ${replyData.subject}</p>
+          <p style="white-space: pre-wrap;"><strong>Your Message:</strong> ${replyData.message}</p>
+        </div>
+
+        <p style="color: #6b7280; font-size: 14px;">Regards,<br/>Vilva Greenhouse Farms</p>
+      </div>
+    `,
+    text: `
+Reply from Vilva Greenhouse Farms
+
+Hi ${replyData.name},
+
+${replyData.reply}
+
+Your Original Subject: ${replyData.subject}
+Your Message: ${replyData.message}
+
+Regards,
+Vilva Greenhouse Farms
     `
   })
 };
 
 // Send email function
-const sendEmail = async (to, templateName, data) => {
+const sendEmail = async (to, templateName, data, ...extraArgs) => {
   try {
     console.log('=== Attempting to send email ===');
     console.log('To:', to);
     console.log('Template:', templateName);
-    
+
     const transporter = createTransporter();
-    
+
     if (!transporter) {
-      console.log('❌ Email not configured, skipping email:', templateName);
+      console.log('Email not configured, skipping email:', templateName);
       return { success: false, error: 'Email service not configured' };
     }
 
-    console.log('✅ Transporter created successfully');
+    console.log('Transporter created successfully');
 
     if (!to || !to.includes('@')) {
-      console.log('❌ Invalid email address:', to);
+      console.log('Invalid email address:', to);
       return { success: false, error: 'Invalid email address' };
     }
 
-    const template = templates[templateName](data);
-    
+    const templateFactory = templates[templateName];
+    if (typeof templateFactory !== 'function') {
+      return { success: false, error: `Unknown email template: ${templateName}` };
+    }
+
+    const template = templateFactory(data, ...extraArgs);
+
     const mailOptions = {
       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-      to: to,
+      to,
       subject: template.subject,
       html: template.html,
       text: template.text
     };
 
-    console.log('📧 Sending email with subject:', template.subject);
+    console.log('Sending email with subject:', template.subject);
     const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent successfully:', info.messageId);
-    
+    console.log('Email sent successfully:', info.messageId);
+
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('❌ Error sending email:', error.message);
+    console.error('Error sending email:', error.message);
     console.error('Full error:', error);
     return { success: false, error: error.message };
   }
 };
 
-// Exported functions
 module.exports = {
   sendNewOrderNotification: async (orderData) => {
     const adminEmail = process.env.ADMIN_EMAIL;
     if (adminEmail) {
-      return await sendEmail(adminEmail, 'newOrderAdmin', orderData);
+      return sendEmail(adminEmail, 'newOrderAdmin', orderData);
     }
     return { success: false, error: 'No admin email configured' };
   },
 
   sendOrderConfirmation: async (orderData) => {
     if (orderData.customer_email) {
-      return await sendEmail(orderData.customer_email, 'orderConfirmation', orderData);
+      return sendEmail(orderData.customer_email, 'orderConfirmation', orderData);
     }
     return { success: false, error: 'No customer email' };
   },
 
   sendOrderStatusUpdate: async (orderData, status) => {
     if (orderData.customer_email) {
-      return await sendEmail(orderData.customer_email, 'orderStatusUpdate', orderData, status);
+      return sendEmail(orderData.customer_email, 'orderStatusUpdate', orderData, status);
     }
     return { success: false, error: 'No customer email' };
   },
 
   sendPaymentReceipt: async (orderData) => {
     if (orderData.customer_email) {
-      return await sendEmail(orderData.customer_email, 'paymentReceipt', orderData);
+      return sendEmail(orderData.customer_email, 'paymentReceipt', orderData);
     }
     return { success: false, error: 'No customer email' };
   },
 
-  // Test email function
   sendTestEmail: async (to) => {
-    return await sendEmail(to, 'orderConfirmation', {
+    return sendEmail(to, 'orderConfirmation', {
       order_id: 'TEST123',
       customer_name: 'Test Customer',
       customer_email: to,
       order_date: new Date().toISOString().split('T')[0],
       delivery_date: new Date().toISOString().split('T')[0],
       delivery_address: 'Test Address',
-      total_amount: 100.00,
+      total_amount: 100.0,
       items: [
         { variety_name: 'Test Spinach', quantity: 5, unit: 'bunches', price_per_unit: 20, subtotal: 100 }
       ]
     });
+  },
+
+  sendContactNotification: async (contactData, adminEmail) => {
+    if (adminEmail) {
+      return sendEmail(adminEmail, 'contactAdminNotification', contactData);
+    }
+    return { success: false, error: 'No admin email configured' };
+  },
+
+  sendContactReply: async (replyData) => {
+    if (replyData && replyData.email) {
+      return sendEmail(replyData.email, 'contactReplyToCustomer', replyData);
+    }
+    return { success: false, error: 'No recipient email provided' };
   }
 };

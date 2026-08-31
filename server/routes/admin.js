@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const db = require('../database')
 const { requireAuth, requireAdmin } = require('../middleware/auth')
+const emailService = require('../services/emailService')
 
 // GET /api/admin/export - Export all data as JSON (admin only)
 router.get('/export', requireAuth, requireAdmin, (req, res) => {
@@ -238,5 +239,83 @@ router.post('/test-email', requireAuth, requireAdmin, async (req, res) => {
     res.status(500).json({ error: result.error || 'Failed to send test email' });
   }
 });
+
+// GET /api/admin/contact-messages - List contact form messages
+router.get('/contact-messages', requireAuth, requireAdmin, (req, res) => {
+  db.all(
+    `SELECT id, name, email, phone, subject, message, status, admin_reply, reply_sent_at, created_at, updated_at
+     FROM contact_messages
+     ORDER BY
+       CASE status
+         WHEN 'new' THEN 1
+         WHEN 'replied' THEN 2
+         ELSE 3
+       END,
+       created_at DESC`,
+    (err, rows) => {
+      if (err) {
+        console.error('Error fetching contact messages:', err)
+        return res.status(500).json({ error: 'Failed to fetch contact messages' })
+      }
+      return res.json(rows || [])
+    }
+  )
+})
+
+// POST /api/admin/contact-messages/:id/reply - Reply to contact form message
+router.post('/contact-messages/:id/reply', requireAuth, requireAdmin, (req, res) => {
+  const messageId = req.params.id
+  const { reply } = req.body
+
+  if (!reply || !String(reply).trim()) {
+    return res.status(400).json({ error: 'Reply message is required' })
+  }
+
+  db.get(
+    'SELECT id, name, email, subject, message FROM contact_messages WHERE id = ?',
+    [messageId],
+    async (err, contact) => {
+      if (err) {
+        console.error('Error loading contact message:', err)
+        return res.status(500).json({ error: 'Failed to load contact message' })
+      }
+
+      if (!contact) {
+        return res.status(404).json({ error: 'Contact message not found' })
+      }
+
+      if (!contact.email) {
+        return res.status(400).json({ error: 'This contact has no email address to reply' })
+      }
+
+      const emailResult = await emailService.sendContactReply({
+        name: contact.name,
+        email: contact.email,
+        subject: contact.subject,
+        message: contact.message,
+        reply: String(reply).trim()
+      })
+
+      if (!emailResult.success) {
+        return res.status(500).json({ error: emailResult.error || 'Failed to send reply email' })
+      }
+
+      db.run(
+        `UPDATE contact_messages
+         SET status = 'replied', admin_reply = ?, reply_sent_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?`,
+        [String(reply).trim(), messageId],
+        function(updateErr) {
+          if (updateErr) {
+            console.error('Error updating contact message status:', updateErr)
+            return res.status(500).json({ error: 'Reply sent but failed to update message status' })
+          }
+
+          return res.json({ success: true, message: 'Reply sent successfully' })
+        }
+      )
+    }
+  )
+})
 
 module.exports = router

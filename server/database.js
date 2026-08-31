@@ -157,6 +157,21 @@ db.serialize(() => {
     FOREIGN KEY (crop_id) REFERENCES crops(id)
   )`);
 
+  // Public contact messages submitted from website contact form
+  db.run(`CREATE TABLE IF NOT EXISTS contact_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT,
+    phone TEXT,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'new' CHECK(status IN ('new', 'replied', 'closed')),
+    admin_reply TEXT,
+    reply_sent_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
   // Microgreens cultivator info (PDF data and manual entries)
   db.run(`CREATE TABLE IF NOT EXISTS microgreen_cultivator_info (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

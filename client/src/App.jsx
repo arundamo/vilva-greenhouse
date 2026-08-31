@@ -13,6 +13,10 @@ import Feedback from './components/Feedback';
 import Login from './components/Login';
 import Home from './components/Home';
 import Shopping from './components/Shopping';
+import About from './components/About';
+import Recipes from './components/Recipes';
+import Contact from './components/Contact';
+import ContactMessages from './components/ContactMessages';
 import Customers from './components/Customers';
 import CropDemand from './components/CropDemand';
 import Microgreens from './components/Microgreens';
@@ -86,8 +90,14 @@ export default function App() {
   // Public routes that don't require authentication
   const isPublicRoute = location.pathname === '/order' || 
                         location.pathname === '/home' || 
+                        location.pathname === '/about' ||
+                        location.pathname === '/greens' ||
+                        location.pathname === '/farms' ||
+                        location.pathname === '/recipes' ||
+                        location.pathname === '/contact' ||
                         location.pathname === '/shopping' || 
                         location.pathname === '/' || 
+                        location.pathname === '/login' ||
                         location.pathname === '/admin' ||
                         location.pathname.startsWith('/feedback/');
   
@@ -109,10 +119,16 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/greens" element={<Navigate to="/about" replace />} />
+        <Route path="/farms" element={<Navigate to="/about" replace />} />
+        <Route path="/recipes" element={<Recipes />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/shopping" element={<Shopping />} />
         <Route path="/order" element={<PublicOrderForm />} />
         <Route path="/feedback/:orderId" element={<PublicFeedback />} />
-        <Route path="/admin" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+        <Route path="/admin" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     );
@@ -135,6 +151,7 @@ export default function App() {
         { path: '/crop-demand', label: 'Crop Demand', icon: '📋' },
         { path: '/microgreens', label: 'Microgreens', icon: '🌾' },
         { path: '/feedback', label: 'Feedback', icon: '⭐' },
+        { path: '/contact-messages', label: 'Contact Messages', icon: '📩' },
         { path: '/settings', label: 'Settings', icon: '⚙️' },
       ]
     : [
@@ -288,6 +305,7 @@ export default function App() {
               <Route path="/crop-demand" element={<CropDemand />} />
               <Route path="/microgreens/*" element={<Microgreens />} />
               <Route path="/feedback" element={<Feedback />} />
+              <Route path="/contact-messages" element={<ContactMessages />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </>

@@ -396,7 +396,7 @@ export default function PublicSurvey() {
                   checked={formData.sample_opt_in}
                   onChange={(e) => setFormData({ ...formData, sample_opt_in: e.target.checked })}
                 />
-                Send me an invite for a FREE sample bunch from next week's harvest!
+                Send me updates about next week's harvest.
               </label>
             </div>
 
@@ -406,7 +406,7 @@ export default function PublicSurvey() {
                 disabled={submitting}
                 className="rounded-lg bg-lime-500 px-6 py-3 text-sm font-black tracking-wide text-black hover:bg-lime-400 disabled:opacity-60"
               >
-                {submitting ? 'Submitting...' : 'Submit Survey & Claim Free Sample'}
+                {submitting ? 'Submitting...' : 'Submit Survey'}
               </button>
               <Link
                 to="/"

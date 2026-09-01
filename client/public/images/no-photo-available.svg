@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">No Photo Available</title>
+  <desc id="desc">Placeholder image shown when a product photo is unavailable.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f2f4f7"/>
+      <stop offset="100%" stop-color="#d7dbe1"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#bg)"/>
+  <g opacity="0.22">
+    <rect x="152" y="72" width="336" height="236" rx="16" fill="#7d8795" transform="rotate(-8 320 210)"/>
+  </g>
+  <g>
+    <rect x="176" y="60" width="300" height="220" rx="18" fill="#e8ebef" stroke="#a8b0bb" stroke-width="10"/>
+    <rect x="216" y="108" width="220" height="124" rx="10" fill="#ffffff"/>
+    <path d="M235 218l54-56 34 31 44-48 50 73H235z" fill="#c4cad3"/>
+    <circle cx="390" cy="140" r="16" fill="#d4dae2"/>
+  </g>
+  <text x="320" y="338" text-anchor="middle" fill="#7c8795" font-family="Arial, Helvetica, sans-serif" font-size="48" font-weight="700" letter-spacing="1.2">NO PHOTO</text>
+  <text x="320" y="382" text-anchor="middle" fill="#8b94a1" font-family="Arial, Helvetica, sans-serif" font-size="40" font-weight="700" letter-spacing="1">AVAILABLE</text>
+</svg>

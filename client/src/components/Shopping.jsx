@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { formatCAD } from '../utils/currency'
 
+const DEFAULT_PRODUCT_IMAGE = '/images/no-photo-available.svg'
+
 export default function Shopping() {
   const [crops, setCrops] = useState([])
   const [loading, setLoading] = useState(true)
@@ -19,14 +21,6 @@ export default function Shopping() {
     delivery_date: '',
     notes: ''
   })
-
-  const productImages = [
-    'https://images.unsplash.com/photo-1518977956812-cd3dbadaaf31?auto=format&fit=crop&w=900&q=80',
-    'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80',
-    'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&q=80',
-    'https://images.unsplash.com/photo-1598030304671-5aa1d6f21128?auto=format&fit=crop&w=900&q=80',
-    'https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=900&q=80'
-  ]
 
   useEffect(() => {
     setLoading(true)
@@ -224,9 +218,9 @@ export default function Shopping() {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {crops.map((crop, index) => {
+                {crops.map((crop) => {
                   const bunchPrice = getBunchPrice(crop)
-                  const productImage = productImages[index % productImages.length]
+                  const productImage = DEFAULT_PRODUCT_IMAGE
 
                   return (
                     <article key={crop.crop_id} className="group rounded-xl overflow-hidden border border-lime-800/40 bg-zinc-950/80 shadow-[0_12px_30px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:-translate-y-1">

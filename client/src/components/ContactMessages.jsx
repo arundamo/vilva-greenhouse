@@ -7,6 +7,7 @@ export default function ContactMessages() {
   const [error, setError] = useState('')
   const [replyDrafts, setReplyDrafts] = useState({})
   const [sendingId, setSendingId] = useState(null)
+  const [deletingId, setDeletingId] = useState(null)
   const [statusMessage, setStatusMessage] = useState('')
 
   const loadMessages = async () => {
@@ -46,6 +47,26 @@ export default function ContactMessages() {
       alert(sendError.response?.data?.error || 'Failed to send reply')
     } finally {
       setSendingId(null)
+    }
+  }
+
+  const deleteMessage = async (message) => {
+    const confirmed = window.confirm(`Delete message from ${message.name}? This cannot be undone.`)
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setDeletingId(message.id)
+      setStatusMessage('')
+      await axios.delete(`/api/admin/contact-messages/${message.id}`)
+      setStatusMessage(`Deleted message from ${message.name}`)
+      await loadMessages()
+    } catch (deleteError) {
+      console.error(deleteError)
+      alert(deleteError.response?.data?.error || 'Failed to delete message')
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -134,6 +155,13 @@ export default function ContactMessages() {
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm font-medium"
               >
                 {sendingId === message.id ? 'Sending...' : 'Send Reply'}
+              </button>
+              <button
+                onClick={() => deleteMessage(message)}
+                disabled={deletingId === message.id}
+                className="ml-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm font-medium"
+              >
+                {deletingId === message.id ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>

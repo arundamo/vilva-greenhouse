@@ -172,6 +172,38 @@ db.serialize(() => {
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 
+  // Public spinach market survey responses
+  db.run(`CREATE TABLE IF NOT EXISTS survey_responses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    respondent_name TEXT,
+    phone TEXT,
+    email TEXT,
+    neighborhood_address TEXT,
+    sample_opt_in INTEGER DEFAULT 1,
+    city TEXT,
+    state TEXT,
+    household_size TEXT,
+    spinach_types TEXT,
+    top_drivers TEXT,
+    hard_to_find_varieties TEXT,
+    hard_to_find_other TEXT,
+    primary_source TEXT,
+    biggest_frustration TEXT,
+    subscription_interest TEXT,
+    curry_delivery_interest TEXT,
+    decision_barrier TEXT,
+    consumption_frequency TEXT,
+    weekly_quantity TEXT,
+    preferred_format TEXT,
+    purchase_preference TEXT,
+    willing_subscriber INTEGER DEFAULT 0,
+    interested_curries INTEGER DEFAULT 0,
+    preferred_delivery_day TEXT,
+    monthly_budget_range TEXT,
+    additional_comments TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
   // Microgreens cultivator info (PDF data and manual entries)
   db.run(`CREATE TABLE IF NOT EXISTS microgreen_cultivator_info (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -231,6 +263,17 @@ db.serialize(() => {
   ensureColumn('microgreen_cultivator_info', 'source_page', 'INTEGER');
   ensureColumn('microgreen_cultivator_info', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP');
   ensureColumn('microgreen_pdf_page_data', 'updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP');
+  ensureColumn('survey_responses', 'email', 'TEXT');
+  ensureColumn('survey_responses', 'neighborhood_address', 'TEXT');
+  ensureColumn('survey_responses', 'sample_opt_in', 'INTEGER DEFAULT 1');
+  ensureColumn('survey_responses', 'top_drivers', 'TEXT');
+  ensureColumn('survey_responses', 'hard_to_find_varieties', 'TEXT');
+  ensureColumn('survey_responses', 'hard_to_find_other', 'TEXT');
+  ensureColumn('survey_responses', 'primary_source', 'TEXT');
+  ensureColumn('survey_responses', 'biggest_frustration', 'TEXT');
+  ensureColumn('survey_responses', 'subscription_interest', 'TEXT');
+  ensureColumn('survey_responses', 'curry_delivery_interest', 'TEXT');
+  ensureColumn('survey_responses', 'decision_barrier', 'TEXT');
 
   // Seed initial data
   db.get('SELECT COUNT(*) as count FROM greenhouses', (err, row) => {

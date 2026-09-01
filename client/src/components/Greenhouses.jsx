@@ -67,10 +67,10 @@ export default function Greenhouses() {
   const getBedColor = (bed) => {
     const status = getBedStatus(bed)
     switch(status) {
-      case 'occupied': return 'bg-green-100 border-green-400'
-      case 'preparation': return 'bg-yellow-100 border-yellow-400'
-      case 'available': return 'bg-gray-50 border-gray-300'
-      default: return 'bg-gray-50 border-gray-300'
+      case 'occupied': return 'bg-emerald-950/70 border-lime-400'
+      case 'preparation': return 'bg-amber-950/60 border-amber-400'
+      case 'available': return 'bg-zinc-900/70 border-zinc-500'
+      default: return 'bg-zinc-900/70 border-zinc-500'
     }
   }
 
@@ -158,7 +158,7 @@ export default function Greenhouses() {
             className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base flex-1 sm:flex-none min-w-[120px] ${
               selectedGH?.id === gh.id
                 ? 'bg-green-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-green-50 border'
+                : 'bg-black/35 text-lime-200 border border-lime-700/60 hover:bg-lime-500/15'
             }`}
           >
             {gh.name}
@@ -185,7 +185,7 @@ export default function Greenhouses() {
                 Left (L1-L10)
               </button>
               <button 
-                className="flex-1 px-4 py-2 rounded bg-gray-200 text-gray-700 font-semibold"
+                className="flex-1 px-4 py-2 rounded border border-lime-700/50 bg-black/35 text-lime-100 font-semibold"
                 onClick={() => {/* Show right beds */}}
               >
                 Right (R1-R10)
@@ -196,7 +196,7 @@ export default function Greenhouses() {
           <div className="lg:flex gap-4 lg:gap-8 justify-center">
             {/* Left Column */}
             <div className="space-y-2 mb-6 lg:mb-0">
-              <h4 className="text-center font-semibold text-gray-700 mb-3 text-sm sm:text-base">Left Side (L1-L10)</h4>
+              <h4 className="text-center font-semibold text-lime-200 mb-3 text-sm sm:text-base">Left Side (L1-L10)</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
                 {leftBeds.map((bed) => (
                   <div
@@ -206,7 +206,7 @@ export default function Greenhouses() {
                   >
                     <div className="flex justify-between items-start">
                       <span className="font-bold text-sm sm:text-base">{bed.bed_name}</span>
-                      <span className="text-xs px-2 py-1 rounded bg-white">
+                      <span className="text-xs px-2 py-1 rounded border border-white/20 bg-black/35 text-lime-100">
                         {getBedStatus(bed)}
                       </span>
                     </div>
@@ -215,15 +215,15 @@ export default function Greenhouses() {
                       <div className="mt-2 text-xs sm:text-sm">
                         {bed.crops.map((crop) => (
                           <div key={crop.id} className="mb-1">
-                            <p className="font-medium text-green-700 truncate">{crop.variety_name}</p>
-                            <p className="text-xs text-gray-600 truncate">{crop.status} (Sowed: {crop.sowing_date})</p>
+                            <p className="font-medium text-lime-100 truncate">{crop.variety_name}</p>
+                            <p className="text-xs text-lime-200/80 truncate">{crop.status} (Sowed: {crop.sowing_date})</p>
                           </div>
                         ))}
                       </div>
                     ) : bed.variety_name ? (
                       <div className="mt-2 text-xs sm:text-sm">
-                        <p className="font-medium text-green-700 truncate">{bed.variety_name}</p>
-                        <p className="text-xs text-gray-600 truncate">{bed.crop_status}</p>
+                        <p className="font-medium text-lime-100 truncate">{bed.variety_name}</p>
+                        <p className="text-xs text-lime-200/80 truncate">{bed.crop_status}</p>
                       </div>
                     ) : null}
                   </div>
@@ -240,7 +240,7 @@ export default function Greenhouses() {
 
             {/* Right Column */}
             <div className="space-y-2">
-              <h4 className="text-center font-semibold text-gray-700 mb-3 text-sm sm:text-base">Right Side (R1-R10)</h4>
+              <h4 className="text-center font-semibold text-lime-200 mb-3 text-sm sm:text-base">Right Side (R1-R10)</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
                 {rightBeds.map((bed) => (
                   <div
@@ -250,7 +250,7 @@ export default function Greenhouses() {
                   >
                     <div className="flex justify-between items-start">
                       <span className="font-bold text-sm sm:text-base">{bed.bed_name}</span>
-                      <span className="text-xs px-2 py-1 rounded bg-white">
+                      <span className="text-xs px-2 py-1 rounded border border-white/20 bg-black/35 text-lime-100">
                         {getBedStatus(bed)}
                       </span>
                     </div>
@@ -259,15 +259,15 @@ export default function Greenhouses() {
                       <div className="mt-2 text-xs sm:text-sm">
                         {bed.crops.map((crop) => (
                           <div key={crop.id} className="mb-1">
-                            <p className="font-medium text-green-700 truncate">{crop.variety_name}</p>
-                            <p className="text-xs text-gray-600 truncate">{crop.status} (Sowed: {crop.sowing_date})</p>
+                            <p className="font-medium text-lime-100 truncate">{crop.variety_name}</p>
+                            <p className="text-xs text-lime-200/80 truncate">{crop.status} (Sowed: {crop.sowing_date})</p>
                           </div>
                         ))}
                       </div>
                     ) : bed.variety_name ? (
                       <div className="mt-2 text-xs sm:text-sm">
-                        <p className="font-medium text-green-700 truncate">{bed.variety_name}</p>
-                        <p className="text-xs text-gray-600 truncate">{bed.crop_status}</p>
+                        <p className="font-medium text-lime-100 truncate">{bed.variety_name}</p>
+                        <p className="text-xs text-lime-200/80 truncate">{bed.crop_status}</p>
                       </div>
                     ) : null}
                   </div>
@@ -279,15 +279,15 @@ export default function Greenhouses() {
           {/* Legend */}
           <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mt-4 sm:mt-6 text-xs sm:text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-100 border-2 border-green-400 rounded"></div>
+              <div className="w-4 h-4 bg-emerald-950/70 border-2 border-lime-400 rounded"></div>
               <span>Occupied</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-100 border-2 border-yellow-400 rounded"></div>
+              <div className="w-4 h-4 bg-amber-950/60 border-2 border-amber-400 rounded"></div>
               <span>Preparation</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-50 border-2 border-gray-300 rounded"></div>
+              <div className="w-4 h-4 bg-zinc-900/70 border-2 border-zinc-500 rounded"></div>
               <span>Available</span>
             </div>
           </div>

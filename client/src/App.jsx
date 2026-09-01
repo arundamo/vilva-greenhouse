@@ -8,11 +8,14 @@ import Activities from './components/Activities';
 import Sales from './components/Sales';
 import Settings from './components/Settings';
 import PublicOrderForm from './components/PublicOrderForm';
+import PublicOrderLookup from './components/PublicOrderLookup';
+import PublicSurvey from './components/PublicSurvey';
 import PublicFeedback from './components/PublicFeedback';
 import Feedback from './components/Feedback';
 import Login from './components/Login';
 import Home from './components/Home';
 import Shopping from './components/Shopping';
+import MyOrders from './components/MyOrders';
 import About from './components/About';
 import Recipes from './components/Recipes';
 import Contact from './components/Contact';
@@ -20,6 +23,7 @@ import ContactMessages from './components/ContactMessages';
 import Customers from './components/Customers';
 import CropDemand from './components/CropDemand';
 import Microgreens from './components/Microgreens';
+import SurveyAnalysis from './components/SurveyAnalysis';
 
 export default function App() {
   const location = useLocation();
@@ -71,8 +75,8 @@ export default function App() {
   
   const handleLoginSuccess = (userData) => {
     setUser(userData);
-    // Redirect to dashboard after successful login
-    navigate('/dashboard');
+    // Redirect by role after successful login
+    navigate(userData?.role === 'admin' ? '/dashboard' : '/shopping');
   };
   
   const handleLogout = () => {
@@ -89,6 +93,8 @@ export default function App() {
   
   // Public routes that don't require authentication
   const isPublicRoute = location.pathname === '/order' || 
+                        location.pathname === '/track-order' ||
+                        location.pathname === '/survey' ||
                         location.pathname === '/home' || 
                         location.pathname === '/about' ||
                         location.pathname === '/greens' ||
@@ -125,8 +131,10 @@ export default function App() {
         <Route path="/recipes" element={<Recipes />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/shopping" element={<Shopping />} />
-        <Route path="/order" element={<PublicOrderForm />} />
-        <Route path="/feedback/:orderId" element={<PublicFeedback />} />
+        <Route path="/track-order" element={<PublicOrderLookup />} />
+        <Route path="/survey" element={<PublicSurvey />} />
+        <Route path="/order" element={user && user.role !== 'admin' ? <Navigate to="/orders" replace /> : <PublicOrderForm />} />
+        <Route path="/feedback/:orderId" element={user && user.role !== 'admin' ? <Navigate to="/shopping" replace /> : <PublicFeedback />} />
         <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
         <Route path="/admin" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<Navigate to="/" />} />
@@ -149,15 +157,18 @@ export default function App() {
         { path: '/customers', label: 'Customers', icon: '👥' },
         { path: '/sales', label: 'Sales', icon: '💰' },
         { path: '/crop-demand', label: 'Crop Demand', icon: '📋' },
+        { path: '/survey-analysis', label: 'Survey Analysis', icon: '🧪' },
         { path: '/microgreens', label: 'Microgreens', icon: '🌾' },
         { path: '/feedback', label: 'Feedback', icon: '⭐' },
         { path: '/contact-messages', label: 'Contact Messages', icon: '📩' },
         { path: '/settings', label: 'Settings', icon: '⚙️' },
       ]
     : [
-        { path: '/home', label: 'Home', icon: '🏠' },
-        { path: '/shopping', label: 'Shopping', icon: '🛒' },
-        { path: '/order', label: 'Order Form', icon: '📝' },
+        { path: '/shopping', label: 'Where to Buy', icon: '🛒' },
+        { path: '/orders', label: 'My Orders', icon: '📦' },
+        { path: '/about', label: 'About Us', icon: '🌱' },
+        { path: '/recipes', label: 'Recipes', icon: '🍽️' },
+        { path: '/contact', label: 'Contact Us', icon: '✉️' },
       ];
   
   // Admin dashboard interface
@@ -303,6 +314,7 @@ export default function App() {
               <Route path="/customers" element={<Customers />} />
               <Route path="/sales" element={<Sales />} />
               <Route path="/crop-demand" element={<CropDemand />} />
+              <Route path="/survey-analysis" element={<SurveyAnalysis />} />
               <Route path="/microgreens/*" element={<Microgreens />} />
               <Route path="/feedback" element={<Feedback />} />
               <Route path="/contact-messages" element={<ContactMessages />} />
@@ -311,10 +323,12 @@ export default function App() {
             </>
           ) : (
             <>
-              <Route path="/home" element={<Home />} />
               <Route path="/shopping" element={<Shopping />} />
-              <Route path="/order" element={<PublicOrderForm />} />
-              <Route path="*" element={<Navigate to="/home" />} />
+              <Route path="/orders" element={<MyOrders />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/recipes" element={<Recipes />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="*" element={<Navigate to="/shopping" />} />
             </>
           )}
         </Routes>

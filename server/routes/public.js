@@ -200,6 +200,77 @@ router.post('/orders', (req, res) => {
   })
 })
 
+// Lookup public order status by order number + name + phone
+router.post('/orders/lookup', (req, res) => {
+  const { order_id, customer_name, phone } = req.body
+
+  if (!order_id || !customer_name || !phone) {
+    return res.status(400).json({ error: 'Order number, customer name, and phone are required.' })
+  }
+
+  const normalizedPhone = String(phone).replace(/\D/g, '')
+  if (normalizedPhone.length !== 10) {
+    return res.status(400).json({ error: 'Please enter a valid 10-digit phone number.' })
+  }
+
+  const parsedOrderId = parseInt(order_id, 10)
+  if (Number.isNaN(parsedOrderId) || parsedOrderId <= 0) {
+    return res.status(400).json({ error: 'Please enter a valid order number.' })
+  }
+
+  db.get(
+    `SELECT
+      so.id,
+      so.order_date,
+      so.delivery_date,
+      so.delivery_address,
+      so.delivery_status,
+      so.payment_status,
+      so.payment_method,
+      so.payment_date,
+      so.total_amount,
+      so.notes,
+      c.name as customer_name,
+      c.phone as customer_phone
+    FROM sales_orders so
+    JOIN customers c ON so.customer_id = c.id
+    WHERE so.id = ?
+      AND LOWER(TRIM(c.name)) = LOWER(TRIM(?))
+      AND REPLACE(REPLACE(REPLACE(REPLACE(IFNULL(c.phone, ''), '-', ''), ' ', ''), '(', ''), ')', '') = ?`,
+    [parsedOrderId, customer_name, normalizedPhone],
+    (err, order) => {
+      if (err) {
+        console.error(err)
+        return res.status(500).json({ error: 'Database error' })
+      }
+
+      if (!order) {
+        return res.status(404).json({ error: 'No matching order found. Please verify your details.' })
+      }
+
+      db.all(
+        `SELECT oi.id, oi.quantity, oi.unit, oi.price_per_unit, oi.subtotal, sv.name as variety_name
+         FROM order_items oi
+         JOIN spinach_varieties sv ON oi.variety_id = sv.id
+         WHERE oi.order_id = ?
+         ORDER BY oi.id`,
+        [order.id],
+        (itemsErr, items) => {
+          if (itemsErr) {
+            console.error(itemsErr)
+            return res.status(500).json({ error: 'Failed to load order items' })
+          }
+
+          return res.json({
+            ...order,
+            items: items || []
+          })
+        }
+      )
+    }
+  )
+})
+
 // Get available varieties (public endpoint)
 router.get('/varieties', (req, res) => {
   db.all(
@@ -280,6 +351,93 @@ router.post('/contact', (req, res) => {
         success: true,
         message: 'Your message has been submitted. Our team will reply soon.',
         id: messageId
+      })
+    }
+  )
+})
+
+// Submit spinach market survey response (public endpoint)
+router.post('/survey', (req, res) => {
+  const {
+    full_name,
+    phone,
+    email,
+    neighborhood_address,
+    sample_opt_in,
+    consumption_frequency,
+    primary_source,
+    top_drivers,
+    hard_to_find_varieties,
+    hard_to_find_other,
+    biggest_frustration,
+    subscription_interest,
+    curry_delivery_interest,
+    decision_barrier
+  } = req.body
+
+  if (!full_name || !phone) {
+    return res.status(400).json({ error: 'Full name and phone number are required.' })
+  }
+
+  if (!consumption_frequency || !primary_source || !biggest_frustration || !subscription_interest || !curry_delivery_interest || !decision_barrier) {
+    return res.status(400).json({ error: 'Please fill all required survey fields.' })
+  }
+
+  const normalizedPhone = String(phone).replace(/\D/g, '')
+  if (normalizedPhone.length !== 10) {
+    return res.status(400).json({ error: 'Phone number must be 10 digits.' })
+  }
+
+  if (email && !/^\S+@\S+\.\S+$/.test(String(email).trim())) {
+    return res.status(400).json({ error: 'Please provide a valid email address.' })
+  }
+
+  const normalizedTopDrivers = Array.isArray(top_drivers) ? top_drivers.slice(0, 2) : []
+  if (normalizedTopDrivers.length === 0) {
+    return res.status(400).json({ error: 'Select at least one top purchasing driver.' })
+  }
+
+  const normalizedHardToFind = Array.isArray(hard_to_find_varieties) ? hard_to_find_varieties : []
+  if (normalizedHardToFind.includes('Other') && !String(hard_to_find_other || '').trim()) {
+    return res.status(400).json({ error: 'Please specify the other specialty variety.' })
+  }
+
+  const topDriversJson = JSON.stringify(normalizedTopDrivers)
+  const hardToFindJson = JSON.stringify(normalizedHardToFind)
+
+  db.run(
+    `INSERT INTO survey_responses (
+      respondent_name, phone, email, neighborhood_address, sample_opt_in,
+      consumption_frequency, primary_source, top_drivers,
+      hard_to_find_varieties, hard_to_find_other, biggest_frustration,
+      subscription_interest, curry_delivery_interest, decision_barrier
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      String(full_name).trim(),
+      normalizedPhone,
+      email ? String(email).trim() : null,
+      neighborhood_address ? String(neighborhood_address).trim() : null,
+      sample_opt_in === false ? 0 : 1,
+      consumption_frequency,
+      primary_source,
+      topDriversJson,
+      hardToFindJson,
+      hard_to_find_other ? String(hard_to_find_other).trim() : null,
+      biggest_frustration,
+      subscription_interest,
+      curry_delivery_interest,
+      decision_barrier
+    ],
+    function(err) {
+      if (err) {
+        console.error('Survey submission error:', err)
+        return res.status(500).json({ error: 'Failed to submit survey response.' })
+      }
+
+      return res.status(201).json({
+        success: true,
+        message: 'Survey submitted successfully. Thank you!',
+        id: this.lastID
       })
     }
   )

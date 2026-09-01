@@ -95,6 +95,8 @@ export default function Home() {
 
   const menuItems = [
     { label: 'WHERE TO BUY', to: '/shopping' },
+    { label: 'TRACK ORDER', to: '/track-order' },
+    { label: 'SURVEY', to: '/survey' },
     { label: 'ABOUT US', to: '/about' },
     { label: 'RECIPES', to: '/recipes' },
     { label: 'CONTACT US', to: '/contact' },

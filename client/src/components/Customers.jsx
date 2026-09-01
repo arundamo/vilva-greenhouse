@@ -97,7 +97,7 @@ export default function Customers() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
+      <div className="bg-white rounded-lg shadow overflow-x-auto border border-lime-700/35">
         {message.text && (
           <div className={`mx-4 mt-4 rounded px-4 py-2 text-sm ${
             message.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'
@@ -105,8 +105,8 @@ export default function Customers() {
             {message.text}
           </div>
         )}
-        <table className="min-w-full text-sm">
-          <thead className="bg-gray-50 text-gray-700">
+        <table className="min-w-full text-sm text-lime-100">
+          <thead className="bg-zinc-900/90 text-lime-100">
             <tr>
               <th className="text-left px-4 py-2 font-semibold">Name</th>
               <th className="text-left px-4 py-2 font-semibold">Phone</th>
@@ -120,22 +120,22 @@ export default function Customers() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-500">Loading...</td>
+                <td colSpan={7} className="px-4 py-8 text-center text-lime-200/70">Loading...</td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-500">No customers found.</td>
+                <td colSpan={7} className="px-4 py-8 text-center text-lime-200/70">No customers found.</td>
               </tr>
             ) : (
               filtered.map(c => (
                 <React.Fragment key={c.id}>
-                  <tr className={`border-t ${editingId === c.id ? 'bg-green-50' : 'hover:bg-gray-50'}`}> 
-                    <td className="px-4 py-2 font-medium">{c.name}</td>
-                    <td className="px-4 py-2">{c.phone}</td>
-                    <td className="px-4 py-2">{c.whatsapp || '-'}</td>
-                    <td className="px-4 py-2 max-w-[220px] truncate" title={c.address || ''}>{c.address || '-'}</td>
-                    <td className="px-4 py-2">{c.notes || '-'}</td>
-                    <td className="px-4 py-2">{c.email || '-'}</td>
+                  <tr className={`border-t border-lime-700/30 ${editingId === c.id ? 'bg-lime-500/10' : 'hover:bg-lime-500/5'}`}> 
+                    <td className="px-4 py-2 font-medium text-white">{c.name}</td>
+                    <td className="px-4 py-2 text-lime-100">{c.phone}</td>
+                    <td className="px-4 py-2 text-lime-100">{c.whatsapp || '-'}</td>
+                    <td className="px-4 py-2 max-w-[220px] truncate text-lime-100" title={c.address || ''}>{c.address || '-'}</td>
+                    <td className="px-4 py-2 text-lime-100">{c.notes || '-'}</td>
+                    <td className="px-4 py-2 text-lime-100">{c.email || '-'}</td>
                     <td className="px-4 py-2">
                       {editingId === c.id ? (
                         <div className="flex gap-2">
@@ -146,19 +146,19 @@ export default function Customers() {
                           >{saving ? 'Saving...' : 'Save'}</button>
                           <button
                             onClick={cancelEdit}
-                            className="px-3 py-1 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300"
+                            className="px-3 py-1 bg-zinc-800 text-lime-100 rounded text-xs hover:bg-zinc-700 border border-lime-700/40"
                           >Cancel</button>
                         </div>
                       ) : (
                         <button
                           onClick={() => startEdit(c)}
-                          className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200"
+                          className="px-3 py-1 bg-lime-500/20 text-lime-100 rounded text-xs hover:bg-lime-500/30 border border-lime-700/40"
                         >Edit</button>
                       )}
                     </td>
                   </tr>
                   {editingId === c.id && (
-                    <tr className="border-t bg-white">
+                    <tr className="border-t border-lime-700/30 bg-black/30">
                       <td colSpan={7} className="px-4 py-4">
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                           <div>

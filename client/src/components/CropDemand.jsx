@@ -56,8 +56,8 @@ export default function CropDemand() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800">Crop Demand Report</h2>
-          <p className="text-sm text-gray-600 mt-1">Quantities needed from pending orders</p>
+          <h2 className="text-3xl font-bold text-white">Crop Demand Report</h2>
+          <p className="text-sm text-lime-200 mt-1">Quantities needed from pending orders</p>
         </div>
       </div>
 
@@ -106,7 +106,7 @@ export default function CropDemand() {
             </button>
             <button
               onClick={resetFilters}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300"
+              className="px-4 py-2 bg-zinc-800 text-lime-100 border border-lime-700/40 rounded text-sm hover:bg-zinc-700"
             >
               Reset
             </button>
@@ -117,15 +117,15 @@ export default function CropDemand() {
       {/* Results */}
       <div className="bg-white rounded-lg shadow">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <div className="p-8 text-center text-lime-200/70">Loading...</div>
         ) : demand.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-8 text-center text-lime-200/70">
             No pending orders found for the selected criteria.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="bg-gray-50 text-gray-700">
+            <table className="min-w-full text-sm text-lime-100">
+              <thead className="bg-zinc-900/90 text-lime-100">
                 <tr>
                   <th className="text-left px-4 py-3 font-semibold">Crop Variety</th>
                   <th className="text-left px-4 py-3 font-semibold">Unit</th>
@@ -140,19 +140,19 @@ export default function CropDemand() {
                     {items.map((item, idx) => (
                       <tr
                         key={`${variety}-${item.unit}`}
-                        className={`border-t hover:bg-gray-50 ${idx === 0 ? 'font-medium' : ''}`}
+                        className={`border-t border-lime-700/30 hover:bg-lime-500/5 ${idx === 0 ? 'font-medium' : ''}`}
                       >
                         {idx === 0 && (
-                          <td className="px-4 py-3 font-semibold text-green-700" rowSpan={items.length}>
+                          <td className="px-4 py-3 font-semibold text-lime-100" rowSpan={items.length}>
                             {variety}
                           </td>
                         )}
-                        <td className="px-4 py-3 text-gray-600">{item.unit}</td>
-                        <td className="px-4 py-3 text-right font-semibold text-green-600">
+                        <td className="px-4 py-3 text-lime-100/90">{item.unit}</td>
+                        <td className="px-4 py-3 text-right font-semibold text-lime-300">
                           {item.total_quantity}
                         </td>
-                        <td className="px-4 py-3 text-right text-gray-600">{item.order_count}</td>
-                        <td className="px-4 py-3 text-gray-600 max-w-xs truncate" title={item.customers}>
+                        <td className="px-4 py-3 text-right text-lime-100/90">{item.order_count}</td>
+                        <td className="px-4 py-3 text-lime-100/90 max-w-xs truncate" title={item.customers}>
                           {item.customers || '-'}
                         </td>
                       </tr>
@@ -189,7 +189,7 @@ export default function CropDemand() {
       )}
 
       {/* Quick Guide */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+      <div className="bg-zinc-900/75 border border-lime-700/35 rounded-lg p-4 text-sm text-lime-100/90">
         <strong>ℹ️ How to use:</strong>
         <ul className="list-disc list-inside mt-2 space-y-1">
           <li>By default, shows all <strong>pending</strong>, <strong>packed</strong>, and <strong>unconfirmed</strong> orders</li>

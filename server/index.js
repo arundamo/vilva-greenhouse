@@ -60,6 +60,9 @@ const { requireAuth, requireAdmin } = require('./middleware/auth');
 app.use('/api/auth', require('./routes/auth')); // Login, register, etc.
 app.use('/api/public', require('./routes/public')); // Public order form endpoint
 
+// Protected authenticated routes
+app.use('/api/orders', requireAuth, require('./routes/orders'));
+
 // Protected admin-only routes
 app.use('/api/greenhouses', requireAuth, requireAdmin, require('./routes/greenhouses'));
 app.use('/api/crops', requireAuth, requireAdmin, require('./routes/crops'));

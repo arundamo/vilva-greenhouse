@@ -318,4 +318,141 @@ router.post('/contact-messages/:id/reply', requireAuth, requireAdmin, (req, res)
   )
 })
 
+// DELETE /api/admin/contact-messages/:id - Delete a contact message
+router.delete('/contact-messages/:id', requireAuth, requireAdmin, (req, res) => {
+  const messageId = req.params.id
+
+  db.run('DELETE FROM contact_messages WHERE id = ?', [messageId], function(err) {
+    if (err) {
+      console.error('Error deleting contact message:', err)
+      return res.status(500).json({ error: 'Failed to delete contact message' })
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ error: 'Contact message not found' })
+    }
+
+    return res.json({ success: true, message: 'Contact message deleted successfully' })
+  })
+})
+
+// GET /api/admin/survey-responses - List all survey responses
+router.get('/survey-responses', requireAuth, requireAdmin, (req, res) => {
+  db.all(
+    `SELECT * FROM survey_responses ORDER BY created_at DESC, id DESC`,
+    (err, rows) => {
+      if (err) {
+        console.error('Error fetching survey responses:', err)
+        return res.status(500).json({ error: 'Failed to fetch survey responses' })
+      }
+
+      const normalized = (rows || []).map((row) => ({
+        ...row,
+        top_drivers: (() => {
+          try {
+            return JSON.parse(row.top_drivers || '[]')
+          } catch {
+            return []
+          }
+        })(),
+        hard_to_find_varieties: (() => {
+          try {
+            return JSON.parse(row.hard_to_find_varieties || '[]')
+          } catch {
+            return []
+          }
+        })()
+      }))
+
+      return res.json(normalized)
+    }
+  )
+})
+
+// GET /api/admin/survey-responses/summary - Aggregated survey metrics
+router.get('/survey-responses/summary', requireAuth, requireAdmin, (req, res) => {
+  db.all('SELECT * FROM survey_responses', (err, rows) => {
+    if (err) {
+      console.error('Error fetching survey summary:', err)
+      return res.status(500).json({ error: 'Failed to fetch survey summary' })
+    }
+
+    const list = rows || []
+    const summary = {
+      total_responses: list.length,
+      sample_opt_in_yes: list.filter((r) => Number(r.sample_opt_in) === 1).length,
+      by_frequency: {},
+      by_source: {},
+      by_frustration: {},
+      by_subscription_interest: {},
+      by_curry_interest: {},
+      by_barrier: {},
+      top_driver_counts: {},
+      hard_to_find_counts: {}
+    }
+
+    list.forEach((row) => {
+      const freq = row.consumption_frequency || 'Unknown'
+      const source = row.primary_source || 'Unknown'
+      const frustration = row.biggest_frustration || 'Unknown'
+      const subscriptionInterest = row.subscription_interest || 'Unknown'
+      const curryInterest = row.curry_delivery_interest || 'Unknown'
+      const barrier = row.decision_barrier || 'Unknown'
+
+      summary.by_frequency[freq] = (summary.by_frequency[freq] || 0) + 1
+      summary.by_source[source] = (summary.by_source[source] || 0) + 1
+      summary.by_frustration[frustration] = (summary.by_frustration[frustration] || 0) + 1
+      summary.by_subscription_interest[subscriptionInterest] = (summary.by_subscription_interest[subscriptionInterest] || 0) + 1
+      summary.by_curry_interest[curryInterest] = (summary.by_curry_interest[curryInterest] || 0) + 1
+      summary.by_barrier[barrier] = (summary.by_barrier[barrier] || 0) + 1
+
+      let topDrivers = []
+      try {
+        topDrivers = JSON.parse(row.top_drivers || '[]')
+      } catch {
+        topDrivers = []
+      }
+
+      if (Array.isArray(topDrivers)) {
+        topDrivers.forEach((driver) => {
+          const key = String(driver || '').trim() || 'Unknown'
+          summary.top_driver_counts[key] = (summary.top_driver_counts[key] || 0) + 1
+        })
+      }
+
+      let hardToFind = []
+      try {
+        hardToFind = JSON.parse(row.hard_to_find_varieties || '[]')
+      } catch {
+        hardToFind = []
+      }
+
+      if (Array.isArray(hardToFind)) {
+        hardToFind.forEach((item) => {
+          const key = String(item || '').trim() || 'Unknown'
+          summary.hard_to_find_counts[key] = (summary.hard_to_find_counts[key] || 0) + 1
+        })
+      }
+    })
+
+    return res.json(summary)
+  })
+})
+
+// DELETE /api/admin/survey-responses - Delete all survey responses
+router.delete('/survey-responses', requireAuth, requireAdmin, (req, res) => {
+  db.run('DELETE FROM survey_responses', function(err) {
+    if (err) {
+      console.error('Error deleting all survey responses:', err)
+      return res.status(500).json({ error: 'Failed to delete survey responses' })
+    }
+
+    return res.json({
+      success: true,
+      message: 'All survey responses deleted successfully',
+      deleted_count: this.changes || 0
+    })
+  })
+})
+
 module.exports = router

@@ -20,6 +20,9 @@ const hardToFindOptions = [
   'Other'
 ]
 
+const optionCardClass = 'flex items-start gap-3 rounded-lg border border-emerald-800 bg-emerald-950/50 p-3 cursor-pointer'
+const optionInputClass = 'mt-0.5 h-4 w-4 shrink-0 accent-lime-400'
+
 export default function PublicSurvey() {
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState('')
@@ -130,9 +133,9 @@ export default function PublicSurvey() {
       </div>
 
       <main className="max-w-5xl mx-auto px-4 py-8">
-        <section className="rounded-2xl border border-lime-700/40 bg-green-950/70 p-6 sm:p-8 shadow-2xl">
+        <section className="rounded-2xl border border-lime-700/40 bg-green-950/70 p-6 sm:p-8 shadow-2xl text-emerald-100">
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight">Vilva Greenhouse Farms — Community Survey</h1>
-          <p className="mt-2 text-lime-100/80 text-sm sm:text-base">
+          <p className="mt-2 text-emerald-100 text-sm sm:text-base">
             Helping us bring fresh, locally grown Indian greens directly to your neighborhood.
           </p>
 
@@ -156,13 +159,14 @@ export default function PublicSurvey() {
                 <p className="block text-sm font-semibold text-lime-100 mb-2">1. Household Green Consumption Frequency</p>
                 <div className="space-y-2 text-sm">
                   {['Daily', '3–4 times/week', '1–2 times/week', 'Rarely / As needed'].map((option) => (
-                    <label key={option} className="flex items-center gap-2">
+                    <label key={option} className={optionCardClass}>
                       <input
                         type="radio"
                         name="consumption_frequency"
                         value={option}
                         checked={formData.consumption_frequency === option}
                         onChange={(e) => setFormData({ ...formData, consumption_frequency: e.target.value })}
+                        className={optionInputClass}
                         required
                       />
                       <span>{option}</span>
@@ -180,13 +184,14 @@ export default function PublicSurvey() {
                     'Direct Farm / Local Farmers Markets',
                     'Online Grocery / Delivery Services'
                   ].map((option) => (
-                    <label key={option} className="flex items-center gap-2">
+                    <label key={option} className={optionCardClass}>
                       <input
                         type="radio"
                         name="primary_source"
                         value={option}
                         checked={formData.primary_source === option}
                         onChange={(e) => setFormData({ ...formData, primary_source: e.target.value })}
+                        className={optionInputClass}
                         required
                       />
                       <span>{option}</span>
@@ -199,11 +204,12 @@ export default function PublicSurvey() {
                 <p className="block text-sm font-semibold text-lime-100 mb-2">3. Top Purchasing Drivers (Select up to 2)</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   {topPurchasingDriverOptions.map((option) => (
-                    <label key={option} className="flex items-center gap-2 rounded-md border border-lime-700/35 bg-black/25 px-2 py-2">
+                    <label key={option} className={optionCardClass}>
                       <input
                         type="checkbox"
                         checked={formData.top_drivers.includes(option)}
                         onChange={() => toggleTopDriver(option)}
+                        className={optionInputClass}
                       />
                       <span>{option}</span>
                     </label>
@@ -220,11 +226,12 @@ export default function PublicSurvey() {
                 <p className="block text-sm font-semibold text-lime-100 mb-2">4. Hard-to-Find Specialty Varieties</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   {hardToFindOptions.map((option) => (
-                    <label key={option} className="flex items-center gap-2 rounded-md border border-lime-700/35 bg-black/25 px-2 py-2">
+                    <label key={option} className={optionCardClass}>
                       <input
                         type="checkbox"
                         checked={formData.hard_to_find_varieties.includes(option)}
                         onChange={() => toggleHardToFindVariety(option)}
+                        className={optionInputClass}
                       />
                       <span>{option}</span>
                     </label>
@@ -252,13 +259,14 @@ export default function PublicSurvey() {
                     'Frequent Stockouts / Inconsistent Availability',
                     'High Price for Subpar Quality'
                   ].map((option) => (
-                    <label key={option} className="flex items-center gap-2">
+                    <label key={option} className={optionCardClass}>
                       <input
                         type="radio"
                         name="biggest_frustration"
                         value={option}
                         checked={formData.biggest_frustration === option}
                         onChange={(e) => setFormData({ ...formData, biggest_frustration: e.target.value })}
+                        className={optionInputClass}
                         required
                       />
                       <span>{option}</span>
@@ -280,13 +288,14 @@ export default function PublicSurvey() {
                     'Maybe occasionally',
                     'Not interested right now'
                   ].map((option) => (
-                    <label key={option} className="flex items-center gap-2">
+                    <label key={option} className={optionCardClass}>
                       <input
                         type="radio"
                         name="subscription_interest"
                         value={option}
                         checked={formData.subscription_interest === option}
                         onChange={(e) => setFormData({ ...formData, subscription_interest: e.target.value })}
+                        className={optionInputClass}
                         required
                       />
                       <span>{option}</span>
@@ -303,13 +312,14 @@ export default function PublicSurvey() {
                     'Maybe on busy weekdays',
                     'No, prefer cooking from scratch'
                   ].map((option) => (
-                    <label key={option} className="flex items-center gap-2">
+                    <label key={option} className={optionCardClass}>
                       <input
                         type="radio"
                         name="curry_delivery_interest"
                         value={option}
                         checked={formData.curry_delivery_interest === option}
                         onChange={(e) => setFormData({ ...formData, curry_delivery_interest: e.target.value })}
+                        className={optionInputClass}
                         required
                       />
                       <span>{option}</span>
@@ -327,13 +337,14 @@ export default function PublicSurvey() {
                     'Budget / Cost constraints',
                     'Existing shopping routine works fine'
                   ].map((option) => (
-                    <label key={option} className="flex items-center gap-2">
+                    <label key={option} className={optionCardClass}>
                       <input
                         type="radio"
                         name="decision_barrier"
                         value={option}
                         checked={formData.decision_barrier === option}
                         onChange={(e) => setFormData({ ...formData, decision_barrier: e.target.value })}
+                        className={optionInputClass}
                         required
                       />
                       <span>{option}</span>
@@ -390,27 +401,28 @@ export default function PublicSurvey() {
                 </div>
               </div>
 
-              <label className="flex items-center gap-2 text-sm font-semibold text-lime-100">
+              <label className={`${optionCardClass} text-sm font-semibold text-emerald-100`}>
                 <input
                   type="checkbox"
                   checked={formData.sample_opt_in}
                   onChange={(e) => setFormData({ ...formData, sample_opt_in: e.target.checked })}
+                  className={optionInputClass}
                 />
                 Send me updates about next week's harvest.
               </label>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <button
                 type="submit"
                 disabled={submitting}
-                className="rounded-lg bg-lime-500 px-6 py-3 text-sm font-black tracking-wide text-black hover:bg-lime-400 disabled:opacity-60"
+                className="w-full sm:w-auto rounded-lg bg-lime-500 px-6 py-3 text-sm font-black tracking-wide text-black hover:bg-lime-400 disabled:opacity-60"
               >
                 {submitting ? 'Submitting...' : 'Submit Survey'}
               </button>
               <Link
                 to="/"
-                className="rounded-lg border border-lime-400/60 px-4 py-2.5 text-sm font-bold text-lime-200 hover:bg-lime-400 hover:text-black"
+                className="w-full sm:w-auto text-center rounded-lg border border-lime-400/60 px-4 py-2.5 text-sm font-bold text-lime-200 hover:bg-lime-400 hover:text-black"
               >
                 Home
               </Link>

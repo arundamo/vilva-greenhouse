@@ -101,3 +101,53 @@ tr.hover\:bg-gray-50:hover,
 .hover\:bg-gray-50:hover {
 	background-color: rgba(5, 16, 9, 0.88) !important;
 }
+
+/* Contrast fix: light controls must keep dark text */
+button.bg-white,
+button.bg-gray-50,
+button.bg-gray-100,
+button.bg-gray-200,
+button.bg-gray-300,
+a.bg-white,
+a.bg-gray-50,
+a.bg-gray-100,
+a.bg-gray-200,
+a.bg-gray-300,
+span.bg-white,
+span.bg-gray-50,
+span.bg-gray-100,
+span.bg-gray-200,
+span.bg-gray-300,
+div.bg-white.text-gray-700,
+div.bg-white.text-gray-600,
+div.bg-gray-50.text-gray-700,
+div.bg-gray-50.text-gray-600,
+div.bg-gray-100.text-gray-700,
+div.bg-gray-100.text-gray-600,
+div.bg-gray-200.text-gray-700,
+div.bg-gray-200.text-gray-600,
+div.bg-gray-300.text-gray-700,
+div.bg-gray-300.text-gray-600,
+.bg-white.text-gray-700,
+.bg-white.text-gray-600,
+.bg-white.text-gray-500,
+.bg-gray-50.text-gray-700,
+.bg-gray-50.text-gray-600,
+.bg-gray-50.text-gray-500,
+.bg-gray-100.text-gray-700,
+.bg-gray-100.text-gray-600,
+.bg-gray-100.text-gray-500,
+.bg-gray-200.text-gray-700,
+.bg-gray-200.text-gray-600,
+.bg-gray-200.text-gray-500,
+.bg-gray-300.text-gray-700,
+.bg-gray-300.text-gray-600,
+.bg-gray-300.text-gray-500 {
+	color: #1f2937 !important;
+}
+
+/* Native select option popup is usually light in browsers; keep text readable */
+select option {
+	color: #111827;
+	background: #ffffff;
+}

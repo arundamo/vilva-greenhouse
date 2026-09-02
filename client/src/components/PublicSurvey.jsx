@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 
 const topPurchasingDriverOptions = [
-  'Peak Freshness & Long Shelf-Life',
-  'Proximity & Shopping Convenience',
-  'Competitive / Low Pricing',
-  'Organic & Locally Grown Quality',
-  'Reliable Supply of Hard-to-Find Traditional Varieties'
+  'They stay fresh in the fridge for a long time',
+  'Easy and convenient store location',
+  'Good prices',
+  'Fresh, locally grown, and pesticide-free',
+  'Always having hard-to-find traditional varieties in stock'
 ]
 
 const hardToFindOptions = [
@@ -153,12 +153,12 @@ export default function PublicSurvey() {
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-5">
             <div className="rounded-xl border border-lime-700/40 bg-black/20 p-4 sm:p-5 space-y-4">
-              <h2 className="text-lg font-black text-lime-100">Section 1: Consumption & Buying Habits</h2>
+              <h2 className="text-lg font-black text-lime-100">Section 1: How You Buy &amp; Eat Greens</h2>
 
               <div>
-                <p className="block text-sm font-semibold text-lime-100 mb-2">1. Household Green Consumption Frequency</p>
+                <p className="block text-sm font-semibold text-lime-100 mb-2">1. How often does your family cook fresh leafy greens (like saag, dal, or fry)?</p>
                 <div className="space-y-2 text-sm">
-                  {['Daily', '3–4 times/week', '1–2 times/week', 'Rarely / As needed'].map((option) => (
+                  {['Almost every day', '3 to 4 times a week', '1 to 2 times a week', 'Rarely / Only occasionally'].map((option) => (
                     <label key={option} className={optionCardClass}>
                       <input
                         type="radio"
@@ -176,13 +176,13 @@ export default function PublicSurvey() {
               </div>
 
               <div>
-                <p className="block text-sm font-semibold text-lime-100 mb-2">2. Current Primary Source for Indian Greens</p>
+                <p className="block text-sm font-semibold text-lime-100 mb-2">2. Where do you usually buy your Indian greens (Gongura, Palak, Methi, Amaranth)?</p>
                 <div className="space-y-2 text-sm">
                   {[
-                    'Local South Asian Supermarkets (Patel Brothers, Spice Land, etc.)',
-                    'Mainstream Grocers (Walmart, Loblaws, Sobeys, etc.)',
-                    'Direct Farm / Local Farmers Markets',
-                    'Online Grocery / Delivery Services'
+                    'Local Indian grocery stores (Patel Brothers, Spice Land, etc.)',
+                    'Mainstream supermarkets (Walmart, Loblaws, Sobeys, etc.)',
+                    'Local farms or farmers markets',
+                    'Online delivery app / Home delivery'
                   ].map((option) => (
                     <label key={option} className={optionCardClass}>
                       <input
@@ -201,7 +201,7 @@ export default function PublicSurvey() {
               </div>
 
               <div>
-                <p className="block text-sm font-semibold text-lime-100 mb-2">3. Top Purchasing Drivers (Select up to 2)</p>
+                <p className="block text-sm font-semibold text-lime-100 mb-2">3. What is most important to you when buying greens? (Pick your top 2)</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   {topPurchasingDriverOptions.map((option) => (
                     <label key={option} className={optionCardClass}>
@@ -220,10 +220,10 @@ export default function PublicSurvey() {
             </div>
 
             <div className="rounded-xl border border-lime-700/40 bg-black/20 p-4 sm:p-5 space-y-4">
-              <h2 className="text-lg font-black text-lime-100">Section 2: Market Gaps & Quality Frustrations</h2>
+              <h2 className="text-lg font-black text-lime-100">Section 2: What&apos;s Missing in Stores?</h2>
 
               <div>
-                <p className="block text-sm font-semibold text-lime-100 mb-2">4. Hard-to-Find Specialty Varieties</p>
+                <p className="block text-sm font-semibold text-lime-100 mb-2">4. Which of these greens do you find hard to get fresh in local stores? (Select all that apply)</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   {hardToFindOptions.map((option) => (
                     <label key={option} className={optionCardClass}>
@@ -241,7 +241,7 @@ export default function PublicSurvey() {
                 {formData.hard_to_find_varieties.includes('Other') && (
                   <input
                     type="text"
-                    placeholder="Please specify other specialty variety"
+                    placeholder="Other: please specify"
                     value={formData.hard_to_find_other}
                     onChange={(e) => setFormData({ ...formData, hard_to_find_other: e.target.value })}
                     className="mt-3 w-full rounded-lg border border-lime-700/40 bg-black/35 px-3 py-2 text-white"
@@ -250,14 +250,14 @@ export default function PublicSurvey() {
               </div>
 
               <div>
-                <p className="block text-sm font-semibold text-lime-100 mb-2">5. Biggest Frustrations with Store-Bought Greens</p>
+                <p className="block text-sm font-semibold text-lime-100 mb-2">5. What frustrates you most about store-bought greens?</p>
                 <div className="space-y-2 text-sm">
                   {[
-                    'Rapid Spoilage (Goes bad within 1–2 days)',
-                    'Tough / Fibrous Stems & Overmatured Leaves',
-                    'Insect Holes & Visible Pest Damage',
-                    'Frequent Stockouts / Inconsistent Availability',
-                    'High Price for Subpar Quality'
+                    'They spoil or go soft within 1–2 days',
+                    'Stems are too thick, tough, or mature',
+                    'Leaves have bug holes or damage',
+                    'Stores are frequently sold out',
+                    'Prices are too high for poor quality'
                   ].map((option) => (
                     <label key={option} className={optionCardClass}>
                       <input
@@ -277,16 +277,16 @@ export default function PublicSurvey() {
             </div>
 
             <div className="rounded-xl border border-lime-700/40 bg-black/20 p-4 sm:p-5 space-y-4">
-              <h2 className="text-lg font-black text-lime-100">Section 3: Subscription & Service Fit</h2>
+              <h2 className="text-lg font-black text-lime-100">Section 3: Fresh Farm Options</h2>
 
               <div>
-                <p className="block text-sm font-semibold text-lime-100 mb-2">6. Interest in Same-Day Harvested Weekly Subscription Box</p>
+                <p className="block text-sm font-semibold text-lime-100 mb-2">6. Would you like a weekly farm box of greens harvested fresh on the same morning?</p>
                 <div className="space-y-2 text-sm">
                   {[
-                    'Yes, definitely interested!',
-                    'Interested, depending on pricing & delivery terms',
-                    'Maybe occasionally',
-                    'Not interested right now'
+                    'Yes, definitely!',
+                    'Yes, depending on price and delivery terms',
+                    'Maybe once in a while',
+                    'No, not right now'
                   ].map((option) => (
                     <label key={option} className={optionCardClass}>
                       <input
@@ -305,12 +305,12 @@ export default function PublicSurvey() {
               </div>
 
               <div>
-                <p className="block text-sm font-semibold text-lime-100 mb-2">7. Interest in Ready-to-Eat Cooked Curry Delivery (Gongura Pappu, Saag, etc.)</p>
+                <p className="block text-sm font-semibold text-lime-100 mb-2">7. Would you be interested in ready-to-eat cooked spinach/curry deliveries (like Gongura Pappu or Palak Paneer)?</p>
                 <div className="space-y-2 text-sm">
                   {[
-                    'Yes, eager to try',
+                    "Yes, I'd love that!",
                     'Maybe on busy weekdays',
-                    'No, prefer cooking from scratch'
+                    'No, I prefer cooking at home from scratch'
                   ].map((option) => (
                     <label key={option} className={optionCardClass}>
                       <input
@@ -329,13 +329,13 @@ export default function PublicSurvey() {
               </div>
 
               <div>
-                <p className="block text-sm font-semibold text-lime-100 mb-2">8. Primary Decision Barrier for Services</p>
+                <p className="block text-sm font-semibold text-lime-100 mb-2">8. If you answered &quot;No&quot; or &quot;Maybe&quot; above, what is the main reason?</p>
                 <div className="space-y-2 text-sm">
                   {[
-                    'Prefer cooking fresh from scratch',
-                    'Hygiene or food safety concerns',
-                    'Budget / Cost constraints',
-                    'Existing shopping routine works fine'
+                    'I prefer cooking fresh meals myself',
+                    'Food safety / Hygiene concerns',
+                    'Price or budget constraints',
+                    'My current shopping routine works fine'
                   ].map((option) => (
                     <label key={option} className={optionCardClass}>
                       <input
@@ -355,11 +355,12 @@ export default function PublicSurvey() {
             </div>
 
             <div className="rounded-xl border border-lime-700/40 bg-black/20 p-4 sm:p-5 space-y-4">
-              <h2 className="text-lg font-black text-lime-100">Section 4: Contact & Sample Registration</h2>
+              <h2 className="text-lg font-black text-lime-100">Section 4: Get Your Free Sample</h2>
+              <p className="text-sm text-emerald-100">9. Where can we send your invitation for a FREE sample bunch from our next harvest?</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-lime-100 mb-1">9. Full Name *</label>
+                  <label className="block text-sm font-semibold text-lime-100 mb-1">Full Name *</label>
                   <input
                     type="text"
                     required
@@ -381,7 +382,7 @@ export default function PublicSurvey() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-lime-100 mb-1">Email Address</label>
+                  <label className="block text-sm font-semibold text-lime-100 mb-1">Email Address (Optional)</label>
                   <input
                     type="email"
                     value={formData.email}
@@ -391,7 +392,7 @@ export default function PublicSurvey() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-lime-100 mb-1">Neighborhood / Street Address</label>
+                  <label className="block text-sm font-semibold text-lime-100 mb-1">Neighborhood / Area</label>
                   <input
                     type="text"
                     value={formData.neighborhood_address}
@@ -408,7 +409,7 @@ export default function PublicSurvey() {
                   onChange={(e) => setFormData({ ...formData, sample_opt_in: e.target.checked })}
                   className={optionInputClass}
                 />
-                Send me updates about next week's harvest.
+                Check this box to get WhatsApp updates on fresh weekly harvests!
               </label>
             </div>
 

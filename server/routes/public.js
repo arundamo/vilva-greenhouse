@@ -39,10 +39,24 @@ router.post('/orders', (req, res) => {
 
     const handleCustomer = (customerId) => {
       // First, fetch variety prices to calculate total
-      const varietyIds = items.map(item => item.variety_id).join(',')
+      const varietyIds = [...new Set(
+        items
+          .map((item) => parseInt(item.variety_id, 10))
+          .filter((id) => Number.isInteger(id) && id > 0)
+      )]
+
+      if (varietyIds.length === 0) {
+        return res.status(400).json({ error: 'Invalid order items' })
+      }
+
+      const placeholders = varietyIds.map(() => '?').join(',')
       
       db.all(
-        `SELECT id, price_per_bunch, price_per_kg, price_per_100g, discount_percent FROM spinach_varieties WHERE id IN (${varietyIds})`,
+        `SELECT id, price_per_bunch, price_per_kg, price_per_100g, discount_percent
+         FROM spinach_varieties
+         WHERE id IN (${placeholders})
+           AND COALESCE(cart_enabled, 1) = 1`,
+        varietyIds,
         (err, varieties) => {
           if (err) {
             console.error(err)
@@ -63,8 +77,18 @@ router.post('/orders', (req, res) => {
           
           // Calculate total amount and item prices
           let totalAmount = 0
+          const hasUnavailableItems = items.some((item) => {
+            const varietyId = parseInt(item.variety_id, 10)
+            return !Number.isInteger(varietyId) || !priceMap[varietyId]
+          })
+
+          if (hasUnavailableItems) {
+            return res.status(400).json({ error: 'One or more selected items are unavailable' })
+          }
+
           const itemsWithPrices = items.map(item => {
-            const variety = priceMap[item.variety_id]
+            const varietyId = parseInt(item.variety_id, 10)
+            const variety = priceMap[varietyId]
             let pricePerUnit = 0
             let subtotal = 0
             const quantity = parseFloat(item.quantity) || 0
@@ -91,7 +115,7 @@ router.post('/orders', (req, res) => {
             totalAmount += subtotal
             
             return {
-              variety_id: item.variety_id,
+              variety_id: varietyId,
               quantity: item.quantity,
               unit: item.unit,
               price_per_unit: pricePerUnit,
@@ -298,6 +322,7 @@ router.get('/varieties', (req, res) => {
       COALESCE(cart_enabled, 1) as cart_enabled,
       COALESCE(discount_percent, 0) as discount_percent
     FROM spinach_varieties
+    WHERE COALESCE(cart_enabled, 1) = 1
     ORDER BY name`,
     (err, rows) => {
       if (err) {

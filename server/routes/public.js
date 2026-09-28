@@ -310,42 +310,35 @@ router.post('/orders/lookup', (req, res) => {
 router.get('/varieties', (req, res) => {
   db.all(
     `SELECT
-      id,
-      name,
-      days_to_harvest,
-      price_per_bunch,
-      price_per_kg,
-      price_per_100g,
-      COALESCE(cart_enabled, 1) as cart_enabled,
-      CASE
-        WHEN COALESCE(discount_percent, 0) < 0 THEN 0
-        WHEN COALESCE(discount_percent, 0) > 100 THEN 100
-        ELSE COALESCE(discount_percent, 0)
-      END as discount_percent,
-      ROUND(price_per_bunch * (1 - (
+      sv.id,
+      sv.name,
+      sv.days_to_harvest,
+      sv.price_per_bunch,
+      sv.price_per_kg,
+      sv.price_per_100g,
+      sv.cart_enabled,
+      sv.clamped_discount as discount_percent,
+      ROUND(sv.price_per_bunch * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_bunch,
+      ROUND(sv.price_per_kg * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_kg,
+      ROUND(sv.price_per_100g * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_100g
+    FROM (
+      SELECT
+        id,
+        name,
+        days_to_harvest,
+        price_per_bunch,
+        price_per_kg,
+        price_per_100g,
+        COALESCE(cart_enabled, 1) as cart_enabled,
         CASE
           WHEN COALESCE(discount_percent, 0) < 0 THEN 0
           WHEN COALESCE(discount_percent, 0) > 100 THEN 100
           ELSE COALESCE(discount_percent, 0)
-        END
-      ) / 100.0), 2) as effective_price_per_bunch,
-      ROUND(price_per_kg * (1 - (
-        CASE
-          WHEN COALESCE(discount_percent, 0) < 0 THEN 0
-          WHEN COALESCE(discount_percent, 0) > 100 THEN 100
-          ELSE COALESCE(discount_percent, 0)
-        END
-      ) / 100.0), 2) as effective_price_per_kg,
-      ROUND(price_per_100g * (1 - (
-        CASE
-          WHEN COALESCE(discount_percent, 0) < 0 THEN 0
-          WHEN COALESCE(discount_percent, 0) > 100 THEN 100
-          ELSE COALESCE(discount_percent, 0)
-        END
-      ) / 100.0), 2) as effective_price_per_100g
-    FROM spinach_varieties
-    WHERE COALESCE(cart_enabled, 1) = 1
-    ORDER BY name`,
+        END as clamped_discount
+      FROM spinach_varieties
+      WHERE COALESCE(cart_enabled, 1) = 1
+    ) sv
+    ORDER BY sv.name`,
     (err, rows) => {
       if (err) {
         console.error(err)
@@ -366,40 +359,31 @@ router.get('/marketplace-crops', (req, res) => {
       sv.price_per_bunch,
       sv.price_per_kg,
       sv.price_per_100g,
-      CASE
-        WHEN COALESCE(sv.discount_percent, 0) < 0 THEN 0
-        WHEN COALESCE(sv.discount_percent, 0) > 100 THEN 100
-        ELSE COALESCE(sv.discount_percent, 0)
-      END as discount_percent,
-      ROUND(sv.price_per_bunch * (1 - (
+      sv.clamped_discount as discount_percent,
+      ROUND(sv.price_per_bunch * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_bunch,
+      ROUND(sv.price_per_kg * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_kg,
+      ROUND(sv.price_per_100g * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_100g
+    FROM (
+      SELECT
+        v.id,
+        v.name,
+        v.price_per_bunch,
+        v.price_per_kg,
+        v.price_per_100g,
         CASE
-          WHEN COALESCE(sv.discount_percent, 0) < 0 THEN 0
-          WHEN COALESCE(sv.discount_percent, 0) > 100 THEN 100
-          ELSE COALESCE(sv.discount_percent, 0)
-        END
-      ) / 100.0), 2) as effective_price_per_bunch,
-      ROUND(sv.price_per_kg * (1 - (
-        CASE
-          WHEN COALESCE(sv.discount_percent, 0) < 0 THEN 0
-          WHEN COALESCE(sv.discount_percent, 0) > 100 THEN 100
-          ELSE COALESCE(sv.discount_percent, 0)
-        END
-      ) / 100.0), 2) as effective_price_per_kg,
-      ROUND(sv.price_per_100g * (1 - (
-        CASE
-          WHEN COALESCE(sv.discount_percent, 0) < 0 THEN 0
-          WHEN COALESCE(sv.discount_percent, 0) > 100 THEN 100
-          ELSE COALESCE(sv.discount_percent, 0)
-        END
-      ) / 100.0), 2) as effective_price_per_100g
-    FROM spinach_varieties sv
-    WHERE EXISTS (
-      SELECT 1
-      FROM crops c
-      WHERE c.variety_id = sv.id
-        AND c.status IN ('sowing', 'growing', 'ready', 'harvested')
-    )
-      AND COALESCE(sv.cart_enabled, 1) = 1
+          WHEN COALESCE(v.discount_percent, 0) < 0 THEN 0
+          WHEN COALESCE(v.discount_percent, 0) > 100 THEN 100
+          ELSE COALESCE(v.discount_percent, 0)
+        END as clamped_discount
+      FROM spinach_varieties v
+      WHERE EXISTS (
+        SELECT 1
+        FROM crops c
+        WHERE c.variety_id = v.id
+          AND c.status IN ('sowing', 'growing', 'ready', 'harvested')
+      )
+        AND COALESCE(v.cart_enabled, 1) = 1
+    ) sv
     ORDER BY sv.name ASC`,
     (err, rows) => {
       if (err) {

@@ -39,16 +39,13 @@ router.post('/orders', (req, res) => {
 
     const handleCustomer = (customerId) => {
       // First, fetch variety prices to calculate total
-      const varietyIds = [...new Set(
-        items
-          .map((item) => parseInt(item.variety_id, 10))
-          .filter((id) => Number.isInteger(id) && id > 0)
-      )]
-
-      if (varietyIds.length === 0) {
+      const parsedVarietyIds = items.map((item) => parseInt(item.variety_id, 10))
+      const hasInvalidVarietyId = parsedVarietyIds.some((id) => !Number.isInteger(id) || id <= 0)
+      if (hasInvalidVarietyId) {
         return res.status(400).json({ error: 'Invalid order items' })
       }
 
+      const varietyIds = [...new Set(parsedVarietyIds)]
       const placeholders = varietyIds.map(() => '?').join(',')
       
       db.all(

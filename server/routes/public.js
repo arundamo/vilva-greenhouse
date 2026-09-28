@@ -3,6 +3,18 @@ const router = express.Router()
 const db = require('../database')
 const emailService = require('../services/emailService')
 
+const toPriceNumber = (value) => {
+  const num = parseFloat(value)
+  return Number.isFinite(num) ? num : 0
+}
+
+const applyDiscount = (price, discountPercent) => {
+  const safePrice = toPriceNumber(price)
+  const safeDiscount = Math.max(0, Math.min(100, toPriceNumber(discountPercent)))
+  const discounted = safePrice * (1 - safeDiscount / 100)
+  return Number(discounted.toFixed(2))
+}
+
 // Submit public order (no authentication required)
 router.post('/orders', (req, res) => {
   const { customer_name, phone, delivery_address, delivery_date, notes, items } = req.body
@@ -30,7 +42,7 @@ router.post('/orders', (req, res) => {
       const varietyIds = items.map(item => item.variety_id).join(',')
       
       db.all(
-        `SELECT id, price_per_bunch, price_per_kg, price_per_100g FROM spinach_varieties WHERE id IN (${varietyIds})`,
+        `SELECT id, price_per_bunch, price_per_kg, price_per_100g, discount_percent FROM spinach_varieties WHERE id IN (${varietyIds})`,
         (err, varieties) => {
           if (err) {
             console.error(err)
@@ -40,10 +52,12 @@ router.post('/orders', (req, res) => {
           // Create a price lookup map
           const priceMap = {}
           varieties.forEach(v => {
+            const discountPercent = Math.max(0, Math.min(100, parseFloat(v.discount_percent) || 0))
             priceMap[v.id] = {
-              price_per_bunch: parseFloat(v.price_per_bunch) || 0,
-              price_per_kg: parseFloat(v.price_per_kg) || 0,
-              price_per_100g: parseFloat(v.price_per_100g) || 0
+              discount_percent: discountPercent,
+              price_per_bunch: applyDiscount(v.price_per_bunch, discountPercent),
+              price_per_kg: applyDiscount(v.price_per_kg, discountPercent),
+              price_per_100g: applyDiscount(v.price_per_100g, discountPercent)
             }
           })
           
@@ -274,7 +288,17 @@ router.post('/orders/lookup', (req, res) => {
 // Get available varieties (public endpoint)
 router.get('/varieties', (req, res) => {
   db.all(
-    'SELECT id, name, days_to_harvest, price_per_bunch, price_per_kg, price_per_100g FROM spinach_varieties ORDER BY name',
+    `SELECT
+      id,
+      name,
+      days_to_harvest,
+      price_per_bunch,
+      price_per_kg,
+      price_per_100g,
+      COALESCE(cart_enabled, 1) as cart_enabled,
+      COALESCE(discount_percent, 0) as discount_percent
+    FROM spinach_varieties
+    ORDER BY name`,
     (err, rows) => {
       if (err) {
         console.error(err)
@@ -294,7 +318,11 @@ router.get('/marketplace-crops', (req, res) => {
       sv.name as variety_name,
       sv.price_per_bunch,
       sv.price_per_kg,
-      sv.price_per_100g
+      sv.price_per_100g,
+      COALESCE(sv.discount_percent, 0) as discount_percent,
+      ROUND(sv.price_per_bunch * (1 - (COALESCE(sv.discount_percent, 0) / 100.0)), 2) as effective_price_per_bunch,
+      ROUND(sv.price_per_kg * (1 - (COALESCE(sv.discount_percent, 0) / 100.0)), 2) as effective_price_per_kg,
+      ROUND(sv.price_per_100g * (1 - (COALESCE(sv.discount_percent, 0) / 100.0)), 2) as effective_price_per_100g
     FROM spinach_varieties sv
     WHERE EXISTS (
       SELECT 1
@@ -302,6 +330,7 @@ router.get('/marketplace-crops', (req, res) => {
       WHERE c.variety_id = sv.id
         AND c.status IN ('sowing', 'growing', 'ready', 'harvested')
     )
+      AND COALESCE(sv.cart_enabled, 1) = 1
     ORDER BY sv.name ASC`,
     (err, rows) => {
       if (err) {

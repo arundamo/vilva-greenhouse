@@ -115,12 +115,28 @@ router.get('/varieties', (req, res) => {
 
 // Add spinach variety
 router.post('/varieties', (req, res) => {
-  const { name, days_to_harvest, price_per_bunch, price_per_kg, price_per_100g } = req.body;
+  const {
+    name,
+    days_to_harvest,
+    price_per_bunch,
+    price_per_kg,
+    price_per_100g,
+    cart_enabled,
+    discount_percent
+  } = req.body;
   
   db.run(
-    `INSERT INTO spinach_varieties (name, days_to_harvest, price_per_bunch, price_per_kg, price_per_100g) 
-     VALUES (?, ?, ?, ?, ?)`,
-    [name, days_to_harvest, price_per_bunch || 0, price_per_kg || 0, price_per_100g || 0],
+    `INSERT INTO spinach_varieties (name, days_to_harvest, price_per_bunch, price_per_kg, price_per_100g, cart_enabled, discount_percent) 
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [
+      name,
+      days_to_harvest,
+      price_per_bunch || 0,
+      price_per_kg || 0,
+      price_per_100g || 0,
+      cart_enabled === undefined ? 1 : (cart_enabled ? 1 : 0),
+      Math.max(0, Math.min(100, parseFloat(discount_percent) || 0))
+    ],
     function(err) {
       if (err) return res.status(500).json({ error: err.message });
       res.status(201).json({ id: this.lastID, message: 'Variety added' });
@@ -130,7 +146,15 @@ router.post('/varieties', (req, res) => {
 
 // Update spinach variety
 router.patch('/varieties/:id', (req, res) => {
-  const { name, days_to_harvest, price_per_bunch, price_per_kg, price_per_100g } = req.body;
+  const {
+    name,
+    days_to_harvest,
+    price_per_bunch,
+    price_per_kg,
+    price_per_100g,
+    cart_enabled,
+    discount_percent
+  } = req.body;
   const updates = [];
   const params = [];
   
@@ -153,6 +177,14 @@ router.patch('/varieties/:id', (req, res) => {
   if (price_per_100g !== undefined) {
     updates.push('price_per_100g = ?');
     params.push(price_per_100g);
+  }
+  if (cart_enabled !== undefined) {
+    updates.push('cart_enabled = ?');
+    params.push(cart_enabled ? 1 : 0);
+  }
+  if (discount_percent !== undefined) {
+    updates.push('discount_percent = ?');
+    params.push(Math.max(0, Math.min(100, parseFloat(discount_percent) || 0)));
   }
   
   if (updates.length === 0) {

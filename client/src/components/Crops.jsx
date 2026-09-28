@@ -29,7 +29,9 @@ export default function Crops() {
     days_to_harvest: '', 
     price_per_bunch: '', 
     price_per_kg: '', 
-    price_per_100g: '' 
+    price_per_100g: '',
+    cart_enabled: true,
+    discount_percent: '' 
   })
   const [formData, setFormData] = useState({
     greenhouse_id: '',
@@ -327,7 +329,9 @@ export default function Crops() {
         days_to_harvest: '', 
         price_per_bunch: '', 
         price_per_kg: '', 
-        price_per_100g: '' 
+        price_per_100g: '',
+        cart_enabled: true,
+        discount_percent: '' 
       })
       setShowVarietyModal(false)
     }).catch(err => {
@@ -343,7 +347,9 @@ export default function Crops() {
       days_to_harvest: variety.days_to_harvest,
       price_per_bunch: variety.price_per_bunch || '',
       price_per_kg: variety.price_per_kg || '',
-      price_per_100g: variety.price_per_100g || ''
+      price_per_100g: variety.price_per_100g || '',
+      cart_enabled: Number(variety.cart_enabled) !== 0,
+      discount_percent: variety.discount_percent || ''
     })
   }
 
@@ -970,6 +976,37 @@ export default function Crops() {
                 </div>
                 <p className="text-xs text-gray-500 mt-1">Optional: Set prices to display in customer order forms</p>
               </div>
+
+              <div className="border-t pt-3 mb-3 space-y-3">
+                <h5 className="text-sm font-semibold text-gray-700">🛒 Shopping Page Controls</h5>
+                <div className="flex items-center gap-3">
+                  <input
+                    id="new-variety-cart-enabled"
+                    type="checkbox"
+                    checked={newVariety.cart_enabled}
+                    onChange={(e) => setNewVariety({ ...newVariety, cart_enabled: e.target.checked })}
+                    className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                  />
+                  <label htmlFor="new-variety-cart-enabled" className="text-sm text-gray-700">
+                    Available on shopping page
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    Discount % for shopping page
+                  </label>
+                  <input
+                    type="number"
+                    value={newVariety.discount_percent}
+                    onChange={(e) => setNewVariety({ ...newVariety, discount_percent: e.target.value })}
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="0"
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  />
+                </div>
+              </div>
               
               <button
                 type="submit"
@@ -1057,6 +1094,35 @@ export default function Crops() {
                             </div>
                           </div>
                         </div>
+
+                        <div className="border-t pt-2 space-y-2">
+                          <p className="text-xs font-medium text-gray-700">Shopping Page Controls</p>
+                          <div className="flex items-center gap-2">
+                            <input
+                              id={`edit-cart-enabled-${variety.id}`}
+                              type="checkbox"
+                              checked={editingVariety.cart_enabled}
+                              onChange={(e) => setEditingVariety({ ...editingVariety, cart_enabled: e.target.checked })}
+                              className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                            />
+                            <label htmlFor={`edit-cart-enabled-${variety.id}`} className="text-xs text-gray-700">
+                              Available on shopping page
+                            </label>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">Discount %</label>
+                            <input
+                              type="number"
+                              value={editingVariety.discount_percent}
+                              onChange={(e) => setEditingVariety({ ...editingVariety, discount_percent: e.target.value })}
+                              min="0"
+                              max="100"
+                              step="0.01"
+                              placeholder="0"
+                              className="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-green-500"
+                            />
+                          </div>
+                        </div>
                         
                         <div className="flex gap-2">
                           <button
@@ -1105,6 +1171,16 @@ export default function Crops() {
                             {variety.price_per_100g > 0 && <span>{formatCAD(variety.price_per_100g)}/100g</span>}
                           </div>
                         )}
+                        <div className="flex gap-3 text-xs text-gray-600 border-t pt-2">
+                          <span className={`px-2 py-1 rounded ${Number(variety.cart_enabled) === 0 ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                            {Number(variety.cart_enabled) === 0 ? 'Hidden from shopping page' : 'Visible on shopping page'}
+                          </span>
+                          {Number(variety.discount_percent || 0) > 0 && (
+                            <span className="px-2 py-1 rounded bg-emerald-50 text-emerald-700">
+                              {parseFloat(variety.discount_percent).toFixed(2).replace(/\.00$/, '')}% discount
+                            </span>
+                          )}
+                        </div>
                       </>
                     )}
                   </div>

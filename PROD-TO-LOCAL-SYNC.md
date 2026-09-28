@@ -40,7 +40,7 @@ This guide explains how to sync your production database (Render.com) to your lo
 2. **Run Import Script**
    ```bash
    cd server
-   node import-data.js
+   node import-data.js --force
    ```
 
 3. **Verify**
@@ -111,7 +111,7 @@ This guide explains how to sync your production database (Render.com) to your lo
 ```bash
 # Place data-export.json in server/ directory
 cd server
-node import-data.js
+node import-data.js --force
 ```
 
 ---
@@ -134,7 +134,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ```bash
 # Windows
 cd server
-node import-data.js
+node import-data.js --force
 
 # Verify
 npm run dev
@@ -286,7 +286,7 @@ curl -H "Authorization: Bearer %PROD_TOKEN%" ^
 
 echo Importing to local...
 cd server
-node import-data.js
+node import-data.js --force
 
 echo Sync complete!
 pause
@@ -342,7 +342,7 @@ echo.
 :: Step 4: Import to local
 echo [3/4] Importing data to local database...
 cd server
-node import-data.js
+node import-data.js --force
 if %ERRORLEVEL% NEQ 0 (
     echo ❌ Import failed
     cd ..
@@ -382,13 +382,13 @@ sync-prod-to-local.bat
 1. Export from production via API: `/api/admin/export`
 2. Download JSON file to `server/data-export.json`
 3. Backup local: `copy server\vilva-farm.db server\vilva-farm.db.backup`
-4. Import: `node server/import-data.js`
+4. Import: `node server/import-data.js --force`
 5. Verify: `npm run dev`
 
 **Quick Command:**
 ```bash
 # Full sync (after downloading export JSON)
-copy server\vilva-farm.db server\vilva-farm.db.backup && cd server && node import-data.js
+copy server\vilva-farm.db server\vilva-farm.db.backup && cd server && node import-data.js --force
 ```
 
 ---

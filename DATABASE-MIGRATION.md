@@ -62,7 +62,7 @@ node server/export-data.js
 
 2. **Run the import script:**
    ```bash
-   node server/import-data.js
+   node server/import-data.js --force
    ```
 
 3. **Verify:**
@@ -84,7 +84,7 @@ If you can't push to git:
 
 3. **Run import:**
    ```bash
-   node server/import-data.js
+   node server/import-data.js --force
    ```
 
 ---
@@ -146,7 +146,7 @@ If you can't push to git:
 node server\export-data.js
 
 # (Optional) Test import locally
-node server\import-data.js
+node server\import-data.js --force
 
 # Commit and push
 git add server\data-export.json
@@ -157,7 +157,7 @@ git push
 ### Render Shell (Linux)
 ```bash
 # Import data (after git push)
-node server/import-data.js
+node server/import-data.js --force
 
 # Or check if export file exists
 ls -lh server/data-export.json

@@ -14,7 +14,7 @@ Wait for Render to finish deploying (check the dashboard - it should show "Live"
 Simply run this single command:
 
 ```bash
-node server/import-data.js
+node server/import-data.js --force
 ```
 
 That's it! The script will:
@@ -59,7 +59,7 @@ After import completes:
 
 ## Need to Re-run?
 
-You can safely run `node server/import-data.js` multiple times.
+You can safely run `node server/import-data.js --force` multiple times.
 Each time it clears and re-imports all data.
 
 ---

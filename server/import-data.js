@@ -8,6 +8,20 @@ const db = new sqlite3.Database(dbPath);
 
 console.log('📥 Importing data into database...\n');
 
+// This script is destructive: it clears live tables and replaces them with the
+// contents of data-export.json. Require an explicit confirmation so it can never
+// run accidentally (for example from a deployment start command) and silently
+// wipe data such as shopping page availability and discounts.
+const forceImport =
+  process.argv.includes('--force') || process.env.ALLOW_DESTRUCTIVE_IMPORT === 'true';
+
+if (!forceImport) {
+  console.error('❌ Refusing to run: this import clears existing data before restoring the snapshot.');
+  console.log('Re-run with --force (or set ALLOW_DESTRUCTIVE_IMPORT=true) if that is what you want:');
+  console.log('   node server/import-data.js --force');
+  process.exit(1);
+}
+
 // Run migrations first to ensure schema is up to date
 console.log('🔧 Running database migrations...\n');
 try {

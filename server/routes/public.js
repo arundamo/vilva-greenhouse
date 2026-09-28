@@ -318,9 +318,9 @@ router.get('/varieties', (req, res) => {
       sv.price_per_100g,
       sv.cart_enabled,
       sv.clamped_discount as discount_percent,
-      ROUND(sv.price_per_bunch * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_bunch,
-      ROUND(sv.price_per_kg * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_kg,
-      ROUND(sv.price_per_100g * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_100g
+      ROUND(COALESCE(sv.price_per_bunch, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_bunch,
+      ROUND(COALESCE(sv.price_per_kg, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_kg,
+      ROUND(COALESCE(sv.price_per_100g, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_100g
     FROM (
       SELECT
         id,
@@ -360,9 +360,9 @@ router.get('/marketplace-crops', (req, res) => {
       sv.price_per_kg,
       sv.price_per_100g,
       sv.clamped_discount as discount_percent,
-      ROUND(sv.price_per_bunch * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_bunch,
-      ROUND(sv.price_per_kg * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_kg,
-      ROUND(sv.price_per_100g * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_100g
+      ROUND(COALESCE(sv.price_per_bunch, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_bunch,
+      ROUND(COALESCE(sv.price_per_kg, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_kg,
+      ROUND(COALESCE(sv.price_per_100g, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_100g
     FROM (
       SELECT
         v.id,

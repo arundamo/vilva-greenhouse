@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database');
 
+function parseBooleanToInt(value, fallback = null) {
+  if (value === undefined || value === null || value === '') return fallback;
+  if (typeof value === 'boolean') return value ? 1 : 0;
+  if (typeof value === 'number') return value === 0 ? 0 : 1;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (['true', '1', 'yes', 'on'].includes(normalized)) return 1;
+    if (['false', '0', 'no', 'off'].includes(normalized)) return 0;
+  }
+  return fallback;
+}
+
 // Get all customers
 router.get('/', (req, res) => {
   db.all('SELECT * FROM customers ORDER BY name', [], (err, rows) => {
@@ -124,6 +136,11 @@ router.post('/varieties', (req, res) => {
     cart_enabled,
     discount_percent
   } = req.body;
+
+  const normalizedCartEnabled = parseBooleanToInt(cart_enabled, 1);
+  if (normalizedCartEnabled === null) {
+    return res.status(400).json({ error: 'cart_enabled must be true or false' });
+  }
   
   db.run(
     `INSERT INTO spinach_varieties (name, days_to_harvest, price_per_bunch, price_per_kg, price_per_100g, cart_enabled, discount_percent) 
@@ -134,7 +151,7 @@ router.post('/varieties', (req, res) => {
       price_per_bunch || 0,
       price_per_kg || 0,
       price_per_100g || 0,
-      cart_enabled === undefined ? 1 : (cart_enabled ? 1 : 0),
+      normalizedCartEnabled,
       Math.max(0, Math.min(100, parseFloat(discount_percent) || 0))
     ],
     function(err) {
@@ -179,8 +196,12 @@ router.patch('/varieties/:id', (req, res) => {
     params.push(price_per_100g);
   }
   if (cart_enabled !== undefined) {
+    const normalizedCartEnabled = parseBooleanToInt(cart_enabled, null);
+    if (normalizedCartEnabled === null) {
+      return res.status(400).json({ error: 'cart_enabled must be true or false' });
+    }
     updates.push('cart_enabled = ?');
-    params.push(cart_enabled ? 1 : 0);
+    params.push(normalizedCartEnabled);
   }
   if (discount_percent !== undefined) {
     updates.push('discount_percent = ?');

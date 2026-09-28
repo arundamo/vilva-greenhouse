@@ -317,7 +317,32 @@ router.get('/varieties', (req, res) => {
       price_per_kg,
       price_per_100g,
       COALESCE(cart_enabled, 1) as cart_enabled,
-      COALESCE(discount_percent, 0) as discount_percent
+      CASE
+        WHEN COALESCE(discount_percent, 0) < 0 THEN 0
+        WHEN COALESCE(discount_percent, 0) > 100 THEN 100
+        ELSE COALESCE(discount_percent, 0)
+      END as discount_percent,
+      ROUND(price_per_bunch * (1 - (
+        CASE
+          WHEN COALESCE(discount_percent, 0) < 0 THEN 0
+          WHEN COALESCE(discount_percent, 0) > 100 THEN 100
+          ELSE COALESCE(discount_percent, 0)
+        END
+      ) / 100.0), 2) as effective_price_per_bunch,
+      ROUND(price_per_kg * (1 - (
+        CASE
+          WHEN COALESCE(discount_percent, 0) < 0 THEN 0
+          WHEN COALESCE(discount_percent, 0) > 100 THEN 100
+          ELSE COALESCE(discount_percent, 0)
+        END
+      ) / 100.0), 2) as effective_price_per_kg,
+      ROUND(price_per_100g * (1 - (
+        CASE
+          WHEN COALESCE(discount_percent, 0) < 0 THEN 0
+          WHEN COALESCE(discount_percent, 0) > 100 THEN 100
+          ELSE COALESCE(discount_percent, 0)
+        END
+      ) / 100.0), 2) as effective_price_per_100g
     FROM spinach_varieties
     WHERE COALESCE(cart_enabled, 1) = 1
     ORDER BY name`,
@@ -341,10 +366,32 @@ router.get('/marketplace-crops', (req, res) => {
       sv.price_per_bunch,
       sv.price_per_kg,
       sv.price_per_100g,
-      COALESCE(sv.discount_percent, 0) as discount_percent,
-      ROUND(sv.price_per_bunch * (1 - (COALESCE(sv.discount_percent, 0) / 100.0)), 2) as effective_price_per_bunch,
-      ROUND(sv.price_per_kg * (1 - (COALESCE(sv.discount_percent, 0) / 100.0)), 2) as effective_price_per_kg,
-      ROUND(sv.price_per_100g * (1 - (COALESCE(sv.discount_percent, 0) / 100.0)), 2) as effective_price_per_100g
+      CASE
+        WHEN COALESCE(sv.discount_percent, 0) < 0 THEN 0
+        WHEN COALESCE(sv.discount_percent, 0) > 100 THEN 100
+        ELSE COALESCE(sv.discount_percent, 0)
+      END as discount_percent,
+      ROUND(sv.price_per_bunch * (1 - (
+        CASE
+          WHEN COALESCE(sv.discount_percent, 0) < 0 THEN 0
+          WHEN COALESCE(sv.discount_percent, 0) > 100 THEN 100
+          ELSE COALESCE(sv.discount_percent, 0)
+        END
+      ) / 100.0), 2) as effective_price_per_bunch,
+      ROUND(sv.price_per_kg * (1 - (
+        CASE
+          WHEN COALESCE(sv.discount_percent, 0) < 0 THEN 0
+          WHEN COALESCE(sv.discount_percent, 0) > 100 THEN 100
+          ELSE COALESCE(sv.discount_percent, 0)
+        END
+      ) / 100.0), 2) as effective_price_per_kg,
+      ROUND(sv.price_per_100g * (1 - (
+        CASE
+          WHEN COALESCE(sv.discount_percent, 0) < 0 THEN 0
+          WHEN COALESCE(sv.discount_percent, 0) > 100 THEN 100
+          ELSE COALESCE(sv.discount_percent, 0)
+        END
+      ) / 100.0), 2) as effective_price_per_100g
     FROM spinach_varieties sv
     WHERE EXISTS (
       SELECT 1

@@ -647,130 +647,169 @@
       "name": "Palak",
       "description": "Indian spinach variety",
       "days_to_harvest": 30,
+      "created_at": "2025-10-27 20:53:55",
       "price_per_bunch": 0,
       "price_per_kg": 0,
       "price_per_100g": 0,
-      "created_at": "2025-10-27 20:53:55"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 6,
       "name": "Red Mulai Keerai",
       "description": null,
       "days_to_harvest": 30,
+      "created_at": "2025-10-28 02:06:05",
       "price_per_bunch": 8,
       "price_per_kg": "",
       "price_per_100g": "",
-      "created_at": "2025-10-28 02:06:05"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 7,
       "name": "Red Thandu Keerai",
       "description": null,
       "days_to_harvest": 45,
+      "created_at": "2025-10-28 02:06:49",
       "price_per_bunch": 8,
       "price_per_kg": "",
       "price_per_100g": "",
-      "created_at": "2025-10-28 02:06:49"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 8,
       "name": "Methi",
       "description": null,
       "days_to_harvest": 30,
+      "created_at": "2025-10-28 02:07:54",
       "price_per_bunch": 2.5,
       "price_per_kg": "",
       "price_per_100g": "",
-      "created_at": "2025-10-28 02:07:54"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 9,
       "name": "Small Onions",
       "description": null,
       "days_to_harvest": 60,
+      "created_at": "2025-10-28 11:34:30",
       "price_per_bunch": "",
       "price_per_kg": "",
       "price_per_100g": "",
-      "created_at": "2025-10-28 11:34:30"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 10,
       "name": "Ponnangani",
       "description": null,
       "days_to_harvest": 30,
+      "created_at": "2025-10-28 11:34:47",
       "price_per_bunch": 7,
       "price_per_kg": "",
       "price_per_100g": "",
-      "created_at": "2025-10-28 11:34:47"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 14,
       "name": "Mint",
       "description": null,
       "days_to_harvest": 60,
+      "created_at": "2025-10-28 11:35:57",
       "price_per_bunch": 2.5,
       "price_per_kg": "",
       "price_per_100g": "",
-      "created_at": "2025-10-28 11:35:57"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 15,
       "name": "Coriander",
       "description": null,
       "days_to_harvest": 45,
+      "created_at": "2025-10-28 11:36:29",
       "price_per_bunch": 2.5,
       "price_per_kg": "",
       "price_per_100g": "",
-      "created_at": "2025-10-28 11:36:29"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 16,
       "name": "Pulicha Keerai",
       "description": null,
       "days_to_harvest": 45,
+      "created_at": "2025-10-28 18:10:07",
       "price_per_bunch": 0,
       "price_per_kg": 0,
       "price_per_100g": 0,
-      "created_at": "2025-10-28 18:10:07"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 17,
       "name": "Green Siru Keerai",
       "description": null,
       "days_to_harvest": 30,
+      "created_at": "2026-03-10 11:35:09",
       "price_per_bunch": 8,
       "price_per_kg": "",
       "price_per_100g": "",
-      "created_at": "2026-03-10 11:35:09"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 18,
       "name": "Manthakali",
       "description": null,
       "days_to_harvest": 45,
+      "created_at": "2026-04-03 01:58:30",
       "price_per_bunch": 8,
       "price_per_kg": "",
       "price_per_100g": "",
-      "created_at": "2026-04-03 01:58:30"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 20,
       "name": "Egg Plant (Indian)",
       "description": null,
       "days_to_harvest": 45,
+      "created_at": "2026-08-14 19:31:34",
       "price_per_bunch": 0,
       "price_per_kg": 0,
       "price_per_100g": 0.88,
-      "created_at": "2026-08-14 19:31:34"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     },
     {
       "id": 21,
       "name": "Valor Beans / Avarakkai",
       "description": null,
       "days_to_harvest": 30,
+      "created_at": "2026-09-02 17:36:08",
       "price_per_bunch": "",
       "price_per_kg": "",
       "price_per_100g": 2,
-      "created_at": "2026-09-02 17:36:08"
+      "offer_text": null,
+      "cart_enabled": 1,
+      "discount_percent": 0
     }
   ],
   "crops": [
@@ -7057,18 +7096,20 @@
     }
   ],
   "sales_crop_mapping": [],
+  "notifications": [],
+  "order_feedback": [],
   "users": [
     {
       "id": 1,
       "username": "admin",
-      "password_hash": "$2b$10$NlPiJR/OpO6QqHyPKoEyQ.1AaJqO6zX/V6U3l/dIcN3Rw1Q1us3IO",
+      "password_hash": "$2b$10$aphc1hv0hqDQEOnrsaQre.b6v8Sd752OPA1hDWf1KdLhoqn3BsIHi",
       "role": "admin",
       "full_name": "Administrator",
       "email": null,
       "phone": null,
       "active": 1,
-      "created_at": "2026-09-01 19:45:11",
-      "last_login": "2026-10-19 17:25:51"
+      "created_at": "2025-10-29 19:45:04",
+      "last_login": "2026-10-19 17:34:35"
     },
     {
       "id": 2,
@@ -7105,7 +7146,19 @@
       "active": 1,
       "created_at": "2025-10-30 16:56:26",
       "last_login": "2025-10-30 19:34:14"
+    },
+    {
+      "id": 5,
+      "username": "testuser",
+      "password_hash": "$2b$10$l7MJBwjNTspgxikNoJqNjuTbzDbgK6b7fW8UXlOWjDTyK/VHBFflW",
+      "role": "public",
+      "full_name": "test user",
+      "email": "",
+      "phone": "",
+      "active": 1,
+      "created_at": "2026-09-01 03:12:23",
+      "last_login": "2026-09-01 16:01:14"
     }
   ],
-  "exported_at": "2026-10-19T17:26:50.300Z"
+  "exported_at": "2026-10-19T17:43:40.328Z"
 }

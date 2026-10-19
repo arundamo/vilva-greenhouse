@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "nodemon server/index.js",
+    "server": "nodemon --watch server --ignore server/uploads/ server/index.js",
     "client": "cd client && npm start",
     "install-all": "npm install && cd client && npm install",
     "migrate": "node server/add-order-items-table.js && node server/migrate-sales-orders-to-header.js"

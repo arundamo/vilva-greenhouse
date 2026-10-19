@@ -21,8 +21,12 @@ export default function Contact() {
 
     try {
       setSubmitting(true)
-      await axios.post('/api/public/contact', formData)
-      setSuccess('Thanks for contacting us. Our admin team has been notified and will reply soon.')
+      const response = await axios.post('/api/public/contact', formData)
+      if (response.data.notificationSent) {
+        setSuccess(response.data.message)
+      } else {
+        setError(response.data.message)
+      }
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
     } catch (submitError) {
       console.error(submitError)
@@ -60,6 +64,15 @@ export default function Contact() {
         <div className="mb-6">
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900">Contact Us</h1>
           <p className="text-slate-600 mt-1">Send us your questions, feedback, or bulk order inquiries.</p>
+          <p className="text-slate-600 mt-3">
+            Email us at{' '}
+            <a
+              href="mailto:contact@vilvagreenhouse.farm"
+              className="font-semibold text-green-700 underline hover:text-green-800 break-all"
+            >
+              contact@vilvagreenhouse.farm
+            </a>
+          </p>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">

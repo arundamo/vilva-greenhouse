@@ -13,6 +13,10 @@ This guide covers the setup of email notifications and WhatsApp click-to-chat in
 - ✅ Payment receipt emails
 - ✅ Settings UI for managing notification preferences
 - ✅ Test email functionality
+- Contact form submissions are saved in the admin contact inbox and emailed to
+  `contact@vilvagreenhouse.farm`, independently of the admin notification email setting.
+  The Contact page also includes a direct email link. If email delivery fails, the
+  form confirms that the message was saved and displays a delivery warning.
 
 ### Phase 2: WhatsApp Click-to-Chat
 - ✅ WhatsApp utility functions with message templates

@@ -325,7 +325,7 @@ router.post('/contact', (req, res) => {
     `INSERT INTO contact_messages (name, email, phone, subject, message, status)
      VALUES (?, ?, ?, ?, ?, 'new')`,
     [name, email || null, phone || null, subject, message],
-    function(err) {
+    async function(err) {
       if (err) {
         console.error(err)
         return res.status(500).json({ error: 'Failed to submit contact form' })
@@ -333,23 +333,21 @@ router.post('/contact', (req, res) => {
 
       const messageId = this.lastID
 
-      db.get(
-        `SELECT setting_value FROM notification_settings WHERE setting_key = 'admin_email'`,
-        async (settingsErr, row) => {
-          const adminEmail = settingsErr ? null : row?.setting_value
-
-          if (adminEmail) {
-            await emailService.sendContactNotification(
-              { id: messageId, name, email, phone, subject, message },
-              adminEmail
-            )
-          }
-        }
+      const notification = await emailService.sendContactNotification(
+        { id: messageId, name, email, phone, subject, message },
+        'contact@vilvagreenhouse.farm'
       )
+
+      if (!notification.success) {
+        console.error('Failed to send contact notification:', notification.error)
+      }
 
       return res.status(201).json({
         success: true,
-        message: 'Your message has been submitted. Our team will reply soon.',
+        notificationSent: notification.success,
+        message: notification.success
+          ? 'Thanks for contacting us. Our team has been notified and will reply soon.'
+          : 'Your message has been saved, but the email notification could not be sent. You can also email us directly at contact@vilvagreenhouse.farm.',
         id: messageId
       })
     }

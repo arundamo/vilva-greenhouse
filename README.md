@@ -19,6 +19,10 @@ npm run dev
 ```
 - API: http://localhost:5000/api/health
 - Client: http://localhost:5173
+- Keep `PORT=5000` in `server/.env` for the default client proxy. If you change
+  the API port, set `VITE_API_URL` to the matching API URL when starting the client.
+- The API watcher monitors server files only, so frontend builds do not restart
+  the API or cause file-lock errors.
 
 ### Database migrations (existing DB only)
 If you already have a `server/vilva-farm.db` from earlier runs, run migrations once to enable multi-item orders:
@@ -51,4 +55,3 @@ Core features:
 - Dashboard with crop performance and customer purchase reports (with grand totals)
 - Activities log with filtering
 - Crops page search by variety name
-

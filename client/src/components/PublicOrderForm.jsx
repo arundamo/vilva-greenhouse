@@ -68,6 +68,19 @@ export default function PublicOrderForm() {
     })
   }
 
+  const getPriceValue = (value) => {
+    const parsed = parseFloat(value)
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+
+  const getEffectivePrice = (variety, unit) => {
+    if (!variety) return 0
+    if (unit === 'bunches') return getPriceValue(variety.effective_price_per_bunch ?? variety.price_per_bunch)
+    if (unit === 'kg') return getPriceValue(variety.effective_price_per_kg ?? variety.price_per_kg)
+    if (unit === 'grams') return getPriceValue(variety.effective_price_per_100g ?? variety.price_per_100g)
+    return 0
+  }
+
   // Calculate price for an item
   const calculateItemPrice = (item) => {
     if (!item.variety_id || !item.quantity) return 0
@@ -78,16 +91,13 @@ export default function PublicOrderForm() {
     const quantity = parseFloat(item.quantity)
     if (isNaN(quantity)) return 0
     
-    // Helper to parse price (handles empty strings, null, etc.)
-    const getPrice = (price) => parseFloat(price) || 0
-    
     switch(item.unit) {
       case 'bunches':
-        return quantity * getPrice(variety.price_per_bunch)
+        return quantity * getEffectivePrice(variety, 'bunches')
       case 'kg':
-        return quantity * getPrice(variety.price_per_kg)
+        return quantity * getEffectivePrice(variety, 'kg')
       case 'grams':
-        return (quantity / 100) * getPrice(variety.price_per_100g)
+        return (quantity / 100) * getEffectivePrice(variety, 'grams')
       default:
         return 0
     }
@@ -390,11 +400,9 @@ export default function PublicOrderForm() {
                         const variety = varieties.find(v => v.id === parseInt(item.variety_id))
                         if (!variety) return null
                         
-                        // Helper to parse and check price
-                        const getPrice = (price) => parseFloat(price) || 0
-                        const priceBunch = getPrice(variety.price_per_bunch)
-                        const priceKg = getPrice(variety.price_per_kg)
-                        const price100g = getPrice(variety.price_per_100g)
+                        const priceBunch = getEffectivePrice(variety, 'bunches')
+                        const priceKg = getEffectivePrice(variety, 'kg')
+                        const price100g = getEffectivePrice(variety, 'grams')
                         
                         const hasPrices = priceBunch > 0 || priceKg > 0 || price100g > 0
                         if (!hasPrices) return null

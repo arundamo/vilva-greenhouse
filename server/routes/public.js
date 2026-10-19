@@ -3,6 +3,18 @@ const router = express.Router()
 const db = require('../database')
 const emailService = require('../services/emailService')
 
+const toPriceNumber = (value) => {
+  const num = parseFloat(value)
+  return Number.isFinite(num) ? num : 0
+}
+
+const applyDiscount = (price, discountPercent) => {
+  const safePrice = toPriceNumber(price)
+  const safeDiscount = Math.max(0, Math.min(100, toPriceNumber(discountPercent)))
+  const discounted = safePrice * (1 - safeDiscount / 100)
+  return Number(discounted.toFixed(2))
+}
+
 // Submit public order (no authentication required)
 router.post('/orders', (req, res) => {
   const { customer_name, phone, delivery_address, delivery_date, notes, items } = req.body
@@ -27,10 +39,21 @@ router.post('/orders', (req, res) => {
 
     const handleCustomer = (customerId) => {
       // First, fetch variety prices to calculate total
-      const varietyIds = items.map(item => item.variety_id).join(',')
+      const parsedVarietyIds = items.map((item) => parseInt(item.variety_id, 10))
+      const hasInvalidVarietyId = parsedVarietyIds.some((id) => !Number.isInteger(id) || id <= 0)
+      if (hasInvalidVarietyId) {
+        return res.status(400).json({ error: 'Invalid order items' })
+      }
+
+      const varietyIds = [...new Set(parsedVarietyIds)]
+      const placeholders = varietyIds.map(() => '?').join(',')
       
       db.all(
-        `SELECT id, price_per_bunch, price_per_kg, price_per_100g FROM spinach_varieties WHERE id IN (${varietyIds})`,
+        `SELECT id, price_per_bunch, price_per_kg, price_per_100g, discount_percent
+         FROM spinach_varieties
+         WHERE id IN (${placeholders})
+           AND COALESCE(cart_enabled, 1) = 1`,
+        varietyIds,
         (err, varieties) => {
           if (err) {
             console.error(err)
@@ -40,17 +63,29 @@ router.post('/orders', (req, res) => {
           // Create a price lookup map
           const priceMap = {}
           varieties.forEach(v => {
+            const discountPercent = Math.max(0, Math.min(100, parseFloat(v.discount_percent) || 0))
             priceMap[v.id] = {
-              price_per_bunch: parseFloat(v.price_per_bunch) || 0,
-              price_per_kg: parseFloat(v.price_per_kg) || 0,
-              price_per_100g: parseFloat(v.price_per_100g) || 0
+              discount_percent: discountPercent,
+              price_per_bunch: applyDiscount(v.price_per_bunch, discountPercent),
+              price_per_kg: applyDiscount(v.price_per_kg, discountPercent),
+              price_per_100g: applyDiscount(v.price_per_100g, discountPercent)
             }
           })
           
           // Calculate total amount and item prices
           let totalAmount = 0
+          const hasUnavailableItems = items.some((item) => {
+            const varietyId = parseInt(item.variety_id, 10)
+            return !Number.isInteger(varietyId) || !priceMap[varietyId]
+          })
+
+          if (hasUnavailableItems) {
+            return res.status(400).json({ error: 'One or more selected items are unavailable' })
+          }
+
           const itemsWithPrices = items.map(item => {
-            const variety = priceMap[item.variety_id]
+            const varietyId = parseInt(item.variety_id, 10)
+            const variety = priceMap[varietyId]
             let pricePerUnit = 0
             let subtotal = 0
             const quantity = parseFloat(item.quantity) || 0
@@ -77,7 +112,7 @@ router.post('/orders', (req, res) => {
             totalAmount += subtotal
             
             return {
-              variety_id: item.variety_id,
+              variety_id: varietyId,
               quantity: item.quantity,
               unit: item.unit,
               price_per_unit: pricePerUnit,
@@ -274,7 +309,36 @@ router.post('/orders/lookup', (req, res) => {
 // Get available varieties (public endpoint)
 router.get('/varieties', (req, res) => {
   db.all(
-    'SELECT id, name, days_to_harvest, price_per_bunch, price_per_kg, price_per_100g FROM spinach_varieties ORDER BY name',
+    `SELECT
+      sv.id,
+      sv.name,
+      sv.days_to_harvest,
+      sv.price_per_bunch,
+      sv.price_per_kg,
+      sv.price_per_100g,
+      sv.cart_enabled,
+      sv.clamped_discount as discount_percent,
+      ROUND(COALESCE(sv.price_per_bunch, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_bunch,
+      ROUND(COALESCE(sv.price_per_kg, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_kg,
+      ROUND(COALESCE(sv.price_per_100g, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_100g
+    FROM (
+      SELECT
+        id,
+        name,
+        days_to_harvest,
+        price_per_bunch,
+        price_per_kg,
+        price_per_100g,
+        COALESCE(cart_enabled, 1) as cart_enabled,
+        CASE
+          WHEN COALESCE(discount_percent, 0) < 0 THEN 0
+          WHEN COALESCE(discount_percent, 0) > 100 THEN 100
+          ELSE COALESCE(discount_percent, 0)
+        END as clamped_discount
+      FROM spinach_varieties
+      WHERE COALESCE(cart_enabled, 1) = 1
+    ) sv
+    ORDER BY sv.name`,
     (err, rows) => {
       if (err) {
         console.error(err)
@@ -294,14 +358,32 @@ router.get('/marketplace-crops', (req, res) => {
       sv.name as variety_name,
       sv.price_per_bunch,
       sv.price_per_kg,
-      sv.price_per_100g
-    FROM spinach_varieties sv
-    WHERE EXISTS (
-      SELECT 1
-      FROM crops c
-      WHERE c.variety_id = sv.id
-        AND c.status IN ('sowing', 'growing', 'ready', 'harvested')
-    )
+      sv.price_per_100g,
+      sv.clamped_discount as discount_percent,
+      ROUND(COALESCE(sv.price_per_bunch, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_bunch,
+      ROUND(COALESCE(sv.price_per_kg, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_kg,
+      ROUND(COALESCE(sv.price_per_100g, 0) * (1 - (sv.clamped_discount / 100.0)), 2) as effective_price_per_100g
+    FROM (
+      SELECT
+        v.id,
+        v.name,
+        v.price_per_bunch,
+        v.price_per_kg,
+        v.price_per_100g,
+        CASE
+          WHEN COALESCE(v.discount_percent, 0) < 0 THEN 0
+          WHEN COALESCE(v.discount_percent, 0) > 100 THEN 100
+          ELSE COALESCE(v.discount_percent, 0)
+        END as clamped_discount
+      FROM spinach_varieties v
+      WHERE EXISTS (
+        SELECT 1
+        FROM crops c
+        WHERE c.variety_id = v.id
+          AND c.status IN ('sowing', 'growing', 'ready', 'harvested')
+      )
+        AND COALESCE(v.cart_enabled, 1) = 1
+    ) sv
     ORDER BY sv.name ASC`,
     (err, rows) => {
       if (err) {

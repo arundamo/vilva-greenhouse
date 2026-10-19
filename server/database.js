@@ -58,6 +58,8 @@ db.serialize(() => {
     price_per_bunch REAL DEFAULT 0,
     price_per_kg REAL DEFAULT 0,
     price_per_100g REAL DEFAULT 0,
+    cart_enabled INTEGER DEFAULT 1,
+    discount_percent REAL DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 
@@ -274,6 +276,8 @@ db.serialize(() => {
   ensureColumn('survey_responses', 'subscription_interest', 'TEXT');
   ensureColumn('survey_responses', 'curry_delivery_interest', 'TEXT');
   ensureColumn('survey_responses', 'decision_barrier', 'TEXT');
+  ensureColumn('spinach_varieties', 'cart_enabled', 'INTEGER DEFAULT 1');
+  ensureColumn('spinach_varieties', 'discount_percent', 'REAL DEFAULT 0');
 
   // Seed initial data
   db.get('SELECT COUNT(*) as count FROM greenhouses', (err, row) => {

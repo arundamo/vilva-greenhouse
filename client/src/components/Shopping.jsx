@@ -38,7 +38,20 @@ export default function Shopping() {
       })
   }, [retryCount])
 
+  const getDiscountPercent = (crop) => {
+    const discount = parseFloat(crop.discount_percent)
+    if (!Number.isFinite(discount)) return 0
+    return Math.max(0, Math.min(100, discount))
+  }
+
   const getBunchPrice = (crop) => parseFloat(crop.price_per_bunch) || 0
+  const getEffectiveBunchPrice = (crop) => {
+    const effectivePrice = parseFloat(crop.effective_price_per_bunch)
+    if (Number.isFinite(effectivePrice)) return effectivePrice
+    const basePrice = getBunchPrice(crop)
+    const discount = getDiscountPercent(crop)
+    return Number((basePrice * (1 - discount / 100)).toFixed(2))
+  }
 
   const addToCart = (crop) => {
     const key = String(crop.variety_id || crop.crop_id)
@@ -49,7 +62,9 @@ export default function Shopping() {
         [key]: {
           variety_id: crop.variety_id,
           variety_name: crop.variety_name,
-          price_per_bunch: getBunchPrice(crop),
+          price_per_bunch: getEffectiveBunchPrice(crop),
+          original_price_per_bunch: getBunchPrice(crop),
+          discount_percent: getDiscountPercent(crop),
           quantity: existing ? existing.quantity + 1 : 1
         }
       }
@@ -220,6 +235,9 @@ export default function Shopping() {
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 {crops.map((crop) => {
                   const bunchPrice = getBunchPrice(crop)
+                  const effectiveBunchPrice = getEffectiveBunchPrice(crop)
+                  const discountPercent = getDiscountPercent(crop)
+                  const hasDiscount = discountPercent > 0 && effectiveBunchPrice < bunchPrice
                   const productImage = DEFAULT_PRODUCT_IMAGE
 
                   return (
@@ -228,8 +246,14 @@ export default function Shopping() {
                       <div className="p-3">
                         <h2 className="text-base font-black text-white line-clamp-1 tracking-wide">{crop.variety_name}</h2>
                         <p className="mt-1 text-sm font-semibold text-lime-300">
-                          {bunchPrice > 0 ? `${formatCAD(bunchPrice)} / bunch` : 'Price on request'}
+                          {effectiveBunchPrice > 0 ? `${formatCAD(effectiveBunchPrice)} / bunch` : 'Price on request'}
                         </p>
+                        {hasDiscount && (
+                          <div className="mt-1 flex items-center gap-2">
+                            <span className="text-xs text-gray-400 line-through">{formatCAD(bunchPrice)}</span>
+                            <span className="text-xs font-bold text-emerald-300">-{discountPercent}% OFF</span>
+                          </div>
+                        )}
                         <button
                           onClick={() => addToCart(crop)}
                           className="mt-3 w-full rounded-md bg-lime-500 px-3 py-2 text-sm font-black tracking-wide text-black hover:bg-lime-400"
@@ -258,6 +282,9 @@ export default function Shopping() {
                   <div key={item.key} className="border border-lime-700/35 bg-black/25 rounded-lg p-3">
                     <p className="text-sm font-semibold text-white line-clamp-1">{item.variety_name}</p>
                     <p className="text-xs text-lime-300 mt-1">{formatCAD(item.price_per_bunch)} / bunch</p>
+                    {item.discount_percent > 0 && item.original_price_per_bunch > item.price_per_bunch && (
+                      <p className="text-xs text-gray-400 mt-1 line-through">{formatCAD(item.original_price_per_bunch)} / bunch</p>
+                    )}
                     <div className="mt-2 flex items-center justify-between">
                       <div className="inline-flex items-center rounded-md border border-lime-500/50 overflow-hidden">
                         <button

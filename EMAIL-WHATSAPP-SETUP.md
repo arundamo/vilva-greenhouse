@@ -27,6 +27,34 @@ This guide covers the setup of email notifications and WhatsApp click-to-chat in
 
 ## Email Setup
 
+### Deploy both the website and API
+
+The website and API are separate deployments. Publishing the website does not
+update the contact handler on the API.
+
+If production displays `Your message has been submitted. Our team will reply soon.`
+without an email, check the response from `POST /api/public/contact` in the browser
+Network tab. A response without `notificationSent` is from the older contact
+handler; it does not confirm that an email was sent.
+
+1. In Render, open **vilva-greenhouse-api**, not just the static website service.
+2. Verify that its repository is `arundamo/vilva-greenhouse`, its branch is `main`,
+   and its start command runs the current `server/index.js`.
+3. Select **Manual Deploy → Deploy latest commit** and wait until the backend
+   deployment is live.
+4. Set the email environment variables below on the **backend service**. A local
+   `server/.env` file is not deployed to Render.
+5. Submit the contact form again. The updated API returns `notificationSent: true`
+   only after the email transport reports success. If it is `false`, the message
+   is still saved; inspect backend logs for `Failed to send contact notification`
+   and resolve the email configuration or provider error.
+
+Also verify that the website's build-time `VITE_API_URL` points to the deployed
+API (currently `https://vilva-greenhouse-api.onrender.com`). Rebuild the website
+after changing that setting. If the email transport reports success but no email
+arrives, check spam and the email provider's delivery logs; transport acceptance
+does not guarantee inbox delivery.
+
 ### Step 1: Configure Gmail for SMTP
 
 1. **Enable 2-Factor Authentication** (if not already enabled):

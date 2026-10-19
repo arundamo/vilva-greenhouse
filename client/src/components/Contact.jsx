@@ -22,10 +22,13 @@ export default function Contact() {
     try {
       setSubmitting(true)
       const response = await axios.post('/api/public/contact', formData)
-      if (response.data.notificationSent) {
+      if (response.data.notificationSent === true) {
         setSuccess(response.data.message)
-      } else {
+      } else if (response.data.notificationSent === false) {
         setError(response.data.message)
+      } else {
+        console.error('Contact API did not return an email notification status. Verify the backend deployment.')
+        setError('Your message has been saved, but email delivery could not be confirmed. Please email contact@vilvagreenhouse.farm directly.')
       }
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
     } catch (submitError) {
